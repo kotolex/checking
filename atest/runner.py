@@ -9,9 +9,15 @@ _FAILED = []
 # Сломанные тесты - падают с любым исключением кроме ассертов
 _BROKEN = []
 # My product name
-__PACKAGE = 'atest'
-# TODO filter
+_MODULES = ('annotations', 'asserts', 'runner')
 _DICT = defaultdict(list)
+
+
+def _is_module(name: str) -> bool:
+    for module_name in _MODULES:
+        if name.endswith(module_name + '.py'):
+            return True
+    return False
 
 
 def _unsuccessful_test(test, verbose, error, is_failed=True):
@@ -30,7 +36,7 @@ def _unsuccessful_test(test, verbose, error, is_failed=True):
         print(_letter[0], end='')
     else:
         print(test.__name__, _letter)
-        for tb in (e for e in traceback.extract_tb(error.__traceback__) if __PACKAGE not in e.filename):
+        for tb in (e for e in traceback.extract_tb(error.__traceback__) if not _is_module(e.filename)):
             print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
             print(f'-->    {tb.line}')
         print(error)
@@ -72,7 +78,11 @@ def _finish(elapsed: float):
     :return: None
     """
     print("=" * 30)
-    print(f'Total tests:{len(_MAIN)}, failed tests:{len(_FAILED)}, broken tests:{len(_BROKEN)}')
+    all_count = len(_MAIN)
+    f_count = len(_FAILED)
+    b_count = len(_BROKEN)
+    success_count = all_count - (f_count + b_count)
+    print(f'Total tests:{all_count}, success tests : {success_count}, failed tests:{f_count}, broken tests:{b_count}')
     print(f'Time elapsed: {elapsed:.2f} seconds.')
     if _FAILED:
         print(f'\nFailed tests are:')
