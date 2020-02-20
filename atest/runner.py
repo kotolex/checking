@@ -78,6 +78,11 @@ def start(verbose: int = 0):
                 _unsuccessful_test(test_object, verbose, e, False)
     if not verbose:
         print()
+    for test_object in _MAIN:
+        try:
+            test_object.finish()
+        except Exception as e:
+            print(e)
     _finish(time.time() - start_time, verbose)
 
 
