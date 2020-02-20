@@ -26,3 +26,6 @@ class Test:
     @classmethod
     def after_module(cls, module_name: str, function: Callable):
         cls.after[module_name].append(function)
+
+    def __str__(self):
+        return f'{self.module_name}.{self.test.__name__}'

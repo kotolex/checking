@@ -1,16 +1,18 @@
 import traceback
 import time
 from collections import defaultdict
-from typing import Callable
+from typing import List
+
+from .classes import Test
 
 # Основной набор тестов, позволяет хранить и одноименные
-_MAIN = []
+_MAIN: List[Test] = []
 # Проваленные тесты (упали по ассертам)
 _FAILED = []
 # Сломанные тесты - падают с любым исключением кроме ассертов
 _BROKEN = []
 # My product name
-_MODULES = ('annotations', 'asserts', 'runner')
+_MODULES = ('annotations', 'asserts', 'runner', "classes")
 _DICT = defaultdict(list)
 
 
@@ -26,10 +28,10 @@ def _is_module(name: str) -> bool:
     return False
 
 
-def _unsuccessful_test(test: Callable, verbose: int, error: Exception, is_failed: bool = True):
+def _unsuccessful_test(test_object: Test, verbose: int, error: Exception, is_failed: bool = True):
     """
     Вывод информации о упавшем тесте
-    :param test: тестовый метод
+    :param test_object: объект тестового класса
     :param verbose: подробность с которой нужно выводить (подробнее смотри start())
     :param error: упавшее исключение
     :param is_failed: упал тест по ассерту или нет
@@ -37,11 +39,11 @@ def _unsuccessful_test(test: Callable, verbose: int, error: Exception, is_failed
     """
     _list = _FAILED if is_failed else _BROKEN
     _letter = 'FAILED!' if is_failed else 'BROKEN!'
-    _list.append(test)
+    _list.append(test_object)
     if not verbose:
         print(_letter[0], end='')
     else:
-        print(test.__name__, _letter)
+        print(test_object, _letter)
         for tb in (e for e in traceback.extract_tb(error.__traceback__) if not _is_module(e.filename)):
             print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
             print(f'-->    {tb.line}')
@@ -59,21 +61,21 @@ def start(verbose: int = 0):
     """
     verbose = 0 if verbose not in range(4) else verbose
     start_time = time.time()
-    for test in _MAIN:
+    for test_object in _MAIN:
         try:
-            test()
+            test_object.run()
             if not verbose:
                 print('.', end='')
             elif verbose == 2:
                 print('-' * 10)
-                print(test.__name__, " SUCCESS!")
+                print(test_object, " SUCCESS!")
         except Exception as e:
             if verbose > 0:
                 print('-' * 10)
             if type(e) == AssertionError:
-                _unsuccessful_test(test, verbose, e)
+                _unsuccessful_test(test_object, verbose, e)
             else:
-                _unsuccessful_test(test, verbose, e, False)
+                _unsuccessful_test(test_object, verbose, e, False)
     if not verbose:
         print()
     _finish(time.time() - start_time, verbose)
@@ -96,9 +98,9 @@ def _finish(elapsed: float, verbose: int):
         if _FAILED:
             print(f'\nFailed tests are:')
             for failed_test in _FAILED:
-                print(' ' * 4, failed_test.__name__)
+                print(' ' * 4, failed_test)
         if _BROKEN:
             print(f'\nBroken tests are:')
             for broken_test in _BROKEN:
-                print(' ' * 4, broken_test.__name__)
+                print(' ' * 4, broken_test)
     print("=" * 30)
