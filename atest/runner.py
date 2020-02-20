@@ -1,6 +1,7 @@
 import traceback
 import time
-from _collections import defaultdict
+from collections import defaultdict
+from typing import Callable
 
 # Основной набор тестов, позволяет хранить и одноименные
 _MAIN = []
@@ -14,13 +15,18 @@ _DICT = defaultdict(list)
 
 
 def _is_module(name: str) -> bool:
+    """
+    Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
+    :param name: имя
+    :return: является ли это именем одного из модулей проекта
+    """
     for module_name in _MODULES:
         if name.endswith(module_name + '.py'):
             return True
     return False
 
 
-def _unsuccessful_test(test, verbose, error, is_failed=True):
+def _unsuccessful_test(test: Callable, verbose: int, error: Exception, is_failed: bool = True):
     """
     Вывод информации о упавшем тесте
     :param test: тестовый метод
@@ -42,14 +48,16 @@ def _unsuccessful_test(test, verbose, error, is_failed=True):
         print(error)
 
 
-def start(verbose=0):
+def start(verbose: int = 0):
     """
     Главная функция запуска тестов.
 
     :param verbose: подробность отчетов, 0 - кратко (только точки и 1 буква), 1 - подробно, с указанием только
-    упавших тестов, 2- подробно, с указанием успешнах и упавших
+    упавших тестов, 2- подробно, с указанием успешных и упавших, 3 - подробно и в конце вывод списка упавших и сломанных
+    Если не в промежутке от 0 до 3 то принимается 0
     :return: None
     """
+    verbose = 0 if verbose not in range(4) else verbose
     start_time = time.time()
     for test in _MAIN:
         try:
@@ -68,10 +76,10 @@ def start(verbose=0):
                 _unsuccessful_test(test, verbose, e, False)
     if not verbose:
         print()
-    _finish(time.time() - start_time)
+    _finish(time.time() - start_time, verbose)
 
 
-def _finish(elapsed: float):
+def _finish(elapsed: float, verbose: int):
     """
     Выводит финальную информацию по тест-сьюту
     :param elapsed: время, за которое прошли все тесты
@@ -84,12 +92,13 @@ def _finish(elapsed: float):
     success_count = all_count - (f_count + b_count)
     print(f'Total tests:{all_count}, success tests : {success_count}, failed tests:{f_count}, broken tests:{b_count}')
     print(f'Time elapsed: {elapsed:.2f} seconds.')
-    if _FAILED:
-        print(f'\nFailed tests are:')
-        for failed_test in _FAILED:
-            print(' ' * 4, failed_test.__name__)
-    if _BROKEN:
-        print(f'\nBroken tests are:')
-        for broken_test in _BROKEN:
-            print(' ' * 4, broken_test.__name__)
+    if verbose == 3:
+        if _FAILED:
+            print(f'\nFailed tests are:')
+            for failed_test in _FAILED:
+                print(' ' * 4, failed_test.__name__)
+        if _BROKEN:
+            print(f'\nBroken tests are:')
+            for broken_test in _BROKEN:
+                print(' ' * 4, broken_test.__name__)
     print("=" * 30)
