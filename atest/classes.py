@@ -4,16 +4,16 @@ from collections import defaultdict
 
 class Test:
     before = defaultdict(list)
-    before_was_successful = False
     after = defaultdict(list)
     before_test = defaultdict(list)
     after_test = defaultdict(list)
-    counter = 0
+    counter = defaultdict(int)
 
     def __init__(self, module_name: str, test: Callable):
         self.module_name = module_name
         self.test = test
-        Test.counter += 1
+        self.run_after_module_always = False
+        Test.counter[self.module_name] += 1
 
     def __str__(self):
         return f'{self.module_name}.{self.test.__name__}'
@@ -24,20 +24,26 @@ class Test:
                 element()
             if a_dict is Test.before or a_dict is Test.after:
                 del a_dict[self.module_name]
-                Test.before_was_successful = True
+
+    def run_before_module(self):
+        self.__run_from_dict(Test.before)
+
+    def run_before_test(self):
+        self.__run_from_dict(Test.before_test)
 
     def run(self):
-        Test.counter -= 1
-        self.__run_from_dict(Test.before)
-        self.__run_from_dict(Test.before_test)
         self.test()
-        self.__run_from_dict(Test.after_test)
-        self.finish()
 
-    def finish(self):
-        if Test.counter == 0 and Test.before_was_successful:
+    def run_after_test(self):
+        self.__run_from_dict(Test.after_test)
+
+    def run_after_module(self):
+        if Test.counter[self.module_name] == 0 and (Test.before_module or self.run_after_module_always):
             Test.counter = -1
             self.__run_from_dict(Test.after)
+
+    def count_down(self):
+        Test.counter[self.module_name] -= 1
 
     @classmethod
     def before_module(cls, module_name: str, function: Callable):

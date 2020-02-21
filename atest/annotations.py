@@ -6,6 +6,8 @@ from .runner import _MAIN
 from .classes import Test
 
 
+# TODO always run, enabled, timeout(?)
+
 class WrongAnnotationPlacement(BaseException):
     pass
 
