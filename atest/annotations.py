@@ -2,11 +2,11 @@ import inspect
 from inspect import signature
 from typing import Callable
 
-from .runner import _MAIN
-from .classes import Test
+from .basic_test import Test
+from .basic_suite import TestSuite
 
 
-# TODO always run, enabled, timeout(?)
+# TODO before and after suite, always run, enabled, timeout(?)
 
 class WrongAnnotationPlacement(BaseException):
     pass
@@ -21,24 +21,24 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
 
 def test(func: Callable[[], None]):
     __check_is_function_without_args(func, 'test')
-    _MAIN.append(Test(func.__module__, func))
+    TestSuite.get_instance().get_or_create(func.__module__).add_test(Test(func.__name__, func))
 
 
 def before(func: Callable[[], None]):
     __check_is_function_without_args(func, 'before')
-    Test.before_each(func.__module__, func)
+    TestSuite.get_instance().get_or_create(func.__module__).add_before_test(func)
 
 
 def after(func: Callable[[], None]):
     __check_is_function_without_args(func, 'after')
-    Test.after_each(func.__module__, func)
+    TestSuite.get_instance().get_or_create(func.__module__).add_after_test(func)
 
 
 def before_module(func: Callable[[], None]):
     __check_is_function_without_args(func, 'before_module')
-    Test.before_module(func.__module__, func)
+    TestSuite.get_instance().get_or_create(func.__module__).add_before(func)
 
 
 def after_module(func: Callable[[], None]):
     __check_is_function_without_args(func, 'after_module')
-    Test.after_module(func.__module__, func)
+    TestSuite.get_instance().get_or_create(func.__module__).add_after(func)
