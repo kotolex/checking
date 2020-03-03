@@ -6,7 +6,7 @@ from .basic_test import Test
 from .basic_suite import TestSuite
 
 
-# TODO before and after suite, always run, enabled, timeout(?)
+# TODO always run, enabled, timeout(?)
 
 class WrongAnnotationPlacement(BaseException):
     pass
@@ -42,3 +42,13 @@ def before_module(func: Callable[[], None]):
 def after_module(func: Callable[[], None]):
     __check_is_function_without_args(func, 'after_module')
     TestSuite.get_instance().get_or_create(func.__module__).add_after(func)
+
+
+def before_suite(func: Callable[[], None]):
+    __check_is_function_without_args(func, 'before_suite')
+    TestSuite.get_instance().add_before(func)
+
+
+def after_suite(func: Callable[[], None]):
+    __check_is_function_without_args(func, 'after_suite')
+    TestSuite.get_instance().add_after(func)

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Callable
 
 from .test_group import TestGroup
 from .basic_test import Test
@@ -7,11 +7,23 @@ from .basic_test import Test
 class TestSuite:
     instance = None
     groups: Dict[str, TestGroup] = {}
+    before: List[Callable] = []
+    after: List[Callable] = []
+    name: str = 'Default Test Suite'
+    is_before_failed: bool = False
 
     def __new__(cls, *args, **kwargs):
         if not TestSuite.instance:
             TestSuite.instance = super(TestSuite, cls).__new__(cls)
         return TestSuite.instance
+
+    @classmethod
+    def add_before(cls, func: Callable):
+        cls.before.append(func)
+
+    @classmethod
+    def add_after(cls, func: Callable):
+        cls.after.append(func)
 
     @classmethod
     def get_instance(cls):
@@ -44,4 +56,3 @@ class TestSuite:
     @classmethod
     def ignored(cls) -> List[Test]:
         return [test for group in cls.groups.values() for test in group.test_results['ignored']]
-

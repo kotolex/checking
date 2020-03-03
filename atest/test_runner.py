@@ -27,6 +27,10 @@ def run(test_suite: TestSuite, verbose: int = 0):
     if test_suite.is_empty():
         print('No tests were found! Stopped...')
         return
+    _run_before(test_suite)
+    if test_suite.is_before_failed:
+        print(f'Before suite "{test_suite.name}" failed! Process stopped!')
+        return
     for group_name, group in test_suite.groups.items():
         _run_before(group)
         if group.is_before_failed:
@@ -60,6 +64,8 @@ def run(test_suite: TestSuite, verbose: int = 0):
                     _unsuccessful_test(test, group, verbose, e, False)
             _run_after(test)
         _run_after(group)
+    if not test_suite.is_before_failed:
+        _run_after(test_suite)
     if not verbose:
         print()
 
