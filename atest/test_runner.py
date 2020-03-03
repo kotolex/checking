@@ -30,12 +30,16 @@ def run(test_suite: TestSuite, verbose: int = 0):
     _run_before(test_suite)
     if test_suite.is_before_failed:
         print(f'Before suite "{test_suite.name}" failed! Process stopped!')
+        if test_suite.always_run_after:
+            _run_after(test_suite)
         return
     for group_name, group in test_suite.groups.items():
         _run_before(group)
         if group.is_before_failed:
             for test in group.tests:
                 _put_to_ignored(test, group, 'before module/group')
+            if group.always_run_after:
+                _run_after(group)
             continue
         is_one_of_before_test_failed = False
         for test in group.tests:
@@ -64,8 +68,7 @@ def run(test_suite: TestSuite, verbose: int = 0):
                     _unsuccessful_test(test, group, verbose, e, False)
             _run_after(test)
         _run_after(group)
-    if not test_suite.is_before_failed:
-        _run_after(test_suite)
+    _run_after(test_suite)
     if not verbose:
         print()
 
@@ -100,7 +103,7 @@ def _run_before(test_case: TestCase):
 
 
 def _run_after(test_case: TestCase):
-    if test_case.is_before_failed:
+    if not test_case.always_run_after and test_case.is_before_failed:
         return
     for after in test_case.after:
         _run_fixture(after, 'after', test_case.name)

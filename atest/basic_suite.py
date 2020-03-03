@@ -11,6 +11,7 @@ class TestSuite:
     after: List[Callable] = []
     name: str = 'Default Test Suite'
     is_before_failed: bool = False
+    always_run_after: bool = False
 
     def __new__(cls, *args, **kwargs):
         if not TestSuite.instance:

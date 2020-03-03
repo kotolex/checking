@@ -1,12 +1,12 @@
 import inspect
 from inspect import signature
-from typing import Callable
+from typing import Callable, Any
 
 from .basic_test import Test
 from .basic_suite import TestSuite
 
 
-# TODO always run, enabled, timeout(?)
+# TODO timeout(?)
 
 class WrongAnnotationPlacement(BaseException):
     pass
@@ -19,9 +19,21 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
             f"with classes or class methods!")
 
 
-def test(func: Callable[[], None]):
-    __check_is_function_without_args(func, 'test')
-    TestSuite.get_instance().get_or_create(func.__module__).add_test(Test(func.__name__, func))
+def _fake():
+    pass
+
+
+def test(anything: Any = None, enabled: bool = True):
+    def real_decorator(func: Callable[[], None]):
+        __check_is_function_without_args(func, 'test')
+        if enabled:
+            TestSuite.get_instance().get_or_create(func.__module__).add_test(Test(func.__name__, func))
+        return _fake
+
+    if anything and inspect.isfunction(anything):
+        return real_decorator(anything)
+
+    return real_decorator
 
 
 def before(func: Callable[[], None]):
@@ -39,9 +51,17 @@ def before_module(func: Callable[[], None]):
     TestSuite.get_instance().get_or_create(func.__module__).add_before(func)
 
 
-def after_module(func: Callable[[], None]):
-    __check_is_function_without_args(func, 'after_module')
-    TestSuite.get_instance().get_or_create(func.__module__).add_after(func)
+def after_module(anything: Any = None, always_run: bool = False):
+    def real_decorator(func: Callable[[], None]):
+        __check_is_function_without_args(func, 'after_module')
+        TestSuite.get_instance().get_or_create(func.__module__).add_after(func)
+        if always_run:
+            TestSuite.get_instance().get_or_create(func.__module__).always_run_after = True
+        return _fake
+
+    if anything and inspect.isfunction(anything):
+        return real_decorator(anything)
+    return real_decorator
 
 
 def before_suite(func: Callable[[], None]):
@@ -49,6 +69,14 @@ def before_suite(func: Callable[[], None]):
     TestSuite.get_instance().add_before(func)
 
 
-def after_suite(func: Callable[[], None]):
-    __check_is_function_without_args(func, 'after_suite')
-    TestSuite.get_instance().add_after(func)
+def after_suite(anything: Any = None, always_run: bool = False):
+    def real_decorator(func: Callable[[], None]):
+        __check_is_function_without_args(func, 'after_suite')
+        TestSuite.get_instance().add_after(func)
+        if always_run:
+            TestSuite.always_run_after = True
+        return _fake
+
+    if anything and inspect.isfunction(anything):
+        return real_decorator(anything)
+    return real_decorator
