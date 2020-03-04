@@ -6,10 +6,11 @@ from .basic_test import Test
 from .basic_suite import TestSuite
 
 
-# TODO timeout(?)
+# TODO timeout(?), unit-tests!
 
 class WrongAnnotationPlacement(BaseException):
     pass
+
 
 class DuplicateNameException(BaseException):
     pass
@@ -26,13 +27,16 @@ def _fake(*args):
     pass
 
 
-def test(*args, enabled: bool = True):
+def test(*args, enabled: bool = True, data_provider: str = None):
     if not enabled:
         return _fake
 
     def real_decorator(func: Callable[[], None]):
         __check_is_function_without_args(func, 'test')
-        TestSuite.get_instance().get_or_create(func.__module__).add_test(Test(func.__name__, func))
+        test_object = Test(func.__name__, func)
+        if data_provider:
+            test_object.provider = data_provider
+        TestSuite.get_instance().get_or_create(func.__module__).add_test(test_object)
         return _fake
 
     if args:
@@ -49,7 +53,7 @@ def data(*args, enabled: bool = True, name: str = None):
         name_ = name if name else func.__name__
         providers = TestSuite.get_instance().providers
         if name_ in providers:
-            raise DuplicateNameException(f'Data provider with name "{name_}" already exists! Only unique names allowed!')
+            raise DuplicateNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
         providers[name_] = func
         return _fake
 

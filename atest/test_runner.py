@@ -10,6 +10,82 @@ from .basic_test import Test
 _MODULES = ('annotations', 'asserts', 'runner', "classes")
 
 
+class UnknownProviderName(BaseException):
+    pass
+
+
+def run(test_suite: TestSuite, verbose: int = 0):
+    verbose = 0 if verbose not in range(4) else verbose
+    if test_suite.is_empty():
+        print('No tests were found! Stopped...')
+        return
+    _check_data_providers(test_suite)
+    if not _run_before_suite(test_suite):
+        return
+    for group in test_suite.groups.values():
+        if not _run_before_group(group):
+            continue
+        _run_all_tests_in_group(group, verbose)
+        _run_after(group)
+    _run_after(test_suite)
+    if not verbose:
+        print()
+
+
+def _run_before_suite(test_suite: TestSuite) -> bool:
+    _run_before(test_suite)
+    if test_suite.is_before_failed:
+        print(f'Before suite "{test_suite.name}" failed! Process stopped!')
+        if test_suite.always_run_after:
+            _run_after(test_suite)
+        return False
+    return True
+
+
+def _run_before_group(group: TestGroup) -> bool:
+    _run_before(group)
+    if group.is_before_failed:
+        for test in group.tests:
+            _put_to_ignored(test, group, 'before module/group')
+        if group.always_run_after:
+            _run_after(group)
+        return False
+    return True
+
+
+def _run_all_tests_in_group(group: TestGroup, verbose: int):
+    is_one_of_before_test_failed = False
+    for test in group.tests:
+        if not is_one_of_before_test_failed:
+            _run_before(test)
+        else:
+            test.is_before_failed = True
+        if test.is_before_failed:
+            _put_to_ignored(test, group, 'before test')
+            is_one_of_before_test_failed = True
+            continue
+        _run_test(test, group, verbose)
+        _run_after(test)
+
+
+def _run_test(test: Test, group: TestGroup, verbose: int):
+    try:
+        test.run()
+        if not verbose:
+            print('.', end='')
+        elif verbose == 2:
+            _print_splitter_line()
+            print(f'{test} SUCCESS!')
+            group.add_result_to(test)
+    except Exception as e:
+        if verbose > 0:
+            _print_splitter_line()
+        if type(e) is AssertionError:
+            _unsuccessful_test(test, group, verbose, e)
+        else:
+            _unsuccessful_test(test, group, verbose, e, False)
+
+
 def _is_module(name: str) -> bool:
     """
     Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
@@ -22,55 +98,15 @@ def _is_module(name: str) -> bool:
     return False
 
 
-def run(test_suite: TestSuite, verbose: int = 0):
-    verbose = 0 if verbose not in range(4) else verbose
-    if test_suite.is_empty():
-        print('No tests were found! Stopped...')
+def _check_data_providers(suite: TestSuite):
+    all_data_providers = [test.provider for group in suite.groups.values() for test in group.tests if test.provider]
+    if not all_data_providers:
         return
-    _run_before(test_suite)
-    if test_suite.is_before_failed:
-        print(f'Before suite "{test_suite.name}" failed! Process stopped!')
-        if test_suite.always_run_after:
-            _run_after(test_suite)
-        return
-    for group_name, group in test_suite.groups.items():
-        _run_before(group)
-        if group.is_before_failed:
-            for test in group.tests:
-                _put_to_ignored(test, group, 'before module/group')
-            if group.always_run_after:
-                _run_after(group)
-            continue
-        is_one_of_before_test_failed = False
-        for test in group.tests:
-            if not is_one_of_before_test_failed:
-                _run_before(test)
-            else:
-                test.is_before_failed = True
-            if test.is_before_failed:
-                _put_to_ignored(test, group, 'before test')
-                is_one_of_before_test_failed = True
-                continue
-            try:
-                test.run()
-                if not verbose:
-                    print('.', end='')
-                elif verbose == 2:
-                    _print_splitter_line()
-                    print(f'{group_name}.{test.name}', " SUCCESS!")
-                    group.add_result_to(test)
-            except Exception as e:
-                if verbose > 0:
-                    _print_splitter_line()
-                if type(e) is AssertionError:
-                    _unsuccessful_test(test, group, verbose, e)
-                else:
-                    _unsuccessful_test(test, group, verbose, e, False)
-            _run_after(test)
-        _run_after(group)
-    _run_after(test_suite)
-    if not verbose:
-        print()
+    is_all_provider_known = all([provider in suite.providers for provider in all_data_providers])
+    if not is_all_provider_known:
+        name_ = [provider for provider in all_data_providers if provider not in suite.providers]
+        raise UnknownProviderName(f'Cant find provider with name(s) {name_}. '
+                                  f'You must have method with @data annotation in this package!')
 
 
 def _unsuccessful_test(test_object: Test, group: TestGroup, verbose: int, error: Exception, is_failed: bool = True):
