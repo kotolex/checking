@@ -16,7 +16,7 @@ class TestClasses(TC):
 
     def test_init_for_Test_Case(self):
         case = TestCase('default')
-        self.assertFalse(any([case.before, case.after, case.always_run_after, case.is_before_failed]))
+        self.assertFalse(any([case.before, case.after, case.always_run_after, case.is_before_failed, case.provider]))
 
     def test_add_before_Test_Case(self):
         test_case = TestCase('default')

@@ -1,4 +1,4 @@
-from typing import Dict, List, Callable
+from typing import Dict, List, Callable, Iterable
 
 from .test_group import TestGroup
 from .basic_test import Test
@@ -7,6 +7,7 @@ from .basic_test import Test
 class TestSuite:
     instance = None
     groups: Dict[str, TestGroup] = {}
+    providers: Dict[str, Callable[[None], Iterable]] = {}
     before: List[Callable] = []
     after: List[Callable] = []
     name: str = 'Default Test Suite'

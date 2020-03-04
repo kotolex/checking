@@ -1,6 +1,6 @@
 import inspect
 from inspect import signature
-from typing import Callable, Any
+from typing import Callable, Any, Iterable
 
 from .basic_test import Test
 from .basic_suite import TestSuite
@@ -11,6 +11,9 @@ from .basic_suite import TestSuite
 class WrongAnnotationPlacement(BaseException):
     pass
 
+class DuplicateNameException(BaseException):
+    pass
+
 
 def __check_is_function_without_args(func: Callable, annotation_name: str):
     if not inspect.isfunction(func) or signature(func).parameters:
@@ -19,15 +22,35 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
             f"with classes or class methods!")
 
 
-def _fake():
+def _fake(*args):
     pass
 
 
 def test(*args, enabled: bool = True):
+    if not enabled:
+        return _fake
+
     def real_decorator(func: Callable[[], None]):
         __check_is_function_without_args(func, 'test')
-        if enabled:
-            TestSuite.get_instance().get_or_create(func.__module__).add_test(Test(func.__name__, func))
+        TestSuite.get_instance().get_or_create(func.__module__).add_test(Test(func.__name__, func))
+        return _fake
+
+    if args:
+        return real_decorator(args[0])
+    return real_decorator
+
+
+def data(*args, enabled: bool = True, name: str = None):
+    if not enabled:
+        return _fake
+
+    def real_decorator(func: Callable[[None], Iterable]):
+        __check_is_function_without_args(func, 'data')
+        name_ = name if name else func.__name__
+        providers = TestSuite.get_instance().providers
+        if name_ in providers:
+            raise DuplicateNameException(f'Data provider with name "{name_}" already exists! Only unique names allowed!')
+        providers[name_] = func
         return _fake
 
     if args:

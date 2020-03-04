@@ -6,4 +6,4 @@ from .annotations import *
 
 
 __all__ = ['start', 'equals', 'is_none', 'not_none', 'test', 'before', 'after', 'before_module', 'after_module',
-           'before_suite', 'after_suite', 'WrongAnnotationPlacement']
+           'before_suite', 'after_suite', 'data','WrongAnnotationPlacement', 'DuplicateNameException']
