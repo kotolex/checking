@@ -27,12 +27,12 @@ def _finish(elapsed: float, verbose: int):
     print()
     print("=" * 30)
     test_suite = TestSuite.get_instance()
-    all_count = test_suite.tests_count()
+    succ_count = len(test_suite.success())
     f_count = len(test_suite.failed())
     b_count = len(test_suite.broken())
     i_count = len(test_suite.ignored())
-    success_count = all_count - (f_count + b_count + i_count)
-    print(f'Total tests:{all_count}, success tests : {success_count}, failed tests:{f_count}, broken tests:'
+    all_count = f_count + b_count + i_count + succ_count
+    print(f'Total tests:{all_count}, success tests : {succ_count}, failed tests:{f_count}, broken tests:'
           f'{b_count}, ignored tests:{i_count}')
     print(f'Time elapsed: {elapsed:.2f} seconds.')
     if verbose == 3:

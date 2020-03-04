@@ -70,6 +70,14 @@ class TestSuite:
         return sum([len(group.tests) for group in cls.groups.values()])
 
     @classmethod
+    def success(cls) -> List[Test]:
+        """
+        Возвращает список успешных тестов
+        :return:
+        """
+        return [test for group in cls.groups.values() for test in group.test_results['success']]
+
+    @classmethod
     def failed(cls) -> List[Test]:
         """
         Возвращает список упаших тестов

@@ -18,12 +18,22 @@ class Test(TestCase):
         self.test = test
         self.group_name = '__main__'
 
-    def run(self):
+    def run(self, *args):
         """
         Запуск теста (функции, помеченной аннотацией test)
         :return: None
         """
-        self.test()
+        self.test(*args)
 
     def __str__(self):
         return f'{self.group_name}.{self.name}'
+
+    def clone(self) -> TestCase:
+        clone = Test(self.name, self.test)
+        clone.group_name = self.group_name
+        clone.provider = self.provider
+        clone.after = self.after[:]
+        clone.before = self.before[:]
+        clone.is_before_failed = self.is_before_failed
+        clone.always_run_after = self.always_run_after
+        return clone

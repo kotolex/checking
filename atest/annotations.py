@@ -6,7 +6,7 @@ from .basic_test import Test
 from .basic_suite import TestSuite
 
 
-# TODO timeout(?), unit-tests!
+# TODO timeout(?), unit-tests, docs!
 
 class WrongAnnotationPlacement(BaseException):
     pass
@@ -23,6 +23,12 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
             f"with classes or class methods!")
 
 
+def __check_is_function_for_provider(func: Callable[[Any], None]):
+    if not inspect.isfunction(func) or not signature(func).parameters:
+        raise WrongAnnotationPlacement(
+            f"Function {func.__name__} marked with data_provider, but no argument there! Must be one at least!")
+
+
 def _fake(*args):
     pass
 
@@ -32,7 +38,10 @@ def test(*args, enabled: bool = True, data_provider: str = None):
         return _fake
 
     def real_decorator(func: Callable[[], None]):
-        __check_is_function_without_args(func, 'test')
+        if not data_provider:
+            __check_is_function_without_args(func, 'test')
+        else:
+            __check_is_function_for_provider(func)
         test_object = Test(func.__name__, func)
         if data_provider:
             test_object.provider = data_provider

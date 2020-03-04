@@ -50,10 +50,10 @@ class TestGroup(TestCase):
         """
         self.after_all.append(func)
 
-    def add_result_to(self, test: Test, result: str = 'success'):
+    def add_result_to(self, test: TestCase, result: str = 'success'):
         """
         Добавления теста в соответствующий раздел словаря результатов
-        :param test: объект Test
+        :param test: объект TestCase
         :param result: результат, по-умолчанию успешен
         :return: None
         """

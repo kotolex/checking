@@ -1,12 +1,12 @@
 import traceback
-from typing import Callable
+from typing import Callable, Any
 
 from .basic_suite import TestSuite
 from .test_group import TestGroup
 from .test_case import TestCase
 from .basic_test import Test
 
-# TODO find another way
+# TODO find another way for modules. Docs!
 _MODULES = ('annotations', 'asserts', 'runner', "classes")
 
 
@@ -53,24 +53,59 @@ def _run_before_group(group: TestGroup) -> bool:
     return True
 
 
+def _run_test_with_provider(test, group, verbose):
+    generator = _provider_next(test.provider)
+    try:
+        for param in generator:
+            clone = test.clone()
+            clone.name = clone.name + f' [{param}]'
+            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False, verbose, param)
+            if is_one_of_before_test_failed:
+                print(f'Because of "before_test" all test for {test} with data provider "{test.provider}" was IGNORED!')
+                break
+    except TypeError as e:
+        if 'is not iterable' not in e.args[0]:
+            raise e
+        else:
+            group.add_result_to(test, 'ignored')
+            print(f'Provider "{test.provider}" for {test} not returns iterable! All tests with provider were IGNORED!')
+
+
 def _run_all_tests_in_group(group: TestGroup, verbose: int):
     is_one_of_before_test_failed = False
     for test in group.tests:
-        if not is_one_of_before_test_failed:
-            _run_before(test)
+        if test.provider:
+            _run_test_with_provider(test, group, verbose)
         else:
-            test.is_before_failed = True
-        if test.is_before_failed:
-            _put_to_ignored(test, group, 'before test')
-            is_one_of_before_test_failed = True
-            continue
-        _run_test(test, group, verbose)
-        _run_after(test)
+            is_one_of_before_test_failed = _run_test_with_before_and_after(test, group, is_one_of_before_test_failed,
+                                                                           verbose)
 
 
-def _run_test(test: Test, group: TestGroup, verbose: int):
+def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_one_of_before_test_failed: bool, verbose: int,
+                                    arg: Any = None) -> bool:
+    if not is_one_of_before_test_failed:
+        _run_before(test)
+    else:
+        test.is_before_failed = True
+    if test.is_before_failed:
+        _put_to_ignored(test, group, 'before test')
+        return True
+    _run_test(test, group, verbose, arg)
+    _run_after(test)
+    return False
+
+
+def _provider_next(provider_name: str) -> Any:
+    for param in TestSuite.get_instance().providers[provider_name]():
+        yield param
+
+
+def _run_test(test: Test, group: TestGroup, verbose: int, arg=None):
     try:
-        test.run()
+        if arg is not None:
+            test.run(arg)
+        else:
+            test.run()
         if not verbose:
             print('.', end='')
         elif verbose == 2:
@@ -159,7 +194,7 @@ def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
     return is_failed
 
 
-def _put_to_ignored(test_object: Test, group: TestGroup, fixture_type: str):
+def _put_to_ignored(test_object: TestCase, group: TestGroup, fixture_type: str):
     group.add_result_to(test_object, 'ignored')
     _print_splitter_line()
     print(f'Because of fixture "{fixture_type}" test {test_object} was IGNORED!')
