@@ -1,7 +1,7 @@
 import time
 
 from .test_runner import run
-from .basic_suite import TestSuite
+from atest.classes.basic_suite import TestSuite
 
 
 def start(verbose: int = 0):
@@ -21,7 +21,7 @@ def start(verbose: int = 0):
 def _finish(elapsed: float, verbose: int):
     """
     Выводит финальную информацию по тест-сьюту
-    :param elapsed: время, за которое прошли все тесты
+    :param elapsed: время, за которое прошли все тесты, verbose: подробность отчетов
     :return: None
     """
     print()

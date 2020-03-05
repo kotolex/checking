@@ -1,10 +1,10 @@
 import traceback
 from typing import Callable, Any
 
-from .basic_suite import TestSuite
-from .test_group import TestGroup
-from .test_case import TestCase
-from .basic_test import Test
+from atest.classes.basic_suite import TestSuite
+from atest.classes.test_group import TestGroup
+from atest.classes.test_case import TestCase
+from atest.classes.basic_test import Test
 
 # TODO find another way for modules. Docs!
 _MODULES = ('annotations', 'asserts', 'runner', "classes")
@@ -108,7 +108,7 @@ def _run_test(test: Test, group: TestGroup, verbose: int, arg=None):
             test.run()
         if not verbose:
             print('.', end='')
-        elif verbose == 2:
+        elif verbose > 1:
             _print_splitter_line()
             print(f'{test} SUCCESS!')
             group.add_result_to(test)

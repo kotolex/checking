@@ -2,8 +2,8 @@ import inspect
 from inspect import signature
 from typing import Callable, Any, Iterable
 
-from .basic_test import Test
-from .basic_suite import TestSuite
+from atest.classes.basic_test import Test
+from atest.classes.basic_suite import TestSuite
 
 
 # TODO timeout(?), unit-tests, docs!

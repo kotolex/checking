@@ -2,10 +2,10 @@ from unittest import TestCase as TC
 from unittest import main
 from random import randint
 
-from atest.test_case import TestCase
-from atest.basic_test import Test
-from atest.test_group import TestGroup
-from atest.basic_suite import TestSuite
+from atest.classes.test_case import TestCase
+from atest.classes.basic_test import Test
+from atest.classes.test_group import TestGroup
+from atest.classes.basic_suite import TestSuite
 
 
 class TestClasses(TC):
