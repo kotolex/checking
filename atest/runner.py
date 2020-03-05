@@ -1,7 +1,7 @@
 import time
 
 from .test_runner import run
-from atest.classes.basic_suite import TestSuite
+from .classes.basic_suite import TestSuite
 
 
 def start(verbose: int = 0):

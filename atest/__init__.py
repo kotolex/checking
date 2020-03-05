@@ -1,9 +1,11 @@
 from .runner import start
 from .asserts import *
 from .annotations import *
+from .exceptions import *
 
-# TODO unit-tests for annotations, docs, data-provider, timeout, listener, logging, parallel(?)
+# TODO unit-tests for annotations, docs, data_file (?),  csv_file(?), timeout, listener, logging, parallel(?)
 
 
 __all__ = ['start', 'equals', 'is_none', 'not_none', 'test', 'before', 'after', 'before_module', 'after_module',
-           'before_suite', 'after_suite', 'data','WrongAnnotationPlacement', 'DuplicateNameException']
+           'before_suite', 'after_suite', 'data', 'WrongAnnotationPlacement', 'DuplicateNameException',
+           'UnknownProviderName']

@@ -1,17 +1,14 @@
 import traceback
 from typing import Callable, Any
 
-from atest.classes.basic_suite import TestSuite
-from atest.classes.test_group import TestGroup
-from atest.classes.test_case import TestCase
-from atest.classes.basic_test import Test
+from .classes.basic_suite import TestSuite
+from .classes.test_group import TestGroup
+from .classes.test_case import TestCase
+from .classes.basic_test import Test
+from .exceptions import UnknownProviderName
 
 # TODO find another way for modules. Docs!
 _MODULES = ('annotations', 'asserts', 'runner', "classes")
-
-
-class UnknownProviderName(BaseException):
-    pass
 
 
 def run(test_suite: TestSuite, verbose: int = 0):
