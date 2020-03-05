@@ -16,6 +16,7 @@ class TestCase:
         self.is_before_failed: bool = False
         # Флаг обязательного запуска функций после теста, даже если предварительные упали
         self.always_run_after: bool = False
+        # Имя провайдера для дальнейшей поставки данных в тест
         self.provider = None
 
     def add_before(self, func: Callable):

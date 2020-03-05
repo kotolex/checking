@@ -29,6 +29,10 @@ class Test(TestCase):
         return f'{self.group_name}.{self.name}'
 
     def clone(self) -> TestCase:
+        """
+        Клонирование объекта, мутабл поля копируются
+        :return: новый Test
+        """
         clone = Test(self.name, self.test)
         clone.group_name = self.group_name
         clone.provider = self.provider

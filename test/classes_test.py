@@ -5,6 +5,7 @@ from random import randint
 from atest.test_case import TestCase
 from atest.basic_test import Test
 from atest.test_group import TestGroup
+from atest.basic_suite import TestSuite
 
 
 class TestClasses(TC):
@@ -45,6 +46,23 @@ class TestClasses(TC):
         before_count = TestClasses.count
         test.run()
         self.assertEqual(before_count + 1, TestClasses.count)
+
+    def test_clone_for_Test(self):
+        test = Test('name', self.fake_runner)
+        test.add_before(print)
+        test.add_after(self.fake_runner)
+        test.provider = "provider"
+        test.is_before_failed = True
+        test.always_run_after = True
+        new_test = test.clone()
+        self.assertEqual(test.name, new_test.name)
+        self.assertEqual(test.before, new_test.before)
+        self.assertEqual(test.after, new_test.after)
+        self.assertEqual(test.provider, new_test.provider)
+        self.assertEqual(test.is_before_failed, new_test.is_before_failed)
+        self.assertEqual(test.always_run_after, new_test.always_run_after)
+        self.assertFalse(test.before is new_test.before)
+        self.assertFalse(test.after is new_test.after)
 
     def test_init_for_TestGroup(self):
         group = TestGroup('default')
@@ -107,6 +125,72 @@ class TestClasses(TC):
         test = Test('name', print)
         group.add_test(test)
         self.assertFalse(group.is_empty())
+
+    def test_singleton_TestSuite(self):
+        suite = TestSuite.get_instance()
+        suite2 = TestSuite()
+        self.assertEqual(suite, suite2)
+
+    def test_add_before_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertFalse(suite.before)
+        suite.add_before(print)
+        self.assertEqual(1, len(suite.before))
+
+    def test_add_after_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertFalse(suite.after)
+        suite.add_after(print)
+        self.assertEqual(1, len(suite.after))
+
+    def test_get_or_create_TestSuite(self):
+        suite = TestSuite.get_instance()
+        suite.get_or_create("group_name")
+        self.assertIsNotNone(suite.groups.get('gr_name'))
+
+    def test_is_empty_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertTrue(suite.is_empty())
+        suite.get_or_create('gr_name').add_test(Test('test', print))
+        self.assertFalse(suite.is_empty())
+
+    def test_tests_count_TestSuite(self):
+        suite = TestSuite.get_instance()
+        initial_count = suite.tests_count()
+        suite.get_or_create('gr_name').add_test(Test('2', print))
+        self.assertEqual(initial_count + 1, suite.tests_count())
+
+    def test_success_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertFalse(suite.success())
+        test_ = Test('any', print)
+        suite.get_or_create('gr_name').test_results['success'].append(test_)
+        self.assertTrue(suite.success())
+        self.assertEqual(test_, suite.success()[0])
+
+    def test_failed_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertFalse(suite.failed())
+        test_ = Test('any', print)
+        suite.get_or_create('gr_name').test_results['failed'].append(test_)
+        self.assertTrue(suite.failed())
+        self.assertEqual(test_, suite.failed()[0])
+
+    def test_broken_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertFalse(suite.broken())
+        test_ = Test('any', print)
+        suite.get_or_create('gr_name').test_results['broken'].append(test_)
+        self.assertTrue(suite.broken())
+        self.assertEqual(test_, suite.broken()[0])
+
+    def test_ignored_TestSuite(self):
+        suite = TestSuite.get_instance()
+        self.assertFalse(suite.ignored())
+        test_ = Test('any', print)
+        suite.get_or_create('gr_name').test_results['ignored'].append(test_)
+        self.assertTrue(suite.ignored())
+        self.assertEqual(test_, suite.ignored()[0])
 
 
 if __name__ == '__main__':
