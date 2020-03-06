@@ -12,8 +12,8 @@ from .exceptions import *
 
 def __check_is_function_without_args(func: Callable, annotation_name: str):
     """
-    Проверка на то, что аннотация стоит над функцией без аргументов, не предполагается использование фннотаций с классами,
-    и/или с их методами
+    Проверка на то, что аннотация стоит над функцией без аргументов, не предполагается использование аннотаций
+    с классами и/или с их методами
     :param func: функция
     :param annotation_name: название аннотации (для ошибки)
     :return: None
@@ -35,7 +35,7 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
     """
     if not isfunction(func) or not signature(func).parameters:
         raise WrongAnnotationPlacement(
-            f"Function {func.__name__} marked with data_provider has no argument! Must be one at least!")
+            f"Function '{func.__name__}' marked with data_provider has no argument! Must be one at least!")
 
 
 def test(*args, enabled: bool = True, data_provider: str = None):

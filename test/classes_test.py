@@ -150,6 +150,7 @@ class TestClasses(TC):
 
     def test_is_empty_TestSuite(self):
         suite = TestSuite.get_instance()
+        suite.groups.clear()
         self.assertTrue(suite.is_empty())
         suite.get_or_create('gr_name').add_test(Test('test', print))
         self.assertFalse(suite.is_empty())
