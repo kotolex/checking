@@ -87,7 +87,13 @@ def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_one_of_
     if test.is_before_failed:
         _put_to_ignored(test, group, 'before test')
         return True
-    _run_test(test, group, verbose, arg)
+    for retry in range(test.retries):
+        clone = test.clone()
+        if retry > 0:
+            clone.name = clone.name + f' ({retry})'
+        result = _run_test(clone, group, verbose, arg)
+        if result:
+            break
     _run_after(test)
     return False
 
@@ -97,7 +103,7 @@ def _provider_next(provider_name: str) -> Any:
         yield param
 
 
-def _run_test(test: Test, group: TestGroup, verbose: int, arg=None):
+def _run_test(test: Test, group: TestGroup, verbose: int, arg=None) -> bool:
     try:
         if arg is not None:
             test.run(arg)
@@ -109,6 +115,7 @@ def _run_test(test: Test, group: TestGroup, verbose: int, arg=None):
             _print_splitter_line()
             print(f'{test} SUCCESS!')
             group.add_result_to(test)
+        return True
     except Exception as e:
         if verbose > 0:
             _print_splitter_line()
@@ -116,6 +123,7 @@ def _run_test(test: Test, group: TestGroup, verbose: int, arg=None):
             _unsuccessful_test(test, group, verbose, e)
         else:
             _unsuccessful_test(test, group, verbose, e, False)
+        return False
 
 
 def _is_module(name: str) -> bool:

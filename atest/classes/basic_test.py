@@ -40,4 +40,5 @@ class Test(TestCase):
         clone.before = self.before[:]
         clone.is_before_failed = self.is_before_failed
         clone.always_run_after = self.always_run_after
+        clone.retries = self.retries
         return clone

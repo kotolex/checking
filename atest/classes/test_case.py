@@ -18,6 +18,8 @@ class TestCase:
         self.always_run_after: bool = False
         # Имя провайдера для дальнейшей поставки данных в тест
         self.provider = None
+        # Количество попыток прогона теста
+        self.retries: int = 1
 
     def add_before(self, func: Callable):
         self.before.append(func)
