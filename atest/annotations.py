@@ -1,6 +1,6 @@
 from inspect import signature
 from inspect import isfunction
-from typing import Callable, Any, Iterable
+from typing import Callable, Any, Iterable, List
 
 from .classes.basic_test import Test
 from .classes.basic_suite import TestSuite
@@ -39,7 +39,7 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
 
 
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         group_name: str = None, priority: int = 0):
+         groups: List[str] = None, priority: int = 0):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
@@ -50,7 +50,7 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
     главное, чтобы он был найден при сборе тестовых сущностей. Если не найден, то будет брошено UnknownProviderName
     :param retries: количество попыток прогона теста, такое количество раз тест будет запущен снова в случае ошибок.
     В случае успеха теста, больше попыток не предпринимается, фикстуры перед и после теста прогоняются только 1 раз!
-    :param group_name: имя группы, к которой будет отнесен тест, если не указана, то автоматически создается группа с
+    :param groups: список имен групп, к которой будет отнесен тест, если пустой, то автоматически создается группа с
     именем модуля. Данный параметр позволяет группировать тесты из разных модулей в один прогон.
     :param priority: приоритет, для организации порядка выполнения тестов. САмый высокий 0, чем выше параметр, тем
     позже выполнится тест
@@ -65,13 +65,16 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
         else:
             __check_is_function_for_provider(func)
         name_ = name if name else func.__name__
-        group = group_name if group_name else func.__module__
-        test_object = Test(name_, func)
-        test_object.retries = retries
-        test_object.priority = priority
-        if data_provider:
-            test_object.provider = data_provider
-        TestSuite.get_instance().get_or_create(group).add_test(test_object)
+        nonlocal groups
+        if not groups:
+            groups = [func.__module__]
+        for group in groups:
+            test_object = Test(name_, func)
+            test_object.retries = retries
+            test_object.priority = priority
+            if data_provider:
+                test_object.provider = data_provider
+            TestSuite.get_instance().get_or_create(group).add_test(test_object)
         return _fake
 
     if args:

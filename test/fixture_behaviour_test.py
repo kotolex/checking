@@ -209,7 +209,7 @@ class TestBeforeAndAfter(TestCase):
     def test_all_fixtures_default_with_two_tests_and_different_groups(self):
         clear()
         test(fn)
-        test(group_name='api')(fn)
+        test(groups=['api'])(fn)
         after_group(a_group)
         before_group(b_group)
         before(b_test)
