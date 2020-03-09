@@ -61,6 +61,7 @@ class TestClasses(TC):
         self.assertEqual(test.after, new_test.after)
         self.assertEqual(test.provider, new_test.provider)
         self.assertEqual(test.is_before_failed, new_test.is_before_failed)
+        self.assertEqual(test.priority, new_test.priority)
         self.assertEqual(test.always_run_after, new_test.always_run_after)
         self.assertFalse(test.before is new_test.before)
         self.assertFalse(test.after is new_test.after)
@@ -139,6 +140,20 @@ class TestClasses(TC):
         group.add_test(test)
         group.test_results['success'] = [1, 2]
         self.assertEqual(2, group.tests_count())
+
+    def test_sort_by_priority(self):
+        group = TestGroup('empty')
+        test = Test('name2', print)
+        test1 = Test('name1', print)
+        test2 = Test('name', print)
+        test1.priority = 2
+        test2.priority = 1
+        group.add_test(test)
+        group.add_test(test1)
+        group.add_test(test2)
+        self.assertEqual(group.tests, [test, test1, test2])
+        group.sort_test_by_priority()
+        self.assertEqual(group.tests, [test, test2, test1])
 
     def test_singleton_TestSuite(self):
         clear()

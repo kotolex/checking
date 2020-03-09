@@ -73,5 +73,8 @@ class TestGroup(TestCase):
         не известно сколько их будет в сумме, благодаря перезапускам (retries) и/или провайдерам.
         :return: количество тестов
         """
-        runnned_count = sum([len(e) for e in self.test_results.values()])
-        return runnned_count if runnned_count else len(self.tests)
+        run_count = sum([len(e) for e in self.test_results.values()])
+        return run_count if run_count else len(self.tests)
+
+    def sort_test_by_priority(self):
+        self.tests = sorted(self.tests, key=lambda t: t.priority)

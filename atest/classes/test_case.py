@@ -20,6 +20,8 @@ class TestCase:
         self.provider = None
         # Количество попыток прогона теста
         self.retries: int = 1
+        # Приоритет теста, 0 - наивысший
+        self.priority: int = 0
 
     def add_before(self, func: Callable):
         self.before.append(func)
