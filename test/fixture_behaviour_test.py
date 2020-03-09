@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 
 from atest.annotations import *
-from atest.test_runner import start
+from atest.runner import start
 from atest.classes.basic_listener import Listener
 
 common_str = ''

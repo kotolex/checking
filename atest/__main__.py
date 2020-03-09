@@ -2,7 +2,7 @@ import sys
 import os
 import importlib
 
-from .test_runner import start
+from .runner import start
 
 HOME_FOLDER = sys.path[0]
 look_for = ('import atest', 'from atest')

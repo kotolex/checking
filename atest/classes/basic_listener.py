@@ -1,8 +1,8 @@
 import traceback
 import time
 
-from .test_case import TestCase
-from .test_group import TestGroup
+from .basic_case import TestCase
+from .basic_group import TestGroup
 from .basic_suite import TestSuite
 
 

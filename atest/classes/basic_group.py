@@ -1,7 +1,7 @@
 from typing import List, Callable, Dict
 
 from .basic_test import Test
-from .test_case import TestCase
+from .basic_case import TestCase
 
 
 class TestGroup(TestCase):

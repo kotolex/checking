@@ -1,8 +1,8 @@
 from typing import Callable, Any
 
 from .classes.basic_suite import TestSuite
-from .classes.test_group import TestGroup
-from .classes.test_case import TestCase
+from .classes.basic_group import TestGroup
+from .classes.basic_case import TestCase
 from .classes.basic_test import Test
 from .classes.basic_listener import DefaultListener, Listener
 from .exceptions import UnknownProviderName

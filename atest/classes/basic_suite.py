@@ -1,6 +1,6 @@
 from typing import Dict, List, Callable, Iterable
 
-from .test_group import TestGroup
+from .basic_group import TestGroup
 from .basic_test import Test
 
 

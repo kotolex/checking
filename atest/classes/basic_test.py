@@ -1,6 +1,6 @@
 from typing import Callable
 
-from .test_case import TestCase
+from .basic_case import TestCase
 
 
 class Test(TestCase):
