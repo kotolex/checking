@@ -117,12 +117,12 @@ def _run_test(test: Test, group: TestGroup, verbose: int, arg=None) -> bool:
             test.run(arg)
         else:
             test.run()
+        group.add_result_to(test)
         if not verbose:
             print('.', end='')
         elif verbose > 1:
             _print_splitter_line()
             print(f'{test} SUCCESS!')
-            group.add_result_to(test)
         return True
     except Exception as e:
         if verbose > 0:
