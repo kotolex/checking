@@ -2,6 +2,7 @@ from unittest import main, TestCase
 
 from atest.annotations import *
 from atest.runner import start
+from atest.runner import common_parameters
 from atest.classes.basic_listener import Listener
 
 common_str = ''
@@ -9,6 +10,14 @@ common_str = ''
 
 def failed():
     assert 1 == 2
+
+
+def par_1():
+    common_parameters['1'] = 1
+
+
+def par_2():
+    assert 1 == common_parameters['1']
 
 
 def clear():
@@ -172,7 +181,7 @@ class TestBeforeAndAfter(TestCase):
         clear()
         after_group(always_run=True)(a_group)
         test(fn)
-        TestSuite.get_instance().get_or_create('fixture_behaviour_test').is_before_failed = True
+        list(TestSuite.get_instance().groups.values())[0].is_before_failed = True
         start(listener=self._listener)
         self.assertEqual('_ag', common_str)
 
@@ -180,7 +189,7 @@ class TestBeforeAndAfter(TestCase):
         clear()
         after_group(a_group)
         test(fn)
-        TestSuite.get_instance().get_or_create('fixture_behaviour_test').is_before_failed = True
+        list(TestSuite.get_instance().groups.values())[0].is_before_failed = True
         start(listener=self._listener)
         self.assertEqual('', common_str)
 
@@ -193,7 +202,7 @@ class TestBeforeAndAfter(TestCase):
         after(a_test)
         before_suite(b_suite)
         after_suite(a_suite)
-        TestSuite.get_instance().get_or_create('fixture_behaviour_test').tests[0].is_before_failed = True
+        list(TestSuite.get_instance().groups.values())[0].tests[0].is_before_failed = True
         start(listener=self._listener)
         self.assertEqual('bs_bg_bt__ag_as', common_str)
 
@@ -237,6 +246,13 @@ class TestBeforeAndAfter(TestCase):
         test(fn)
         start(listener=self._listener)
         self.assertEqual('testbg__asbs_', common_str)
+
+    def test_common_params(self):
+        clear()
+        test(par_1)
+        test(par_2)
+        start(listener=self._listener)
+        self.assertEqual(common_parameters, {'1': 1})
 
 
 if __name__ == '__main__':

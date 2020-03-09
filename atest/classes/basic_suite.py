@@ -1,4 +1,4 @@
-from typing import Dict, List, Callable, Iterable
+from typing import Dict, List, Callable, Iterable, Any
 
 from .basic_group import TestGroup
 from .basic_test import Test
@@ -10,16 +10,21 @@ class TestSuite:
     Если есть хоть 1 тест, то включает в себя 1 набор.
     """
     instance = None
+
     # Словарь пар имя набора-набор
     groups: Dict[str, TestGroup] = {}
+
     # Дата провайдеры (доступны всем тестам во всех наборах)
     providers: Dict[str, Callable[[None], Iterable]] = {}
+
     # Списки функций выполняемых перед и после всего прогона
     before: List[Callable] = []
     after: List[Callable] = []
     name: str = 'Default Test Suite'
+
     # Флаг что предварительные функции упали
     is_before_failed: bool = False
+
     # Флаг что завершающие функции нужно выполнять независимо от результата предварительных
     always_run_after: bool = False
 
@@ -75,7 +80,7 @@ class TestSuite:
         Возвращает список успешных тестов
         :return:
         """
-        return [test for group in cls.groups.values() for test in group.test_results['success']]
+        return cls._test_result_of('success')
 
     @classmethod
     def failed(cls) -> List[Test]:
@@ -83,7 +88,7 @@ class TestSuite:
         Возвращает список упаших тестов
         :return:
         """
-        return [test for group in cls.groups.values() for test in group.test_results['failed']]
+        return cls._test_result_of('failed')
 
     @classmethod
     def broken(cls) -> List[Test]:
@@ -91,7 +96,7 @@ class TestSuite:
         Возвращает список сломанных тестов (упали по исключению, а не ассерту)
         :return:
         """
-        return [test for group in cls.groups.values() for test in group.test_results['broken']]
+        return cls._test_result_of('broken')
 
     @classmethod
     def ignored(cls) -> List[Test]:
@@ -99,4 +104,8 @@ class TestSuite:
         Возвращает список проигнорированных тестов (неудачные предварительные функции)
         :return:
         """
-        return [test for group in cls.groups.values() for test in group.test_results['ignored']]
+        return cls._test_result_of('ignored')
+
+    @classmethod
+    def _test_result_of(cls, name: str) -> List[Test]:
+        return [test for group in cls.groups.values() for test in group.test_results[name]]

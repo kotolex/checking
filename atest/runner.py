@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable, Any, Dict
 
 from .classes.basic_suite import TestSuite
 from .classes.basic_group import TestGroup
@@ -7,7 +7,11 @@ from .classes.basic_test import Test
 from .classes.basic_listener import DefaultListener, Listener
 from .exceptions import UnknownProviderName
 
+# Слушатель для тестов
 _listener: Listener
+
+# Общие параметры для всего прогона
+common_parameters: Dict[str, Any] = {}
 
 
 def start(verbose: int = 0, listener: Listener = None):
