@@ -5,19 +5,22 @@ from .classes.basic_suite import TestSuite
 from .classes.test_group import TestGroup
 from .classes.test_case import TestCase
 from .classes.basic_test import Test
+from .classes.basic_listener import DefaultListener, Listener
 from .exceptions import UnknownProviderName
 
-# TODO find another way for modules. Docs!
-_MODULES = ('annotations', 'asserts', 'runner', "classes")
+_listener: Listener = DefaultListener()
 
 
-def run(test_suite: TestSuite, verbose: int = 0):
+def run(test_suite: TestSuite, verbose: int = 0, listener: Listener = None):
     verbose = 0 if verbose not in range(4) else verbose
     # Если тестов нет, то продолжать не стоит
     if test_suite.is_empty():
         print('No tests were found! Stopped...')
         return
-    # Проверка все ли используемые имена профайдеров найдены
+    if listener:
+        global _listener
+        _listener = listener
+           # Проверка все ли используемые имена профайдеров найдены
     _check_data_providers(test_suite)
     # Если фикстура перед тест-сьютом упала, то тесты не запускаем (фикстура после тест-сюта будет выполнена
     # при соответствующем флаге)
@@ -72,8 +75,7 @@ def _run_test_with_provider(test, group, verbose):
         if 'is not iterable' not in e.args[0]:
             raise e
         else:
-            group.add_result_to(test, 'ignored')
-            print(f'Provider "{test.provider}" for {test} not returns iterable! All tests with provider were IGNORED!')
+            _listener.on_ignored_with_provider(test, group)
 
 
 def _run_all_tests_in_group(group: TestGroup, verbose: int):
@@ -117,33 +119,14 @@ def _run_test(test: Test, group: TestGroup, verbose: int, arg=None) -> bool:
             test.run(arg)
         else:
             test.run()
-        group.add_result_to(test)
-        if not verbose:
-            print('.', end='')
-        elif verbose > 1:
-            _print_splitter_line()
-            print(f'{test} SUCCESS!')
+        _listener.on_success(group, test, verbose)
         return True
     except Exception as e:
-        if verbose > 0:
-            _print_splitter_line()
         if type(e) is AssertionError:
-            _unsuccessful_test(test, group, verbose, e)
+            _listener.on_failed(group, test, e, verbose)
         else:
-            _unsuccessful_test(test, group, verbose, e, False)
+            _listener.on_broken(group, test, e, verbose)
         return False
-
-
-def _is_module(name: str) -> bool:
-    """
-    Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
-    :param name: имя
-    :return: является ли это именем одного из модулей проекта
-    """
-    for module_name in _MODULES:
-        if name.endswith(module_name + '.py'):
-            return True
-    return False
 
 
 def _check_data_providers(suite: TestSuite):
@@ -155,28 +138,6 @@ def _check_data_providers(suite: TestSuite):
         name_ = [provider for provider in all_data_providers if provider not in suite.providers]
         raise UnknownProviderName(f'Cant find provider with name(s) {name_}. '
                                   f'You must have method with @data annotation in this package!')
-
-
-def _unsuccessful_test(test_object: Test, group: TestGroup, verbose: int, error: Exception, is_failed: bool = True):
-    """
-    Вывод информации о упавшем тесте
-    :param test_object: объект тестового класса
-    :param verbose: подробность с которой нужно выводить (подробнее смотри start())
-    :param error: упавшее исключение
-    :param is_failed: упал тест по ассерту или нет
-    :return: None
-    """
-    _result = 'failed' if is_failed else 'broken'
-    _letter = f'{_result.upper()}!'
-    group.add_result_to(test_object, _result)
-    if not verbose:
-        print(_letter[0], end='')
-    else:
-        print(f'Test {test_object} {_letter}')
-        for tb in (e for e in traceback.extract_tb(error.__traceback__) if not _is_module(e.filename)):
-            print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
-            print(f'-->    {tb.line}')
-        print(error)
 
 
 def _run_before(test_case: TestCase):
@@ -198,20 +159,10 @@ def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
     try:
         func()
     except Exception as error:
-        _print_splitter_line()
-        print(f'Fixture {fixture_type} "{group_name}" failed!')
-        for tb in (e for e in traceback.extract_tb(error.__traceback__)):
-            print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
-        print(error)
+        _listener.on_fixture_failed(group_name, fixture_type, error)
         is_failed = True
     return is_failed
 
 
 def _put_to_ignored(test_object: TestCase, group: TestGroup, fixture_type: str):
-    group.add_result_to(test_object, 'ignored')
-    _print_splitter_line()
-    print(f'Because of fixture "{fixture_type}" test {test_object} was IGNORED!')
-
-
-def _print_splitter_line():
-    print('-' * 10)
+    _listener.on_ignored(group, test_object, fixture_type)
