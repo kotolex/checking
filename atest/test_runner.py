@@ -1,4 +1,3 @@
-import traceback
 from typing import Callable, Any
 
 from .classes.basic_suite import TestSuite
@@ -8,36 +7,52 @@ from .classes.basic_test import Test
 from .classes.basic_listener import DefaultListener, Listener
 from .exceptions import UnknownProviderName
 
-_listener: Listener = DefaultListener()
+_listener: Listener
 
 
-def run(test_suite: TestSuite, verbose: int = 0, listener: Listener = None):
+def start(verbose: int = 0, listener: Listener = None):
+    """
+    Главная функция запуска тестов.
+
+    :param listener: слушатель тестов, по-умолчанию используется DefaultListener. Если задан, то параметр verbose
+    игнорируется (используется тот, что в слушателе).
+    :param verbose: подробность отчетов, 0 - кратко (только точки и 1 буква), 1 - подробно, с указанием только
+    упавших тестов, 2- подробно, с указанием успешных и упавших, 3 - подробно и в конце вывод списка упавших и сломанных
+    Если не в промежутке от 0 до 3 то принимается 0
+    :return: None
+    """
+    _run(TestSuite.get_instance(), verbose, listener)
+
+
+def _run(test_suite: TestSuite, verbose: int = 0, listener: Listener = None):
     verbose = 0 if verbose not in range(4) else verbose
     # Если тестов нет, то продолжать не стоит
     if test_suite.is_empty():
         print('No tests were found! Stopped...')
         return
-    if listener:
-        global _listener
-        _listener = listener
-           # Проверка все ли используемые имена профайдеров найдены
+    # Если задан слушатель, то используем его, иначе по умолчанию
+    global _listener
+    _listener = listener if listener else DefaultListener(verbose)
+    # Проверка все ли используемые имена профайдеров найдены
     _check_data_providers(test_suite)
-    # Если фикстура перед тест-сьютом упала, то тесты не запускаем (фикстура после тест-сюта будет выполнена
-    # при соответствующем флаге)
-    if not _run_before_suite(test_suite):
-        return
-    for group in test_suite.groups.values():
-        # Если в группе нет тестов, то пропускаем ее
-        if not group.tests:
-            continue
-        # Если фикстура перед группой упала, то тесты не запускаем
-        if not _run_before_group(group):
-            continue
-        _run_all_tests_in_group(group, verbose)
-        _run_after(group)
-    _run_after(test_suite)
-    if not verbose:
-        print()
+    _listener.on_suite_starts(test_suite)
+    try:
+        # Если фикстура перед тест-сьютом упала, то тесты не запускаем (фикстура после тест-сюта будет выполнена
+        # при соответствующем флаге)
+        if not _run_before_suite(test_suite):
+            return
+        for group in test_suite.groups.values():
+            # Если в группе нет тестов, то пропускаем ее
+            if not group.tests:
+                continue
+            # Если фикстура перед группой упала, то тесты не запускаем
+            if not _run_before_group(group):
+                continue
+            _run_all_tests_in_group(group)
+            _run_after(group)
+        _run_after(test_suite)
+    finally:
+        _listener.on_suite_ends(test_suite)
 
 
 def _run_before_suite(test_suite: TestSuite) -> bool:
@@ -54,20 +69,20 @@ def _run_before_group(group: TestGroup) -> bool:
     _run_before(group)
     if group.is_before_failed:
         for test in group.tests:
-            _put_to_ignored(test, group, 'before module/group')
+            _listener.on_ignored(group, test, 'before module/group')
         if group.always_run_after:
             _run_after(group)
         return False
     return True
 
 
-def _run_test_with_provider(test, group, verbose):
+def _run_test_with_provider(test, group):
     generator = _provider_next(test.provider)
     try:
         for param in generator:
             clone = test.clone()
             clone.name = clone.name + f' [{param}]'
-            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False, verbose, param)
+            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False, param)
             if is_one_of_before_test_failed:
                 print(f'Because of "before_test" all test for {test} with data provider "{test.provider}" was IGNORED!')
                 break
@@ -78,30 +93,28 @@ def _run_test_with_provider(test, group, verbose):
             _listener.on_ignored_with_provider(test, group)
 
 
-def _run_all_tests_in_group(group: TestGroup, verbose: int):
+def _run_all_tests_in_group(group: TestGroup):
     is_one_of_before_test_failed = False
     for test in group.tests:
         if test.provider:
-            _run_test_with_provider(test, group, verbose)
+            _run_test_with_provider(test, group)
         else:
-            is_one_of_before_test_failed = _run_test_with_before_and_after(test, group, is_one_of_before_test_failed,
-                                                                           verbose)
+            is_one_of_before_test_failed = _run_test_with_before_and_after(test, group, is_one_of_before_test_failed)
 
 
-def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_one_of_before_test_failed: bool, verbose: int,
-                                    arg: Any = None) -> bool:
-    if not is_one_of_before_test_failed:
+def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_before_failed: bool, arg: Any = None) -> bool:
+    if not is_before_failed:
         _run_before(test)
     else:
         test.is_before_failed = True
     if test.is_before_failed:
-        _put_to_ignored(test, group, 'before test')
+        _listener.on_ignored(group, test, 'before test')
         return True
     for retry in range(test.retries):
         clone = test.clone()
         if retry > 0:
             clone.name = clone.name + f' ({retry})'
-        result = _run_test(clone, group, verbose, arg)
+        result = _run_test(clone, group, arg)
         if result:
             break
     _run_after(test)
@@ -113,19 +126,19 @@ def _provider_next(provider_name: str) -> Any:
         yield param
 
 
-def _run_test(test: Test, group: TestGroup, verbose: int, arg=None) -> bool:
+def _run_test(test: Test, group: TestGroup, arg=None) -> bool:
     try:
         if arg is not None:
             test.run(arg)
         else:
             test.run()
-        _listener.on_success(group, test, verbose)
+        _listener.on_success(group, test)
         return True
     except Exception as e:
         if type(e) is AssertionError:
-            _listener.on_failed(group, test, e, verbose)
+            _listener.on_failed(group, test, e)
         else:
-            _listener.on_broken(group, test, e, verbose)
+            _listener.on_broken(group, test, e)
         return False
 
 
@@ -162,7 +175,3 @@ def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
         _listener.on_fixture_failed(group_name, fixture_type, error)
         is_failed = True
     return is_failed
-
-
-def _put_to_ignored(test_object: TestCase, group: TestGroup, fixture_type: str):
-    _listener.on_ignored(group, test_object, fixture_type)

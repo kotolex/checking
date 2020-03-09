@@ -1,4 +1,4 @@
-from .runner import start
+from .test_runner import start
 from .asserts import *
 from .annotations import *
 from .exceptions import *
