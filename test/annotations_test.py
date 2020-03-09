@@ -5,6 +5,7 @@ from atest.exceptions import *
 from atest.classes.basic_suite import TestSuite
 from atest.test_runner import start
 from atest.classes.basic_listener import Listener
+from test.fixture_behaviour_test import clear
 
 
 def valid():
@@ -27,16 +28,19 @@ class T:
 class TestAnnotations(TestCase):
 
     def test_valid_func_works(self):
+        clear()
         initial_count = TestSuite.get_instance().tests_count()
         test(valid)
         self.assertEqual(initial_count + 1, TestSuite.get_instance().tests_count())
 
     def test_not_add_if_disabled(self):
+        clear()
         initial_count = TestSuite.get_instance().tests_count()
         test(enabled=False)(valid)
         self.assertEqual(initial_count, TestSuite.get_instance().tests_count())
 
     def test_not_add_if_enabled(self):
+        clear()
         initial_count = TestSuite.get_instance().tests_count()
         test(enabled=True)(valid)
         self.assertEqual(initial_count + 1, TestSuite.get_instance().tests_count())
@@ -48,6 +52,7 @@ class TestAnnotations(TestCase):
                          e.exception.args[0])
 
     def test_raises_when_no_provider(self):
+        clear()
         test(data_provider="missing")(valid_for_provider)
         with self.assertRaises(UnknownProviderName) as e:
             start(TestSuite.get_instance(), listener=Listener(0))
@@ -73,11 +78,13 @@ class TestAnnotations(TestCase):
         self.assertTrue('test' in ex.exception.args[0])
 
     def test_name_param_works(self):
+        clear()
         test(name='new_name')(valid)
-        self.assertTrue('new_name' in [t.name for t in TestSuite.get_instance().get_or_create('annotations_test').tests])
+        self.assertTrue('new_name' in [t.name for t in list(TestSuite.get_instance().groups.values())[0].tests])
 
 
     def test_data_works(self):
+        clear()
         data(name="any_name")(valid_for_data)
         self.assertTrue('valid_for_data' in TestSuite.get_instance().providers)
 
@@ -89,26 +96,30 @@ class TestAnnotations(TestCase):
                          e.exception.args[0])
 
     def test_data_name_works(self):
+        clear()
         data(name="another")(valid_for_data)
         self.assertTrue('another' in TestSuite.get_instance().providers)
 
     def test_data_ignore_if_disabled(self):
+        clear()
         data(enabled=False, name="no")(valid)
         self.assertFalse('no' in TestSuite.get_instance().providers)
 
     def test_before_all_when_before_first(self):
-        before_ = lambda: None
+        clear()
+        before_ = valid
         before(before_)
         t = Test('first', print)
-        TestSuite.get_instance().get_or_create('annotations_test').add_test(t)
+        list(TestSuite.get_instance().groups.values())[0].add_test(t)
         self.assertTrue(t.before)
         self.assertEqual(before_, t.before[0])
 
     def test_before_all_when_before_last(self):
+        clear()
         t = Test('second', print)
-        TestSuite.get_instance().get_or_create('annotations_test').add_test(t)
+        TestSuite.get_instance().get_or_create("new").add_test(t)
         bef = lambda: None
-        before(bef)
+        before(group_name='new')(bef)
         self.assertTrue(bef in t.before)
 
 
