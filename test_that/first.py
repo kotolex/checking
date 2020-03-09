@@ -6,7 +6,7 @@ def first():
     assert 1 == 2
 
 
-@test
+@test(name='one_not_two')
 def second():
     equals(1, 2, "cant be")
 

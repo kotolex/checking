@@ -38,12 +38,14 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
             f"Function '{func.__name__}' marked with data_provider has no argument! Must be one at least!")
 
 
-def test(*args, enabled: bool = True, data_provider: str = None, retries: int = 1, group_name: str = None):
+def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
+         group_name: str = None):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
     :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @test
     :param enabled: флаг активного теста, если False то тест не попадает в прогон и все прочие его настройки игнорируются
+    :param name: имя теста, если не указано, то берется название функции
     :param data_provider: строковое имя дата-провайдера, который не обязательно должен быть в текущем модуле с тестом,
     главное, чтобы он был найден при сборе тестовых сущностей. Если не найден, то будет брошено UnknownProviderName
     :param retries: количество попыток прогона теста, такое количество раз тест будет запущен снова в случае ошибок.
@@ -60,11 +62,12 @@ def test(*args, enabled: bool = True, data_provider: str = None, retries: int = 
             __check_is_function_without_args(func, 'test')
         else:
             __check_is_function_for_provider(func)
-        test_object = Test(func.__name__, func)
+        name_ = name if name else func.__name__
+        group = group_name if group_name else func.__module__
+        test_object = Test(name_, func)
         test_object.retries = retries
         if data_provider:
             test_object.provider = data_provider
-        group = group_name if group_name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_test(test_object)
         return _fake
 

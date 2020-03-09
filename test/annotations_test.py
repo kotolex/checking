@@ -3,7 +3,8 @@ from unittest import TestCase, main
 from atest.annotations import *
 from atest.exceptions import *
 from atest.classes.basic_suite import TestSuite
-from atest.test_runner import run
+from atest.test_runner import start
+from atest.classes.basic_listener import Listener
 
 
 def valid():
@@ -49,7 +50,7 @@ class TestAnnotations(TestCase):
     def test_raises_when_no_provider(self):
         test(data_provider="missing")(valid_for_provider)
         with self.assertRaises(UnknownProviderName) as e:
-            run(TestSuite.get_instance(), verbose=0)
+            start(TestSuite.get_instance(), listener=Listener(0))
         self.assertTrue("Cant find provider with name(s) ['missing']" in e.exception.args[0])
 
     def test_ignore_all_if_test_disabled(self):
@@ -70,6 +71,11 @@ class TestAnnotations(TestCase):
             t = T()
             test(t.m)
         self.assertTrue('test' in ex.exception.args[0])
+
+    def test_name_param_works(self):
+        test(name='new_name')(valid)
+        self.assertTrue('new_name' in [t.name for t in TestSuite.get_instance().get_or_create('annotations_test').tests])
+
 
     def test_data_works(self):
         data(name="any_name")(valid_for_data)

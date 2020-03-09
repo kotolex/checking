@@ -33,7 +33,7 @@ def _run(test_suite: TestSuite, verbose: int = 0, listener: Listener = None):
     # Если задан слушатель, то используем его, иначе по умолчанию
     global _listener
     _listener = listener if listener else DefaultListener(verbose)
-    # Проверка все ли используемые имена профайдеров найдены
+    # Проверка все ли используемые имена провайдеров найдены
     _check_data_providers(test_suite)
     _listener.on_suite_starts(test_suite)
     try:
