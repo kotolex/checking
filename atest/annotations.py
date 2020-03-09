@@ -38,16 +38,18 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
             f"Function '{func.__name__}' marked with data_provider has no argument! Must be one at least!")
 
 
-def test(*args, enabled: bool = True, data_provider: str = None, retries: int = 1):
+def test(*args, enabled: bool = True, data_provider: str = None, retries: int = 1, group_name: str = None):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
     :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @test
     :param enabled: флаг активного теста, если False то тест не попадает в прогон и все прочие его настройки игнорируются
     :param data_provider: строковое имя дата-провайдера, который не обязательно должен быть в текущем модуле с тестом,
-    главное, чтобы он был найден при сборе тестовых сущностей. Если не найден то будет брошено UnknownProviderName
+    главное, чтобы он был найден при сборе тестовых сущностей. Если не найден, то будет брошено UnknownProviderName
     :param retries: количество попыток прогона теста, такое количество раз тест будет запущен снова в случае ошибок.
     В случае успеха теста, больше попыток не предпринимается, фикстуры перед и после теста прогоняются только 1 раз!
+    :param group_name: имя группы, к которой будет отнесен тест, если не указана, то автоматически создается группа с
+    именем модуля. Данный параметр позволяет группировать тесты из разных модулей в один прогон.
     :return: _fake
     """
     if not enabled:
@@ -62,7 +64,8 @@ def test(*args, enabled: bool = True, data_provider: str = None, retries: int = 
         test_object.retries = retries
         if data_provider:
             test_object.provider = data_provider
-        TestSuite.get_instance().get_or_create(func.__module__).add_test(test_object)
+        group = group_name if group_name else func.__module__
+        TestSuite.get_instance().get_or_create(group).add_test(test_object)
         return _fake
 
     if args:
@@ -74,7 +77,7 @@ def data(*args, enabled: bool = True, name: str = None):
     """
     Аннотация помечающая поставщик данных, то есть функцию, поставляющую данные в тест. Такая функция должна возвращать
     Iterable или Sequence, иначе будет брошена ошибка. Невозможно во время компиляции определить возвращает ли функция
-    верный ли тип, поэтому исключение при неверном типе будет брошено уже во время выполнения. При исключении тесты
+    верный тип, поэтому исключение при неверном типе будет брошено уже во время выполнения. При исключении тесты
     с таким провайдером добавляются в игнорированные.
     :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @data
     :param enabled: флаг активного поставщика, если False то он не попадает в список провайдеров и все прочие его
@@ -100,44 +103,73 @@ def data(*args, enabled: bool = True, name: str = None):
     return real_decorator
 
 
-def before(func: Callable[[], None]):
+def before(*args, group_name: str = None):
     """
     Помечает функцию, как обязательную к прогону перед каждым тестом модуля/группы
-    :param func: функция, не принимающая аргументов
-    :return: None
+    :param group_name: имя группы, перед каждым тестом которой будет выполнена функция. Если имя группы не указано,
+    то автоматически создается группа с именем модуля. Функция не обязана быть в том же модуле, что и тесты.
+    :return: __fake
     """
-    __check_is_function_without_args(func, 'before')
-    TestSuite.get_instance().get_or_create(func.__module__).add_before_test(func)
+
+    def real_decorator(func: Callable[[], None]):
+        __check_is_function_without_args(func, 'before')
+        group = group_name if group_name else func.__module__
+        TestSuite.get_instance().get_or_create(group).add_before_test(func)
+        return _fake
+
+    if args:
+        return real_decorator(args[0])
+    return real_decorator
 
 
-def after(func: Callable[[], None]):
+def after(*args, group_name: str = None):
     """
     Помечает функцию, как обязательную к прогону после каждого теста модуля/группы. Если есть функции, прогоняющиеся
     перед тестом (@before) и они выполнились с ошибкой, то данные функции запускаться не будут!
-    :param func: функция, не принимающая аргументов
-    :return: None
+    :param group_name: имя группы, после каждого теста которой будет выполнена функция. Если имя группы не указано,
+    то автоматически создается группа с именем модуля. Функция не обязана быть в том же модуле, что и тесты.
+    :return: __fake
     """
-    __check_is_function_without_args(func, 'after')
-    TestSuite.get_instance().get_or_create(func.__module__).add_after_test(func)
+
+    def real_decorator(func: Callable[[], None]):
+        __check_is_function_without_args(func, 'after')
+        group = group_name if group_name else func.__module__
+        TestSuite.get_instance().get_or_create(group).add_after_test(func)
+        return _fake
+
+    if args:
+        return real_decorator(args[0])
+    return real_decorator
 
 
-def before_module(func: Callable[[], None]):
+def before_group(*args, name: str = None):
     """
     Помечает функцию, как обязательную к прогону перед выполнением модуля/группы, то есть выполняется один раз до
     запуска всех тестов модуля/группы
-    :param func: функция, не принимающая аргументов
-    :return: None
+    :param name: имя модуля или группы, перед выполнением тестов которой будет однократно выполнена функция. Если имя
+    не указано, то берется имя текущего модуля, где использована аннотация.
+    :return: __fake
     """
-    __check_is_function_without_args(func, 'before_module')
-    TestSuite.get_instance().get_or_create(func.__module__).add_before(func)
+
+    def real_decorator(func: Callable[[], None]):
+        __check_is_function_without_args(func, 'before_module')
+        group = name if name else func.__module__
+        TestSuite.get_instance().get_or_create(group).add_before(func)
+        return _fake
+
+    if args:
+        return real_decorator(args[0])
+    return real_decorator
 
 
-def after_module(*args, always_run: bool = False):
+def after_group(*args, name: str = None, always_run: bool = False):
     """
     Помечает функцию, как обязательную к прогону после выполнения модуля/группы, то есть выполняется один раз после
     выполнения всех тестов модуля/группы. Если есть функция, прогоняющаяся перед модулем/группой (@before_module) и она
     выполнилась с ошибкой, то данная функция не будет запущена, если не использован флаг always_run = True. При таком
     флаге функция игнорирует результаты предварительных функций и запускается всегда
+    :param name: имя модуля или группы, после выполнением тестов которой будет однократно выполнена функция. Если имя
+    не указано, то берется имя текущего модуля, где использована аннотация.
     :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @after_module
     :param always_run: флаг старта функции независимо от результата выполнения предварительных функций. Если True, то
     будет запущена в любом случае
@@ -146,7 +178,8 @@ def after_module(*args, always_run: bool = False):
 
     def real_decorator(func: Callable[[], None]):
         __check_is_function_without_args(func, 'after_module')
-        TestSuite.get_instance().get_or_create(func.__module__).add_after(func)
+        group = name if name else func.__module__
+        TestSuite.get_instance().get_or_create(group).add_after(func)
         if always_run:
             TestSuite.get_instance().get_or_create(func.__module__).always_run_after = True
         return _fake

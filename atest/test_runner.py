@@ -13,13 +13,21 @@ _MODULES = ('annotations', 'asserts', 'runner', "classes")
 
 def run(test_suite: TestSuite, verbose: int = 0):
     verbose = 0 if verbose not in range(4) else verbose
+    # Если тестов нет, то продолжать не стоит
     if test_suite.is_empty():
         print('No tests were found! Stopped...')
         return
+    # Проверка все ли используемые имена профайдеров найдены
     _check_data_providers(test_suite)
+    # Если фикстура перед тест-сьютом упала, то тесты не запускаем (фикстура после тест-сюта будет выполнена
+    # при соответствующем флаге)
     if not _run_before_suite(test_suite):
         return
     for group in test_suite.groups.values():
+        # Если в группе нет тестов, то пропускаем ее
+        if not group.tests:
+            continue
+        # Если фикстура перед группой упала, то тесты не запускаем
         if not _run_before_group(group):
             continue
         _run_all_tests_in_group(group, verbose)
