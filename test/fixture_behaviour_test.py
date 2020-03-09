@@ -229,6 +229,15 @@ class TestBeforeAndAfter(TestCase):
         self.assertEqual(3, len(TestSuite.get_instance().failed()))
         self.assertEqual(3, TestSuite.get_instance().tests_count())
 
+    def test_priorities(self):
+        clear()
+        test(priority=3)(b_suite)
+        test(priority=2)(a_suite)
+        test(priority=1)(b_group)
+        test(fn)
+        start(listener=self._listener)
+        self.assertEqual('testbg__asbs_', common_str)
+
 
 if __name__ == '__main__':
     main()

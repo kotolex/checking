@@ -95,6 +95,7 @@ def _run_test_with_provider(test, group):
 
 def _run_all_tests_in_group(group: TestGroup):
     is_one_of_before_test_failed = False
+    group.sort_test_by_priority()
     for test in group.tests:
         if test.provider:
             _run_test_with_provider(test, group)

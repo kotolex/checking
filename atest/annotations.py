@@ -39,7 +39,7 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
 
 
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         group_name: str = None):
+         group_name: str = None, priority: int = 0):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
@@ -52,6 +52,8 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
     В случае успеха теста, больше попыток не предпринимается, фикстуры перед и после теста прогоняются только 1 раз!
     :param group_name: имя группы, к которой будет отнесен тест, если не указана, то автоматически создается группа с
     именем модуля. Данный параметр позволяет группировать тесты из разных модулей в один прогон.
+    :param priority: приоритет, для организации порядка выполнения тестов. САмый высокий 0, чем выше параметр, тем
+    позже выполнится тест
     :return: _fake
     """
     if not enabled:
@@ -66,6 +68,7 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
         group = group_name if group_name else func.__module__
         test_object = Test(name_, func)
         test_object.retries = retries
+        test_object.priority = priority
         if data_provider:
             test_object.provider = data_provider
         TestSuite.get_instance().get_or_create(group).add_test(test_object)

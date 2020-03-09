@@ -151,7 +151,7 @@ class DefaultListener(Listener):
             print('.', end='')
         elif self.verbose > 1:
             _print_splitter_line()
-            print(f'{test} SUCCESS!')
+            print(f'"{test}" SUCCESS!')
 
     def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
         super().on_broken(group, test, exception_)
