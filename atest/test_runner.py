@@ -58,7 +58,7 @@ def _run(test_suite: TestSuite, verbose: int = 0, listener: Listener = None):
 def _run_before_suite(test_suite: TestSuite) -> bool:
     _run_before(test_suite)
     if test_suite.is_before_failed:
-        print(f'Before suite "{test_suite.name}" failed! Process stopped!')
+        _listener.on_before_suite_failed(test_suite)
         if test_suite.always_run_after:
             _run_after(test_suite)
         return False

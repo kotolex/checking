@@ -67,7 +67,7 @@ class TestSuite:
         """
         if cls.is_empty():
             return 0
-        return sum([len(group.tests) for group in cls.groups.values()])
+        return sum([group.tests_count() for group in cls.groups.values()])
 
     @classmethod
     def success(cls) -> List[Test]:

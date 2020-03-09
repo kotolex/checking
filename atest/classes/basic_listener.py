@@ -60,7 +60,6 @@ class Listener:
         Вызывается, когда тест завершен успешно
         :param group: TestGroup
         :param test: TestCase
-        :param verbose: подробность вывода результата
         :return: None
         """
         self._to_results(group, test, 'success')
@@ -71,7 +70,6 @@ class Listener:
         :param group: TestGroup
         :param test: TestCase
         :param exception_: упавший ассерт
-        :param verbose: подробность вывода результата
         :return: None
         """
         self._to_results(group, test, 'failed')
@@ -82,7 +80,6 @@ class Listener:
         :param group: TestGroup
         :param test: TestCase
         :param exception_: упавшее исключение
-        :param verbose: подробность вывода результата
         :return: None
         """
         self._to_results(group, test, 'broken')
@@ -93,13 +90,15 @@ class Listener:
         :param group: TestGroup
         :param test: TestCase
         :param fixture_type: название фикстуры, вызвавшей игнорирование
-        :param verbose: подробность вывода результата
         :return: None
         """
         self._to_results(group, test, 'ignored')
 
     def _to_results(self, group: TestGroup, test: TestCase, result: str):
         group.add_result_to(test, result)
+
+    def on_before_suite_failed(self, test_suite):
+        pass
 
 
 class DefaultListener(Listener):
@@ -108,8 +107,9 @@ class DefaultListener(Listener):
     Пользователь может написать свои собственные слушатели по образцу данного класса.
     """
 
-    def __init__(self, verbose: int = 0):
-        super().__init__(verbose)
+    def on_before_suite_failed(self, test_suite):
+        super().on_before_suite_failed(test_suite)
+        print(f'Before suite "{test_suite.name}" failed! Process stopped!')
 
     def on_suite_starts(self, test_suite: TestSuite):
         super().on_suite_starts(test_suite)

@@ -65,3 +65,13 @@ class TestGroup(TestCase):
         :return: True если нет тестов в наборе
         """
         return len(self.tests) == 0
+
+    def tests_count(self):
+        """
+        Возвращает количество тестов. Если тесты уже были выполнены и есть результаты, то вернет сумму тестов из
+        результатов, иначе просто количество TestCase в списке tests. Это сделано потому что на момент старта тестов
+        не известно сколько их будет в сумме, благодаря перезапускам (retries) и/или провайдерам.
+        :return: количество тестов
+        """
+        runnned_count = sum([len(e) for e in self.test_results.values()])
+        return runnned_count if runnned_count else len(self.tests)
