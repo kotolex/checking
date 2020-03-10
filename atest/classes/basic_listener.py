@@ -1,9 +1,12 @@
 import traceback
 import time
+import os
 
 from .basic_case import TestCase
 from .basic_group import TestGroup
 from .basic_suite import TestSuite
+
+SEPARATOR = os.path.sep
 
 
 def _print_splitter_line():
@@ -11,7 +14,8 @@ def _print_splitter_line():
 
 
 def _is_module(name: str) -> bool:
-    parts = ('atest/asserts.py', 'atest/classes/basic_test.py')
+    parts = (f'atest{SEPARATOR}asserts.py', f'atest{SEPARATOR}classes{SEPARATOR}basic_test.py',
+             f'lib{SEPARATOR}contextlib.py')
     """
     Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
     :param name: имя

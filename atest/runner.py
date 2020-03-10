@@ -146,12 +146,11 @@ def _run_test(test: Test, group: TestGroup, arg=None) -> bool:
             test.run()
         _listener.on_success(group, test)
         return True
+    except AssertionError as e:
+        _listener.on_failed(group, test, e)
     except Exception as e:
-        if type(e) is AssertionError:
-            _listener.on_failed(group, test, e)
-        else:
-            _listener.on_broken(group, test, e)
-        return False
+        _listener.on_broken(group, test, e)
+    return False
 
 
 def _check_data_providers(suite: TestSuite):
