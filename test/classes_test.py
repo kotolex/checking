@@ -232,6 +232,14 @@ class TestClasses(TC):
         self.assertTrue(suite.ignored())
         self.assertEqual(test_, suite.ignored()[0])
 
+    def test_filter_TestSuite(self):
+        clear()
+        suite = TestSuite.get_instance()
+        suite.get_or_create("a")
+        suite.get_or_create("b")
+        suite.filter_groups(['a'])
+        self.assertEqual(list(suite.groups), ['a'])
+
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,4 @@
-from typing import Callable, Any, Dict
+from typing import Callable, Any, Dict, List
 
 from .classes.basic_suite import TestSuite
 from .classes.basic_group import TestGroup
@@ -14,7 +14,7 @@ _listener: Listener
 common_parameters: Dict[str, Any] = {}
 
 
-def start(verbose: int = 0, listener: Listener = None):
+def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None):
     """
     Главная функция запуска тестов.
 
@@ -23,20 +23,24 @@ def start(verbose: int = 0, listener: Listener = None):
     :param verbose: подробность отчетов, 0 - кратко (только точки и 1 буква), 1 - подробно, с указанием только
     упавших тестов, 2- подробно, с указанием успешных и упавших, 3 - подробно и в конце вывод списка упавших и сломанных
     Если не в промежутке от 0 до 3 то принимается 0
+    :param groups: список названий групп для выполнения, чтобы выполнять только нужные тесты
     :return: None
     """
-    _run(TestSuite.get_instance(), verbose, listener)
-
-
-def _run(test_suite: TestSuite, verbose: int = 0, listener: Listener = None):
     verbose = 0 if verbose not in range(4) else verbose
-    # Если тестов нет, то продолжать не стоит
-    if test_suite.is_empty():
-        print('No tests were found! Stopped...')
-        return
     # Если задан слушатель, то используем его, иначе по умолчанию
     global _listener
     _listener = listener if listener else DefaultListener(verbose)
+    test_suite = TestSuite.get_instance()
+    if groups:
+        test_suite.filter_groups(groups)
+    # Если тестов нет, то останавливаем
+    if test_suite.is_empty():
+        _listener.on_empty_suite(test_suite)
+        return
+    _run(test_suite)
+
+
+def _run(test_suite: TestSuite):
     # Проверка все ли используемые имена провайдеров найдены
     _check_data_providers(test_suite)
     _listener.on_suite_starts(test_suite)

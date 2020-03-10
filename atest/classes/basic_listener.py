@@ -30,9 +30,27 @@ class Listener:
         self.verbose = verbose
 
     def on_suite_starts(self, test_suite: TestSuite):
+        """
+        Вызывается при старте прогона, после проверки провайдеров
+        :param test_suite: TestSuite
+        :return: None
+        """
         pass
 
     def on_suite_ends(self, test_suite: TestSuite):
+        """
+        Вызывается при завершении прогона, когда уже завершены все тесты и фикстуры
+        :param test_suite: TestSuite
+        :return: None
+        """
+        pass
+
+    def on_empty_suite(self, test_suite: TestSuite):
+        """
+        Вызывается перед остановкой прогона в связи с тем, что нет тестов ни в одной из групп.
+        :param test_suite: TestSuite
+        :return: None
+        """
         pass
 
     def on_fixture_failed(self, group_name: str, fixture_type: str, exception_: Exception):
@@ -98,6 +116,11 @@ class Listener:
         group.add_result_to(test, result)
 
     def on_before_suite_failed(self, test_suite):
+        """
+        Вызывается при падении @before_suite фикстуры
+        :param test_suite: TestSuite
+        :return: None
+        """
         pass
 
 
@@ -114,6 +137,9 @@ class DefaultListener(Listener):
     def on_suite_starts(self, test_suite: TestSuite):
         super().on_suite_starts(test_suite)
         self.start_time = time.time()
+
+    def on_empty_suite(self, test_suite: TestSuite):
+        print('No tests were found! Stopped...')
 
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)

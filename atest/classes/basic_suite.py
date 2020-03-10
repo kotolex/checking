@@ -28,10 +28,10 @@ class TestSuite:
     # Флаг что завершающие функции нужно выполнять независимо от результата предварительных
     always_run_after: bool = False
 
-    def __new__(cls, *args, **kwargs):
-        if not TestSuite.instance:
-            TestSuite.instance = super(TestSuite, cls).__new__(cls)
-        return TestSuite.instance
+    def __new__(cls):
+        if not cls.instance:
+            cls.instance = super(TestSuite, cls).__new__(cls)
+        return cls.instance
 
     @classmethod
     def add_before(cls, func: Callable):
@@ -55,6 +55,10 @@ class TestSuite:
         if group_name not in cls.groups:
             cls.groups[group_name] = TestGroup(group_name)
         return cls.groups[group_name]
+
+    @classmethod
+    def filter_groups(cls, groups: List[str]):
+        cls.groups = {name: tests for name, tests in cls.groups.items() if name in groups}
 
     @classmethod
     def is_empty(cls) -> bool:

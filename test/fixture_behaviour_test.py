@@ -254,6 +254,20 @@ class TestBeforeAndAfter(TestCase):
         start(listener=self._listener)
         self.assertEqual(common_parameters, {'1': 1})
 
+    def test_no_tests_if_filter_not_existed_group(self):
+        clear()
+        test(par_1)
+        test(groups=['a'])(par_2)
+        start(listener=self._listener, groups=['b'])
+        self.assertFalse(TestSuite.tests_count())
+
+    def test_one_test_if_filter_existed_group(self):
+        clear()
+        test(par_1)
+        test(groups=['a'])(par_2)
+        start(listener=self._listener, groups=['a'])
+        self.assertEqual(1, TestSuite.tests_count())
+
 
 if __name__ == '__main__':
     main()
