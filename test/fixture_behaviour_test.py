@@ -28,6 +28,7 @@ def clear():
     test_suite.is_before_failed = False
     global common_str
     common_str = ''
+    common_parameters.clear()
 
 
 def b_suite():
@@ -267,6 +268,27 @@ class TestBeforeAndAfter(TestCase):
         test(groups=['a'])(par_2)
         start(listener=self._listener, groups=['a'])
         self.assertEqual(1, TestSuite.tests_count())
+
+    def test_no_params_on_default(self):
+        clear()
+        test(fn)
+        start(listener=self._listener)
+        self.assertFalse(common_parameters)
+
+    def test_params_if_exists(self):
+        clear()
+        test(fn)
+        start(listener=self._listener, params={'test': 'test'})
+        self.assertTrue(common_parameters)
+        self.assertEqual(common_parameters, {'test': 'test'})
+
+    def test_params_if_exists_and_use_in_test(self):
+        clear()
+        test(par_1)
+        start(listener=self._listener, params={'test': 'test'})
+        self.assertTrue(common_parameters)
+        self.assertEqual('test', common_parameters['test'])
+        self.assertEqual(1, common_parameters['1'])
 
 
 if __name__ == '__main__':

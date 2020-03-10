@@ -14,7 +14,7 @@ _listener: Listener
 common_parameters: Dict[str, Any] = {}
 
 
-def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None):
+def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None):
     """
     Главная функция запуска тестов.
 
@@ -24,6 +24,7 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None)
     упавших тестов, 2- подробно, с указанием успешных и упавших, 3 - подробно и в конце вывод списка упавших и сломанных
     Если не в промежутке от 0 до 3 то принимается 0
     :param groups: список названий групп для выполнения, чтобы выполнять только нужные тесты
+    :param params: словарь параметров, доступных во всех тестах (общие параметры прогона)
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
@@ -37,6 +38,8 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None)
     if test_suite.is_empty():
         _listener.on_empty_suite(test_suite)
         return
+    if params:
+        common_parameters.update(params)
     _run(test_suite)
 
 
