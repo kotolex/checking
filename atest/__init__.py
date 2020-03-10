@@ -2,8 +2,6 @@ from .runner import start
 from .runner import common_parameters
 from .asserts import *
 from .annotations import *
-from .exceptions import *
-from .classes.basic_suite import TestSuite
 
 # TODO docs, data_file (?),  csv_file(?), args to main, timeout, parallel(?)
 
