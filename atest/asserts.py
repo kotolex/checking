@@ -81,6 +81,24 @@ def waiting_exception(exception: Type[Exception]):
         raise fake
 
 
+@contextmanager
+def no_exception_expected():
+    """
+    Менеджер контекста для ситуаций, когда не ожидается падения исключений, более явно, чем просто писать тест
+    без ассерта. Пример:
+
+    with no_exception_expected():
+        some_action()
+
+    :return: None
+    :raises AssertionError если исключение (любой наследник Exception) все же падает
+    """
+    try:
+        yield
+    except Exception as e:
+        raise AssertionError(f'Expect no exception, but raised {type(e)} ("{e}")')
+
+
 def test_fail(message: str = None):
     """
     Принудительный провал теста, может быть использовано в редких условиях вместо проверки заведомо неверных условий
