@@ -82,6 +82,26 @@ class AssertsTest(TestCase):
                 pass
         self.assertEqual("Expect exception, but none raised!", e.exception.args[0])
 
+    def test_failing_test_default(self):
+        with self.assertRaises(AssertionError) as e:
+            test_fail()
+        self.assertEqual("Test was forcibly failed!", e.exception.args[0])
+
+    def test_failing_test_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            test_fail('message')
+        self.assertEqual("message", e.exception.args[0])
+
+    def test_braking_test_default(self):
+        with self.assertRaises(TestBrokenException) as e:
+            test_brake()
+        self.assertEqual("Test was forcibly broken!", e.exception.args[0])
+
+    def test_failing_test_with_message(self):
+        with self.assertRaises(TestBrokenException) as e:
+            test_brake('message')
+        self.assertEqual("message", e.exception.args[0])
+
 
 if __name__ == '__main__':
     main()

@@ -81,5 +81,24 @@ def waiting_exception(exception: Type[Exception]):
         raise fake
 
 
+def test_fail(message: str = None):
+    """
+    Принудительный провал теста, может быть использовано в редких условиях вместо проверки заведомо неверных условий
+    :param message: опциональное сообщение
+    :return: None
+    """
+    raise AssertionError(message if message else 'Test was forcibly failed!')
+
+
+def test_brake(message: str = None):
+    """
+    Принудительно приводим тест в сломанное состояние, может быть использовано в редких условиях вместо
+    бросания исключений
+    :param message: опциональное сообщение
+    :return: None
+    """
+    raise TestBrokenException(message if message else 'Test was forcibly broken!')
+
+
 def _mess(message: str) -> str:
     return f'{message}\n' if message else ''

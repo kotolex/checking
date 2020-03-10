@@ -1,4 +1,4 @@
-from typing import Dict, List, Callable, Iterable, Any
+from typing import Dict, List, Callable, Iterable
 
 from .basic_group import TestGroup
 from .basic_test import Test
