@@ -75,10 +75,10 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
             test_object = Test(name_, func)
             test_object.retries = retries
             test_object.priority = priority
-            if timeout < 0:
-                timeout = 0
             if timeout:
                 test_object.timeout = int(timeout)
+                if test_object.timeout < 0:
+                    test_object.timeout = 0
             if data_provider:
                 test_object.provider = data_provider
             TestSuite.get_instance().get_or_create(group).add_test(test_object)
