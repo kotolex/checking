@@ -56,7 +56,8 @@ class TestClasses(TC):
         test.is_before_failed = True
         test.always_run_after = True
         test.priority = 3
-        test.argument='1'
+        test.argument = '1'
+        test.timeout = 1
         new_test = test.clone()
         self.assertEqual(test.name, new_test.name)
         self.assertEqual(test.before, new_test.before)
@@ -65,6 +66,7 @@ class TestClasses(TC):
         self.assertEqual(test.is_before_failed, new_test.is_before_failed)
         self.assertEqual(test.priority, new_test.priority)
         self.assertEqual(test.argument, new_test.argument)
+        self.assertEqual(test.timeout, new_test.timeout)
         self.assertEqual(test.always_run_after, new_test.always_run_after)
         self.assertFalse(test.before is new_test.before)
         self.assertFalse(test.after is new_test.after)

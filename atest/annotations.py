@@ -39,7 +39,7 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
 
 
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         groups: List[str] = None, priority: int = 0):
+         groups: List[str] = None, priority: int = 0, timeout: int = 0):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
@@ -54,6 +54,9 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
     именем модуля. Данный параметр позволяет группировать тесты из разных модулей в один прогон.
     :param priority: приоритет, для организации порядка выполнения тестов. САмый высокий 0, чем выше параметр, тем
     позже выполнится тест
+    :param timeout количество секунд в течение которого ожидается завершение теста. Если тест не завершен, то будет
+    брошено исключение TestBrokenException, а поток, в котором выполняется тест будет прерван. Из-за возможной утечки
+    памяти нужно использовать только при особой необходимости.
     :return: _fake
     """
     if not enabled:
@@ -72,6 +75,10 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
             test_object = Test(name_, func)
             test_object.retries = retries
             test_object.priority = priority
+            if timeout < 0:
+                timeout = 0
+            if timeout:
+                test_object.timeout = int(timeout)
             if data_provider:
                 test_object.provider = data_provider
             TestSuite.get_instance().get_or_create(group).add_test(test_object)

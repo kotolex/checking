@@ -18,6 +18,7 @@ class Test(TestCase):
         self.test = test
         self.group_name: str = '__main__'
         self.argument: Any = None
+        self.timeout: int = 0
 
     def run(self):
         """
@@ -47,4 +48,5 @@ class Test(TestCase):
         clone.retries = self.retries
         clone.priority = self.priority
         clone.argument = self.argument
+        clone.timeout = self.timeout
         return clone

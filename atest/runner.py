@@ -6,6 +6,7 @@ from .classes.basic_case import TestCase
 from .classes.basic_test import Test
 from .classes.basic_listener import DefaultListener, Listener
 from .exceptions import UnknownProviderName
+from .classes.exc_thread import run_with_timeout
 
 # Слушатель для тестов
 _listener: Listener
@@ -141,7 +142,10 @@ def _provider_next(provider_name: str) -> Any:
 
 def _run_test(test: Test, group: TestGroup) -> bool:
     try:
-        test.run()
+        if test.timeout:
+            run_with_timeout(test)
+        else:
+            test.run()
         _listener.on_success(group, test)
         return True
     except AssertionError as e:
