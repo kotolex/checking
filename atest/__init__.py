@@ -8,4 +8,5 @@ from .annotations import *
 
 __all__ = ['start', 'common_parameters',
            'equals', 'is_none', 'not_none', 'waiting_exception', 'test_fail', 'test_brake', 'no_exception_expected',
+           'contains',
            'test', 'before', 'after', 'before_group', 'after_group', 'before_suite', 'after_suite', 'data']

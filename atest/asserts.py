@@ -17,8 +17,8 @@ def equals(expected: Any, actual: Any, message: str = None):
     if (expected is actual) or expected == actual:
         return
     _message = _mess(message)
-    raise AssertionError(f'{_message}Expected "{expected}" ({type(expected).__name__}), '
-                         f'but got "{actual}"({type(actual).__name__})!')
+    raise AssertionError(f'{_message}Expected "{expected}" <{type(expected).__name__}>, '
+                         f'but got "{actual}"<{type(actual).__name__}>!')
 
 
 def is_none(obj: Any, message: str = None):
@@ -31,7 +31,7 @@ def is_none(obj: Any, message: str = None):
     """
     _message = _mess(message)
     if obj is not None:
-        raise AssertionError(f'{_message}Object {obj}({type(obj).__name__}) is not None!')
+        raise AssertionError(f'{_message}Object {obj}<{type(obj).__name__}> is not None!')
 
 
 def not_none(obj: Any, message: str = None):
@@ -68,7 +68,8 @@ def waiting_exception(exception: Type[Exception]):
         if exception is BaseException:
             raise TestBrokenException('You must use concrete exception, except of BaseException!')
         if not issubclass(type(exception), type(Exception)):
-            raise TestBrokenException(f"Exception or its subclasses expected, but got {exception}({type(exception)})")
+            raise TestBrokenException(f"Exception or its subclasses expected, but got "
+                                      f"\"{exception}\"<{type(exception).__name__}>")
         yield fake
     except TestBrokenException as e:
         raise e
@@ -76,7 +77,7 @@ def waiting_exception(exception: Type[Exception]):
         fake.set_value(e)
         return
     except Exception as e:
-        raise AssertionError(f'Expect {exception}, but raised {type(e)} ("{e}")')
+        raise AssertionError(f'Expect {exception}, but raised {type(e).__name__} ("{e}")')
     else:
         raise fake
 
@@ -96,7 +97,7 @@ def no_exception_expected():
     try:
         yield
     except Exception as e:
-        raise AssertionError(f'Expect no exception, but raised {type(e)} ("{e}")')
+        raise AssertionError(f'Expect no exception, but raised {type(e).__name__} ("{e}")')
 
 
 def test_fail(message: str = None):
@@ -116,6 +117,31 @@ def test_brake(message: str = None):
     :return: None
     """
     raise TestBrokenException(message if message else 'Test was forcibly broken!')
+
+
+def contains(part: Any, whole: Any, message: str = None):
+    """
+    Проверяется, что один объект является частью (входит) второго. Аналогично проверке a in b
+    :param part: объект-часть, который входит в целое
+    :param whole: объект-целое, которое содержит часть
+    :param message: опциональное сообщение
+    :return: None
+    :raises AssertionError если один объект не является частью второго
+    :raises TestBrokenException если whole не итерабл или объекты не могут быть проверены на содержимое, например
+    1 in '123
+    """
+    try:
+        if part in whole:
+            return
+    except TypeError as e:
+        if 'requires' in e.args[0]:
+            raise TestBrokenException(f'Object "{part}" <{type(part).__name__}> and '
+                                      f'"{whole}"<{type(whole).__name__}> are of different types and cant be check '
+                                      f'for contains!')
+        raise TestBrokenException(f'"{whole}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
+    _message = _mess(message)
+    raise AssertionError(f'{_message}Object "{part}" <{type(part).__name__}>, is not part of '
+                         f'"{whole}"<{type(whole).__name__}>!')
 
 
 def _mess(message: str) -> str:

@@ -15,7 +15,7 @@ def _print_splitter_line():
 
 def _is_module(name: str) -> bool:
     parts = (f'atest{SEPARATOR}asserts.py', f'atest{SEPARATOR}classes{SEPARATOR}basic_test.py',
-             f'lib{SEPARATOR}contextlib.py')
+             f'{SEPARATOR}contextlib.py')
     """
     Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
     :param name: имя
