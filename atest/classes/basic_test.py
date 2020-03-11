@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 
 from .basic_case import TestCase
 
@@ -16,14 +16,18 @@ class Test(TestCase):
         """
         super().__init__(name)
         self.test = test
-        self.group_name = '__main__'
+        self.group_name: str = '__main__'
+        self.argument: Any = None
 
-    def run(self, *args):
+    def run(self):
         """
         Запуск теста (функции, помеченной аннотацией test)
         :return: None
         """
-        self.test(*args)
+        if self.argument is not None:
+            self.test(self.argument)
+        else:
+            self.test()
 
     def __str__(self):
         return f'{self.group_name}.{self.name}'
@@ -42,4 +46,5 @@ class Test(TestCase):
         clone.always_run_after = self.always_run_after
         clone.retries = self.retries
         clone.priority = self.priority
+        clone.argument = self.argument
         return clone

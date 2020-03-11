@@ -82,11 +82,10 @@ class TestAnnotations(TestCase):
         test(name='new_name')(valid)
         self.assertTrue('new_name' in [t.name for t in list(TestSuite.get_instance().groups.values())[0].tests])
 
-
     def test_data_works(self):
         clear()
         data(name="any_name")(valid_for_data)
-        self.assertTrue('valid_for_data' in TestSuite.get_instance().providers)
+        self.assertTrue('any_name' in TestSuite.get_instance().providers)
 
     def test_data_raises_when_duplicate_name(self):
         with self.assertRaises(DuplicateNameException) as e:

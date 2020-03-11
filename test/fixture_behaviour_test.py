@@ -26,6 +26,7 @@ def clear():
     test_suite.before.clear()
     test_suite.after.clear()
     test_suite.is_before_failed = False
+    test_suite.providers.clear()
     global common_str
     common_str = ''
     common_parameters.clear()

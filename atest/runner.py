@@ -92,8 +92,9 @@ def _run_test_with_provider(test, group):
     try:
         for param in generator:
             clone = test.clone()
+            clone.argument = param
             clone.name = clone.name + f' [{param}]'
-            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False, param)
+            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False)
             if is_one_of_before_test_failed:
                 print(f'Because of "before_test" all test for {test} with data provider "{test.provider}" was IGNORED!')
                 break
@@ -114,7 +115,7 @@ def _run_all_tests_in_group(group: TestGroup):
             is_one_of_before_test_failed = _run_test_with_before_and_after(test, group, is_one_of_before_test_failed)
 
 
-def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_before_failed: bool, arg: Any = None) -> bool:
+def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_before_failed: bool) -> bool:
     if not is_before_failed:
         _run_before(test)
     else:
@@ -126,7 +127,7 @@ def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_before_
         clone = test.clone()
         if retry > 0:
             clone.name = clone.name + f' ({retry})'
-        result = _run_test(clone, group, arg)
+        result = _run_test(clone, group)
         if result:
             break
     _run_after(test)
@@ -138,12 +139,9 @@ def _provider_next(provider_name: str) -> Any:
         yield param
 
 
-def _run_test(test: Test, group: TestGroup, arg=None) -> bool:
+def _run_test(test: Test, group: TestGroup) -> bool:
     try:
-        if arg is not None:
-            test.run(arg)
-        else:
-            test.run()
+        test.run()
         _listener.on_success(group, test)
         return True
     except AssertionError as e:
