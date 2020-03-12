@@ -3,8 +3,10 @@ from time import sleep
 
 from atest.runner import start
 from atest.classes.basic_listener import Listener
+from atest.classes.soft_assert import SoftAssert
 from atest.annotations import *
 from test.fixture_behaviour_test import clear
+from atest.asserts import *
 
 
 def _fn(it):
@@ -23,8 +25,23 @@ def simple():
 def long():
     sleep(1.5)
 
+
 def long_data(it):
     sleep(1.5)
+
+
+def sa_ok():
+    soft = SoftAssert()
+    soft.check(lambda: equals(1, 1))
+    soft.check(lambda: equals(2, 2))
+    soft.assert_all()
+
+
+def sa_failed():
+    soft = SoftAssert()
+    soft.check(lambda: equals(1, 2))
+    soft.check(lambda: equals(2, 2))
+    soft.assert_all()
 
 
 def raises():
@@ -100,6 +117,24 @@ class BehaviourTest(TestCase):
         self.assertEqual(0, len(TestSuite.get_instance().success()))
         self.assertEqual(0, len(TestSuite.get_instance().failed()))
         self.assertEqual(3, TestSuite.get_instance().tests_count())
+
+    def test_soft_ok(self):
+        clear()
+        test(sa_ok)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(1, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
+    def test_soft_failed(self):
+        clear()
+        test(sa_failed)
+        start(3)
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(1, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
 
 
 if __name__ == '__main__':

@@ -79,9 +79,7 @@ class SoftAssert:
         message = '=' * 20
         message += '\nFAILED ASSERTS:\n'
         for exception in exceptions:
-            message += get_trace_filtered_by_filename(exception)
-            message += f'{str(exception)}\n'
-            message += '------------------\n'
+            message += "\n".join([get_trace_filtered_by_filename(exception), str(exception), f'{("-"*20)}\n'])
         return message
 
     def _check(self, func: Callable):
