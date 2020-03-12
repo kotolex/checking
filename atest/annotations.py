@@ -1,9 +1,9 @@
-from inspect import signature
 from inspect import isfunction
-from typing import Callable, Any, Iterable, List
+from inspect import signature
+from typing import Callable, Any, Iterable, Tuple
 
-from .classes.basic_test import Test
 from .classes.basic_suite import TestSuite
+from .classes.basic_test import Test
 from .exceptions import *
 
 
@@ -36,7 +36,7 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
 
 
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         groups: List[str] = None, priority: int = 0, timeout: int = 0):
+         groups: Tuple[str] = None, priority: int = 0, timeout: int = 0):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
@@ -68,6 +68,9 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
         nonlocal groups
         if not groups:
             groups = [func.__module__]
+        else:
+            if type(groups) not in (list, tuple, set):
+                raise ValueError('Group parameter of @test annotation must be a tuple of strings (Tuple[str])!')
         for group in groups:
             test_object = Test(name_, func)
             test_object.retries = retries

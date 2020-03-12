@@ -130,7 +130,7 @@ class BehaviourTest(TestCase):
     def test_soft_failed(self):
         clear()
         test(sa_failed)
-        start(3)
+        start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
         self.assertEqual(0, len(TestSuite.get_instance().success()))
         self.assertEqual(1, len(TestSuite.get_instance().failed()))
