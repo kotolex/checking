@@ -121,6 +121,26 @@ class TestAnnotations(TestCase):
         before(group_name='new')(bef)
         self.assertTrue(bef in t.before)
 
+    def test_no_timeout_default(self):
+        clear()
+        test(valid)
+        self.assertEqual(0, list(TestSuite.get_instance().groups.values())[0].tests[0].timeout)
+
+    def test_timeout_same(self):
+        clear()
+        test(timeout=10)(valid)
+        self.assertEqual(10, list(TestSuite.get_instance().groups.values())[0].tests[0].timeout)
+
+    def test_timeout_same_float(self):
+        clear()
+        test(timeout=10.02)(valid)
+        self.assertEqual(10, list(TestSuite.get_instance().groups.values())[0].tests[0].timeout)
+
+    def test_timeout_same_negative(self):
+        clear()
+        test(timeout=-1)(valid)
+        self.assertEqual(0, list(TestSuite.get_instance().groups.values())[0].tests[0].timeout)
+
 
 if __name__ == '__main__':
     main()
