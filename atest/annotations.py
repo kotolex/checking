@@ -7,9 +7,6 @@ from .classes.basic_suite import TestSuite
 from .exceptions import *
 
 
-# TODO timeout(?), unit-tests, docs!
-
-
 def __check_is_function_without_args(func: Callable, annotation_name: str):
     """
     Проверка на то, что аннотация стоит над функцией без аргументов, не предполагается использование аннотаций

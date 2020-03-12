@@ -1,27 +1,14 @@
 import traceback
 import time
-import os
 
 from .basic_case import TestCase
 from .basic_group import TestGroup
 from .basic_suite import TestSuite
-
-SEPARATOR = os.path.sep
+from atest.helpers.exception_traceback import get_trace_filtered_by_filename
 
 
 def _print_splitter_line():
     print('-' * 10)
-
-
-def _is_module(name: str) -> bool:
-    parts = (f'atest{SEPARATOR}asserts.py', f'atest{SEPARATOR}classes{SEPARATOR}basic_test.py',
-             f'{SEPARATOR}contextlib.py')
-    """
-    Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
-    :param name: имя
-    :return: True если является именем одного из модулей проекта
-    """
-    return any([name.endswith(part) for part in parts])
 
 
 class Listener:
@@ -216,7 +203,5 @@ class DefaultListener(Listener):
             if self.verbose > 0:
                 _print_splitter_line()
             print(f'Test {test} {_letter}')
-            for tb in (e for e in traceback.extract_tb(exception_.__traceback__) if not _is_module(e.filename)):
-                print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
-                print(f'-->    {tb.line}')
+            print(get_trace_filtered_by_filename(exception_))
             print(exception_)
