@@ -25,14 +25,16 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
 def __check_is_function_for_provider(func: Callable[[Any], None]):
     """
     Проверка, что функция пригодна принимать значения (использовать провайдер данных),
-    то есть имеет как минимум 1 аргумент.
+    то есть имеет ровно 1 аргумент.
     :param func: функция
     :return: None
     :raises: WrongAnnotationPlacement
     """
     if not isfunction(func) or not signature(func).parameters:
-        raise WrongAnnotationPlacement(
-            f"Function '{func.__name__}' marked with data_provider has no argument! Must be one at least!")
+        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider has no argument!")
+    if len(signature(func).parameters) > 1:
+        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider "
+                                       f"has more than 1 argument!")
 
 
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
