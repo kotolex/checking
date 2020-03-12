@@ -12,13 +12,27 @@ def equals(expected: Any, actual: Any, message: str = None):
     :param actual: актуальный объект
     :param message: сообщение, которое будет указано при провале проверки
     :return: None
-    :raises AssertionError с указанием объектов и их типов
+    :raises AssertionError если объекты не равны, с указанием объектов и их типов
     """
     if (expected is actual) or expected == actual:
         return
     _message = _mess(message)
     raise AssertionError(f'{_message}Expected "{expected}" <{type(expected).__name__}>, '
                          f'but got "{actual}"<{type(actual).__name__}>!')
+
+
+def not_equals(expected: Any, actual: Any, message: str = None):
+    """
+    Проверяет, что объекты не равны
+    :param expected: ожидаемый объект
+    :param actual: актуальный объект
+    :param message: сообщение, которое будет указано при провале проверки
+    :return: None
+    :raises AssertionError если объекты равны
+    """
+    if (expected is actual) or expected == actual:
+        _message = _mess(message)
+        raise AssertionError(f'Objects are equal ({expected}, {actual})!')
 
 
 def is_none(obj: Any, message: str = None):
