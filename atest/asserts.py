@@ -6,6 +6,28 @@ from .exceptions import TestBrokenException
 from .classes.basic_listener import short
 
 
+def is_true(obj: Any, message: str = None):
+    """
+    Проверка объекта на истинность (truthy)
+    :param object: любой объект для проверки
+    :return: None
+    """
+    if not obj:
+        _message = _mess(message)
+        raise AssertionError(f'{_message}Expected True, but got False! ')
+
+
+def is_false(obj: Any, message: str = None):
+    """
+    Проверка объекта на не истинность (falsy)
+    :param obj: любой объект для проверки
+    :return: None
+    """
+    if obj:
+        _message = _mess(message)
+        raise AssertionError(f'{_message}Expected False, but got True')
+
+
 def equals(expected: Any, actual: Any, message: str = None):
     """
     Сравнивает равенство двух объектов

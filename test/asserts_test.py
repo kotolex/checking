@@ -150,6 +150,24 @@ class AssertsTest(TestCase):
         self.assertEqual("Object \"1\" <int> and \"123\"<str> are of different types and cant be check for contains!",
                          e.exception.args[0])
 
+    def test_is_true(self):
+        is_true(True)
+        is_true(1 == 1)
+        is_true([1, 2])
+
+    def test_is_true_failed(self):
+        with self.assertRaises(AssertionError):
+            is_true(False)
+
+    def test_is_false(self):
+        is_false(False)
+        is_false(1 == 2)
+        is_false([])
+
+    def is_false_failed(self):
+        with self.assertRaises(AssertionError):
+            is_false(True)
+
 
 if __name__ == '__main__':
     main()

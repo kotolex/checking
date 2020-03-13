@@ -78,6 +78,12 @@ class SoftAssert:
     def not_contains(self, part: Any, whole: Any, message: str = None):
         self.check(lambda: not_contains(part, whole, message))
 
+    def is_true(self, obj: Any, message: str = None):
+        self.check(lambda: is_true(obj, message))
+
+    def is_false(self, obj: Any, message: str = None):
+        self.check(lambda: is_false(obj, message))
+
     def _create_message(self, exceptions: List[Exception]) -> str:
         message = '=' * 20
         message += '\nFAILED ASSERTS:\n'

@@ -46,6 +46,12 @@ class FluentAssert:
     def is_not_none(self):
         not_none(self.__actual)
 
+    def is_true(self):
+        is_true(self.__actual)
+
+    def is_false(self):
+        is_false(self.__actual)
+
     def equal(self, obj: Any):
         equals(self.__actual, obj)
 

@@ -10,5 +10,5 @@ from .classes.fluent_assert import verify
 
 __all__ = ['start', 'common_parameters','SoftAssert',
            'equals', 'is_none', 'not_none', 'waiting_exception', 'test_fail', 'test_brake', 'no_exception_expected',
-           'contains', 'verify', 'not_contains', 'not_equals',
+           'contains', 'verify', 'not_contains', 'not_equals', 'is_false', 'is_true',
            'test', 'before', 'after', 'before_group', 'after_group', 'before_suite', 'after_suite', 'data']
