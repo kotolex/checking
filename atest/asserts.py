@@ -3,6 +3,7 @@ from typing import Any, Type
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
+from .classes.basic_listener import short
 
 
 def equals(expected: Any, actual: Any, message: str = None):
@@ -17,8 +18,8 @@ def equals(expected: Any, actual: Any, message: str = None):
     if (expected is actual) or expected == actual:
         return
     _message = _mess(message)
-    raise AssertionError(f'{_message}Expected "{expected}" <{type(expected).__name__}>, '
-                         f'but got "{actual}"<{type(actual).__name__}>!')
+    raise AssertionError(f'{_message}Expected "{short(expected)}" <{type(expected).__name__}>, '
+                         f'but got "{short(actual)}"<{type(actual).__name__}>!')
 
 
 def not_equals(expected: Any, actual: Any, message: str = None):
@@ -32,7 +33,7 @@ def not_equals(expected: Any, actual: Any, message: str = None):
     """
     if (expected is actual) or expected == actual:
         _message = _mess(message)
-        raise AssertionError(f'Objects are equal ({expected}, {actual})!')
+        raise AssertionError(f'Objects are equal ({short(expected)}, {short(actual)})!')
 
 
 def is_none(obj: Any, message: str = None):
@@ -45,7 +46,7 @@ def is_none(obj: Any, message: str = None):
     """
     _message = _mess(message)
     if obj is not None:
-        raise AssertionError(f'{_message}Object {obj}<{type(obj).__name__}> is not None!')
+        raise AssertionError(f'{_message}Object {short(obj)}<{type(obj).__name__}> is not None!')
 
 
 def not_none(obj: Any, message: str = None):
@@ -82,8 +83,8 @@ def waiting_exception(exception: Type[Exception]):
         if exception is BaseException:
             raise TestBrokenException('You must use concrete exception, except of BaseException!')
         if not issubclass(type(exception), type(Exception)):
-            raise TestBrokenException(f"Exception or its subclasses expected, but got "
-                                      f"\"{exception}\"<{type(exception).__name__}>")
+            raise TestBrokenException(f'Exception or its subclasses expected, but got '
+                                      f'"{exception}"<{type(exception).__name__}>')
         yield fake
     except TestBrokenException as e:
         raise e
@@ -169,14 +170,15 @@ def __contains_or_not(part, whole, is_contains: bool = True, message: str = None
             return
     except TypeError as e:
         if 'requires' in e.args[0]:
-            raise TestBrokenException(f'Object "{part}" <{type(part).__name__}> and '
-                                      f'"{whole}"<{type(whole).__name__}> are of different types and cant be check '
+            raise TestBrokenException(f'Object "{short(part)}" <{type(part).__name__}> and '
+                                      f'"{short(whole)}"<{type(whole).__name__}> are of different types and cant be check '
                                       f'for contains!')
-        raise TestBrokenException(f'"{whole}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
+        raise TestBrokenException(
+            f'"{short(whole)}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
     _message = _mess(message)
     add_ = 'is a' if not is_contains else 'is not'
-    raise AssertionError(f'{_message}Object "{part}" <{type(part).__name__}>, {add_} part of '
-                         f'"{whole}"<{type(whole).__name__}>!')
+    raise AssertionError(f'{_message}Object "{short(part)}" <{type(part).__name__}>, {add_} part of '
+                         f'"{short(whole)}"<{type(whole).__name__}>!')
 
 
 def _mess(message: str) -> str:

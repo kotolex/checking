@@ -1,6 +1,7 @@
 from typing import Iterable, Sized, Sequence
 
 from atest.asserts import *
+from .basic_listener import short
 
 
 class FluentAssert:
@@ -15,6 +16,8 @@ class FluentAssert:
         """
         self.__actual = obj
         self._t = type(self.__actual)
+        # Строковое представление объекта в сокращенном виде (не более 50 символов)
+        self.str = short(self.__actual)
 
     def is_a(self, type_: Type):
         """
@@ -24,7 +27,7 @@ class FluentAssert:
         """
         self._check_is_type(type_)
         if not isinstance(self.__actual, type_):
-            raise AssertionError(f'"{self.__actual}"{self._t} is not instance of {type_}')
+            raise AssertionError(f'"{self.str}"{self._t} is not instance of {type_}')
 
     def child_of(self, type_: Type):
         """
@@ -35,7 +38,7 @@ class FluentAssert:
         self._check_is_type(type_)
         if issubclass(type(self.__actual), type_):
             return
-        raise AssertionError(f'"{self.__actual}"{self._t} is not sub-class of {type_}')
+        raise AssertionError(f'"{self.str}"{self._t} is not sub-class of {type_}')
 
     def is_none(self):
         is_none(self.__actual)
@@ -57,12 +60,12 @@ class FluentAssert:
         """
         self._check_same_type(obj)
         if self.__actual >= obj:
-            raise AssertionError(f'"{self.__actual}" is not less than "{obj}"!')
+            raise AssertionError(f'"{self.str}" is not less than "{short(obj)}"!')
 
     def greater_than(self, obj: Any):
         self._check_same_type(obj)
         if self.__actual <= obj:
-            raise AssertionError(f'"{self.__actual}" is not greater than "{obj}"!')
+            raise AssertionError(f'"{self.str}" is not greater than "{short(obj)}"!')
 
     def length_equal_to_length_of(self, obj: Sized):
         self._check_has_len(self.__actual)
@@ -86,7 +89,7 @@ class FluentAssert:
         len_ = len(self.__actual)
         len_obj = len(obj)
         if len_ >= len_obj:
-            raise AssertionError(f'Length of "{self.__actual}" is {len_}, it is not less of "{obj}"({len_obj})')
+            raise AssertionError(f'Length of "{self.str}" is {len_}, it is not less of "{obj}"({len_obj})')
 
     def length_less_than(self, obj: int):
         self._check_has_len(self.__actual)
@@ -102,7 +105,7 @@ class FluentAssert:
         len_ = len(self.__actual)
         len_obj = len(obj)
         if len_ <= len_obj:
-            raise AssertionError(f'Length of "{self.__actual}" is {len_}, it is not greater of "{obj}"({len_obj})')
+            raise AssertionError(f'Length of "{self.str}" is {len_}, it is not greater of "{short(obj)}"({len_obj})')
 
     def length_greater_than(self, obj: int):
         self._check_has_len(self.__actual)
@@ -127,7 +130,7 @@ class FluentAssert:
             if index == len(self.__actual) - 1:
                 break
             if not check(element, self.__actual[index + 1]):
-                raise AssertionError(f'Object {self.__actual} is not sorted!')
+                raise AssertionError(f'Object "{self.str}" is not sorted!')
 
     def contains(self, obj: Any):
         contains(obj, self.__actual)
@@ -153,7 +156,7 @@ class FluentAssert:
         try:
             len(obj)
         except TypeError:
-            raise TestBrokenException(f'There is no length for "{obj}"{type(obj)}')
+            raise TestBrokenException(f'There is no length for "{short(obj)}"{type(obj)}')
 
 
 def verify(obj: Any) -> FluentAssert:

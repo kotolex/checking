@@ -34,7 +34,7 @@ def run_with_timeout(test: Test):
         # Ставим уведомление что пора прервать работу и бросаем исключение
         event.set()
         raise TestBrokenException(f'Time ({test.timeout} seconds) is over for test "{test}"!')
-    # Если ест атрибут, значит в потоке-демоне упало исключение, бросаем его
+    # Если есть атрибут, значит в потоке-демоне упало исключение, бросаем его
     if hasattr(event, 'attr'):
         raise event.attr
 
@@ -42,7 +42,7 @@ def run_with_timeout(test: Test):
 def _start_test_at_daemon_thread(test: Test, event: Event):
     t = ExceptionThread(test.run, event)
     t.start()
-    # Пока не уведомили через ивент илил не завершен поток-демон, работаем
+    # Пока не уведомили через ивент или не завершен поток-демон, работаем
     while not event.is_set():
         if not t.is_alive():
             break

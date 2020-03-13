@@ -7,6 +7,7 @@ from atest.classes.soft_assert import SoftAssert
 from atest.annotations import *
 from test.fixture_behaviour_test import clear
 from atest.asserts import *
+from atest.classes.basic_listener import short
 
 
 def _fn(it):
@@ -135,6 +136,9 @@ class BehaviourTest(TestCase):
         self.assertEqual(0, len(TestSuite.get_instance().success()))
         self.assertEqual(1, len(TestSuite.get_instance().failed()))
         self.assertEqual(1, TestSuite.get_instance().tests_count())
+
+    def test_short(self):
+        self.assertTrue(len(short(list(range(50))))<=50)
 
 
 if __name__ == '__main__':

@@ -11,6 +11,17 @@ def _print_splitter_line():
     print('-' * 10)
 
 
+def short(object) -> str:
+    return _short(str(object), width=50)
+
+
+def _short(x, width: int = 10):
+    string = str(x)
+    if len(string) > width:
+        return string[:45] + '[...]'
+    return string
+
+
 class Listener:
     """
     Родитель слушателей тестов. Пользователь может написать свой слушатель и изменить поведение по-умолчанию, при этом
@@ -148,12 +159,12 @@ class DefaultListener(Listener):
         print()
         print("=" * 30)
         elapsed = time.time() - self.start_time
-        succ_count = len(test_suite.success())
+        success_count = len(test_suite.success())
         f_count = len(test_suite.failed())
         b_count = len(test_suite.broken())
         i_count = len(test_suite.ignored())
-        all_count = f_count + b_count + i_count + succ_count
-        print(f'Total tests:{all_count}, success tests : {succ_count}, failed tests:{f_count}, broken tests:'
+        all_count = f_count + b_count + i_count + success_count
+        print(f'Total tests:{all_count}, success tests : {success_count}, failed tests:{f_count}, broken tests:'
               f'{b_count}, ignored tests:{i_count}')
         print(f'Time elapsed: {elapsed:.2f} seconds.')
         if self.verbose == 3:
