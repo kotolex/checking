@@ -136,6 +136,8 @@ class FluentAssert:
         not_contains(obj, self.__actual)
 
     def contains_in_any_order(self, obj: Iterable):
+        if not isinstance(obj, Iterable):
+            raise TestBrokenException(f'Only Iterables can be argument here, not {type(obj)}')
         for element in obj:
             contains(element, self.__actual)
 
