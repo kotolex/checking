@@ -1,6 +1,9 @@
 from inspect import isfunction
 from inspect import signature
+from inspect import getsource
+from sys import stderr
 from typing import Callable, Any, Iterable, Tuple
+
 
 from .classes.basic_suite import TestSuite
 from .classes.basic_test import Test
@@ -67,6 +70,7 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
         else:
             __check_is_function_for_provider(func)
         name_ = name if name else func.__name__
+        # _check_func_for_soft_assert(func)
         nonlocal groups
         if not groups:
             groups = [func.__module__]
@@ -249,3 +253,18 @@ def _fake(*args):
     :return: None
     """
     pass
+
+def _check_func_for_soft_assert(func):
+    try:
+        code = getsource(func)
+        is_soft_assert_there = 'SoftAssert(' in code
+        if not is_soft_assert_there:
+            return
+        if not 'assert_all()' in code:
+            print(f'WARNING! Function {func.__module__}.{func.__name__} marked with @test seems to contains SoftAssert '
+                          f'object without calling assert_all()!', file=stderr)
+    except Exception:
+        print("!")
+        pass
+
+
