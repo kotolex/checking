@@ -1,5 +1,5 @@
-from typing import Any, Iterable
-from atest.exceptions import *
+from typing import Iterable, Sized, Sequence
+
 from atest.asserts import *
 
 
@@ -9,12 +9,33 @@ class FluentAssert:
     """
 
     def __init__(self, obj: Any):
+        """
+        При инициализации принимаем объект, который нужно проверять. Не предполагается, что это будет класс или тип!
+        :param obj:
+        """
         self.__actual = obj
+        self._t = type(self.__actual)
 
     def is_a(self, type_: Type):
-        if type(type_) is not type:
-            raise TestBrokenException(f'Argument "{type_}"{type(type_)} is not type!')
-        assert isinstance(self.__actual, type_)
+        """
+        Проверяем, является ли наш объект конкретным классом(типом)
+        :param type_: тип для проверки
+        :return: None
+        """
+        self._check_is_type(type_)
+        if not isinstance(self.__actual, type_):
+            raise AssertionError(f'"{self.__actual}"{self._t} is not instance of {type_}')
+
+    def child_of(self, type_: Type):
+        """
+        Проверяем, является ли наш объект конкретным классом(типом) или его наследником
+        :param type_: тип для проверки
+        :return: None
+        """
+        self._check_is_type(type_)
+        if issubclass(type(self.__actual), type_):
+            return
+        raise AssertionError(f'"{self.__actual}"{self._t} is not sub-class of {type_}')
 
     def is_none(self):
         is_none(self.__actual)
@@ -29,54 +50,78 @@ class FluentAssert:
         not_equals(self.__actual, obj)
 
     def less_than(self, obj: Any):
-        if not type(self.__actual) is type(obj):
-            raise TestBrokenException('To compare "less" or "greater" both arguments must be the same type!')
-        assert self.__actual < obj
+        """
+        Проверка, что проверяемый объект меньше, чем данный
+        :param obj: объект для сравнения
+        :return:
+        """
+        self._check_same_type(obj)
+        if self.__actual >= obj:
+            raise AssertionError(f'"{self.__actual}" is not less than "{obj}"!')
 
     def greater_than(self, obj: Any):
-        if not type(self.__actual) is type(obj):
-            raise TestBrokenException('To compare "less" or "greater" both arguments must be the same type!')
-        assert self.__actual > obj
+        self._check_same_type(obj)
+        if self.__actual <= obj:
+            raise AssertionError(f'"{self.__actual}" is not greater than "{obj}"!')
 
-    def length_equal_to_length_of(self, obj: Any):
-        try:
-            len_ = len(self.__actual)
-            len_obj = len(obj)
-            if len_ != len_obj:
-                raise AssertionError(f'Length of object is {len_}, it is not equal to {len_obj}')
-        except TypeError:
-            raise TestBrokenException(f'There is no length for one of ["{self.__actual}"{type(self.__actual)},'
-                                      f' "{obj}"{type(obj)}]')
+    def length_equal_to_length_of(self, obj: Sized):
+        self._check_has_len(self.__actual)
+        self._check_has_len(obj)
+        len_ = len(self.__actual)
+        len_obj = len(obj)
+        if len_ != len_obj:
+            raise AssertionError(f'Length of object is {len_}, it is not equal to {len_obj}')
 
     def length_equal_to(self, obj: int):
-        try:
-            len_ = len(self.__actual)
-            if type(obj) is not int:
-                raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
-            if len_ != obj:
-                raise AssertionError(f'Length of object is {len_}, it is not equal to {obj}')
-        except TypeError:
-            raise TestBrokenException(f'There is no length for object "{self.__actual}"{type(self.__actual)}')
+        self._check_has_len(self.__actual)
+        len_ = len(self.__actual)
+        if type(obj) is not int:
+            raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
+        if len_ != obj:
+            raise AssertionError(f'Length of object is {len_}, it is not equal to {obj}')
 
-    def length_less_than_length_of(self, obj: Any):
-        assert len(self.__actual) < len(obj)
+    def length_less_than_length_of(self, obj: Sized):
+        self._check_has_len(self.__actual)
+        self._check_has_len(obj)
+        len_ = len(self.__actual)
+        len_obj = len(obj)
+        if len_ >= len_obj:
+            raise AssertionError(f'Length of "{self.__actual}" is {len_}, it is not less of "{obj}"({len_obj})')
 
     def length_less_than(self, obj: int):
-        assert len(self.__actual) < obj
+        self._check_has_len(self.__actual)
+        len_ = len(self.__actual)
+        if type(obj) is not int:
+            raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
+        if len_ >= obj:
+            raise AssertionError(f'Length of object is {len_}, it is not less than {obj}')
 
-    def length_greater_than_length_of(self, obj: Any):
-        assert len(self.__actual) > len(obj)
+    def length_greater_than_length_of(self, obj: Sized):
+        self._check_has_len(self.__actual)
+        self._check_has_len(obj)
+        len_ = len(self.__actual)
+        len_obj = len(obj)
+        if len_ <= len_obj:
+            raise AssertionError(f'Length of "{self.__actual}" is {len_}, it is not greater of "{obj}"({len_obj})')
 
     def length_greater_than(self, obj: int):
-        assert len(self.__actual) > obj
+        self._check_has_len(self.__actual)
+        len_ = len(self.__actual)
+        if type(obj) is not int:
+            raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
+        if len_ <= obj:
+            raise AssertionError(f'Length of object is {len_}, it is not greater than {obj}')
 
     def is_sorted(self, reverse_order: bool = False):
-        def smaller(a, b):
-            return a <= b
-
-        def bigger(a, b):
-            return a >= b
-
+        """
+        Проверка, что проверяемый объект отсортирован (применимо, только к list/tuple/str и прочим Sequence)
+        :param reverse_order: если True то проверяет сортировку в обратном порядке (от большего к меньшему)
+        :return:
+        """
+        if not isinstance(self.__actual, Sequence):
+            raise TestBrokenException(f'Only sequences can be checked for sorted, not {self._t}')
+        smaller = lambda a, b: a <= b
+        bigger = lambda a, b: a >= b
         check = smaller if not reverse_order else bigger
         for index, element in enumerate(self.__actual):
             if index == len(self.__actual) - 1:
@@ -88,14 +133,25 @@ class FluentAssert:
         contains(obj, self.__actual)
 
     def not_contains(self, obj: Any):
-        assert obj not in self.__actual
-
-    def child_of(self, obj: Type):
-        assert issubclass(type(self.__actual), obj)
+        not_contains(obj, self.__actual)
 
     def contains_in_any_order(self, obj: Iterable):
         for element in obj:
             contains(element, self.__actual)
+
+    def _check_same_type(self, second):
+        if self._t is not type(second):
+            raise TestBrokenException('To compare "less" or "greater" both arguments must be the same type!')
+
+    def _check_is_type(self, obj):
+        if type(obj) is not type:
+            raise TestBrokenException(f'Argument "{obj}"{type(obj)} is not type!')
+
+    def _check_has_len(self, obj):
+        try:
+            len(obj)
+        except TypeError:
+            raise TestBrokenException(f'There is no length for "{obj}"{type(obj)}')
 
 
 def verify(obj: Any) -> FluentAssert:

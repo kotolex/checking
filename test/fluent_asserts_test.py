@@ -54,6 +54,10 @@ class FluentAssertTest(TestCase):
         with self.assertRaises(AssertionError):
             verify(2).less_than(1)
 
+    def test_less_than_failed_if_equal(self):
+        with self.assertRaises(AssertionError):
+            verify(2).less_than(2)
+
     def test_less_than_broken(self):
         with self.assertRaises(TestBrokenException):
             verify(2).less_than('1')
@@ -64,6 +68,10 @@ class FluentAssertTest(TestCase):
     def test_greater_than_failed(self):
         with self.assertRaises(AssertionError):
             verify(2).greater_than(3)
+
+    def test_greater_than_failed_if_equal(self):
+        with self.assertRaises(AssertionError):
+            verify(2).greater_than(2)
 
     def test_greater_than_broken(self):
         with self.assertRaises(TestBrokenException):
@@ -104,7 +112,7 @@ class FluentAssertTest(TestCase):
     def test_is_sorted_reverse(self):
         verify([3, 2, 1]).is_sorted(reverse_order=True)
 
-    def test_is_sorted_reverse(self):
+    def test_is_sorted_reverse_long(self):
         verify([3, 2, 2, 1, 1, 1]).is_sorted(reverse_order=True)
 
     def test_is_sorted_failed(self):
@@ -115,6 +123,10 @@ class FluentAssertTest(TestCase):
         with self.assertRaises(AssertionError):
             verify([3, 2, 3]).is_sorted(reverse_order=True)
 
+    def test_is_sorted_broken(self):
+        with self.assertRaises(TestBrokenException):
+            verify({3, 2, 3}).is_sorted(reverse_order=True)
+
     def test_contains_in_any_order(self):
         verify([1, 2, 3, 4]).contains_in_any_order([2, 4])
 
@@ -124,6 +136,98 @@ class FluentAssertTest(TestCase):
     def test_contains_in_any_order_failed(self):
         with self.assertRaises(AssertionError):
             verify([1, 2, 3, 4]).contains_in_any_order([5, 7])
+
+    def test_child_of(self):
+        verify(True).child_of(int)
+
+    def test_child_of_same(self):
+        verify(True).child_of(bool)
+
+    def test_child_of_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(True).child_of(str)
+
+    def test_not_contains(self):
+        verify('12').not_contains('3')
+
+    def test_not_contains_list(self):
+        verify([1, 2, 3]).not_contains(5)
+
+    def test_not_contains_failed(self):
+        with self.assertRaises(AssertionError):
+            verify('12').not_contains('2')
+
+    def test_not_contains_broken(self):
+        with self.assertRaises(TestBrokenException):
+            verify('12').not_contains(2)
+
+    def test_length_less_than_length_of(self):
+        verify([1]).length_less_than_length_of([1, 2])
+
+    def test_length_less_than_length_of_failed(self):
+        with self.assertRaises(AssertionError):
+            verify([1, 2, 3]).length_less_than_length_of([1, 2])
+
+    def test_length_less_than_length_of_failed_if_equal(self):
+        with self.assertRaises(AssertionError):
+            verify([1, 2]).length_less_than_length_of([1, 2])
+
+    def test_length_less_than_length_of_broken(self):
+        with self.assertRaises(TestBrokenException):
+            verify([1, 2]).length_less_than_length_of(1)
+
+    def test_length_less_than(self):
+        verify([1]).length_less_than(2)
+
+    def test_length_less_than_failed_if_equal(self):
+        with self.assertRaises(AssertionError):
+            verify([1]).length_less_than(1)
+
+    def test_length_less_than_failed(self):
+        with self.assertRaises(AssertionError):
+            verify([1]).length_less_than(0)
+
+    def test_length_less_than_broken(self):
+        with self.assertRaises(TestBrokenException):
+            verify([1]).length_less_than('test')
+
+    def test_length_less_than_broken_if_no_len(self):
+        with self.assertRaises(TestBrokenException):
+            verify(1).length_less_than(2)
+
+    def test_length_greater_than_length_of(self):
+        verify([1]).length_greater_than_length_of([])
+
+    def test_length_greater_than_length_of_failed(self):
+        with self.assertRaises(AssertionError):
+            verify([1, 2, 3]).length_greater_than_length_of([1, 2, 3])
+
+    def test_length_greater_than_length_of_failed_if_equal(self):
+        with self.assertRaises(AssertionError):
+            verify([1, 2]).length_greater_than_length_of([1, 2])
+
+    def test_length_greater_than_length_of_broken(self):
+        with self.assertRaises(TestBrokenException):
+            verify([1, 2]).length_greater_than_length_of(1)
+
+    def test_length_greater_than(self):
+        verify([1]).length_greater_than(0)
+
+    def test_length_greater_than_failed_if_equal(self):
+        with self.assertRaises(AssertionError):
+            verify([1]).length_greater_than(1)
+
+    def test_length_greater_than_failed(self):
+        with self.assertRaises(AssertionError):
+            verify([1]).length_greater_than(10)
+
+    def test_length_greater_than_broken(self):
+        with self.assertRaises(TestBrokenException):
+            verify([1]).length_greater_than('test')
+
+    def test_length_greater_than_broken_if_no_len(self):
+        with self.assertRaises(TestBrokenException):
+            verify(1).length_greater_than(2)
 
 
 if __name__ == '__main__':

@@ -142,10 +142,30 @@ def contains(part: Any, whole: Any, message: str = None):
     :return: None
     :raises AssertionError если один объект не является частью второго
     :raises TestBrokenException если whole не итерабл или объекты не могут быть проверены на содержимое, например
-    1 in '123
+    1 in '123'
     """
+    __contains_or_not(part, whole, message=message)
+
+
+def not_contains(part: Any, whole: Any, message: str = None):
+    """
+    Проверяется, что один объект не является частью (не входит) второго. Аналогично проверке a not in b
+    :param part: объект-часть, который входит в целое
+    :param whole: объект-целое, которое содержит часть
+    :param message: опциональное сообщение
+    :return: None
+    :raises AssertionError если один объект является частью второго
+    :raises TestBrokenException если whole не итерабл или объекты не могут быть проверены на содержимое, например
+    1 not in '123'
+    """
+    __contains_or_not(part, whole, is_contains=False, message=message)
+
+
+def __contains_or_not(part, whole, is_contains: bool = True, message: str = None):
     try:
-        if part in whole:
+        if is_contains and part in whole:
+            return
+        if not is_contains and part not in whole:
             return
     except TypeError as e:
         if 'requires' in e.args[0]:
@@ -154,7 +174,8 @@ def contains(part: Any, whole: Any, message: str = None):
                                       f'for contains!')
         raise TestBrokenException(f'"{whole}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
     _message = _mess(message)
-    raise AssertionError(f'{_message}Object "{part}" <{type(part).__name__}>, is not part of '
+    add_ = 'is a' if not is_contains else 'is not'
+    raise AssertionError(f'{_message}Object "{part}" <{type(part).__name__}>, {add_} part of '
                          f'"{whole}"<{type(whole).__name__}>!')
 
 
