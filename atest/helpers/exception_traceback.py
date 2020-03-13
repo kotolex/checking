@@ -5,12 +5,13 @@ from typing import List, Tuple
 SEPARATOR = os.path.sep
 
 
-def _is_module(name: str) -> bool:
+def _is_need_to_hide(name: str) -> bool:
     parts = (f'atest{SEPARATOR}asserts.py', f'atest{SEPARATOR}classes{SEPARATOR}', f'{SEPARATOR}contextlib.py',)
     """
-    Проверяем на модуль атеста, чтобы не выводить трейсы ошибок самой библиотеки (которые юзеру не интересны)
+    Проверяем строки трейсбека на содержание внутренних модулей проекта и некоторых модулей стандартной библиотеки, 
+    чтобы не выводить трейсы ошибок (которые юзеру не интересны)
     :param name: имя
-    :return: True если является именем одного из модулей проекта
+    :return: True если является именем одного из внутренних модулей
     """
     return any([part in name for part in parts])
 
@@ -36,4 +37,4 @@ def get_trace_filtered_by_filename(exception_: Exception) -> str:
     :param exception_: исключение, чей стектрейс нужен
     :return: строку, где каждая запись отделена \n
     """
-    return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception_) if not _is_module(a)])
+    return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception_) if not _is_need_to_hide(a)])

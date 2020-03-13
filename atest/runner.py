@@ -141,6 +141,7 @@ def _provider_next(provider_name: str) -> Any:
 
 
 def _run_test(test: Test, group: TestGroup) -> bool:
+    _listener.on_test_starts(test, group)
     try:
         if test.timeout:
             run_with_timeout(test)

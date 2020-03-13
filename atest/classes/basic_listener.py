@@ -36,6 +36,15 @@ class Listener:
         """
         pass
 
+    def on_test_starts(self, test: TestCase, group: TestGroup):
+        """
+        Вызывается перед стартом теста (уже после предварительных фикстур, но до самого теста).
+        :param test: объект теста со всеми параметрами
+        :param group: группа, к которой тест принадлежит
+        :return: None
+        """
+        pass
+
     def on_empty_suite(self, test_suite: TestSuite):
         """
         Вызывается перед остановкой прогона в связи с тем, что нет тестов ни в одной из групп.
@@ -194,6 +203,9 @@ class DefaultListener(Listener):
     def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
         super().on_ignored_with_provider(test, group)
         print(f'Provider "{test.provider}" for {test} not returns iterable! All tests with provider were IGNORED!')
+
+    def on_test_starts(self, test: TestCase, group: TestGroup):
+        super().on_test_starts(test, group)
 
     def _failed_or_broken(self, test, exception_, _result):
         _letter = f'{_result.upper()}!'
