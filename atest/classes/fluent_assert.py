@@ -6,7 +6,12 @@ from .basic_listener import short
 
 class FluentAssert:
     """
-    Класс для гибких, читаемых проверок
+    Класс для гибких, читаемых проверок, которые можно собирать в цепочки (при желании разделяя AND)
+    При провале одной из проверок, тест падает и другие условия не проверяются!
+    Пример:
+
+    verify(my_list).is_not_none().AND.is_a(list).AND.contains(2).AND.is_sorted()
+
     """
 
     def __init__(self, obj: Any):
@@ -18,6 +23,8 @@ class FluentAssert:
         self._t = type(self.__actual)
         # Строковое представление объекта в сокращенном виде (не более 50 символов)
         self.str = short(self.__actual)
+        # Ссылка на самого себя для читаемой последовательности проверок
+        self.AND= self
 
     def is_a(self, type_: Type):
         """
@@ -28,6 +35,7 @@ class FluentAssert:
         self._check_is_type(type_)
         if not isinstance(self.__actual, type_):
             raise AssertionError(f'"{self.str}"{self._t} is not instance of {type_}')
+        return self
 
     def child_of(self, type_: Type):
         """
@@ -37,26 +45,32 @@ class FluentAssert:
         """
         self._check_is_type(type_)
         if issubclass(type(self.__actual), type_):
-            return
+            return self
         raise AssertionError(f'"{self.str}"{self._t} is not sub-class of {type_}')
 
     def is_none(self):
         is_none(self.__actual)
+        return self
 
     def is_not_none(self):
         not_none(self.__actual)
+        return self
 
     def is_true(self):
         is_true(self.__actual)
+        return self
 
     def is_false(self):
         is_false(self.__actual)
+        return self
 
     def equal(self, obj: Any):
         equals(self.__actual, obj)
+        return self
 
     def not_equal(self, obj: Any):
         not_equals(self.__actual, obj)
+        return self
 
     def less_than(self, obj: Any):
         """
@@ -67,11 +81,13 @@ class FluentAssert:
         self._check_same_type(obj)
         if self.__actual >= obj:
             raise AssertionError(f'"{self.str}" is not less than "{short(obj)}"!')
+        return self
 
     def greater_than(self, obj: Any):
         self._check_same_type(obj)
         if self.__actual <= obj:
             raise AssertionError(f'"{self.str}" is not greater than "{short(obj)}"!')
+        return self
 
     def length_equal_to_length_of(self, obj: Sized):
         self._check_has_len(self.__actual)
@@ -80,6 +96,7 @@ class FluentAssert:
         len_obj = len(obj)
         if len_ != len_obj:
             raise AssertionError(f'Length of object is {len_}, it is not equal to {len_obj}')
+        return self
 
     def length_equal_to(self, obj: int):
         self._check_has_len(self.__actual)
@@ -88,6 +105,7 @@ class FluentAssert:
             raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
         if len_ != obj:
             raise AssertionError(f'Length of object is {len_}, it is not equal to {obj}')
+        return self
 
     def length_less_than_length_of(self, obj: Sized):
         self._check_has_len(self.__actual)
@@ -96,6 +114,7 @@ class FluentAssert:
         len_obj = len(obj)
         if len_ >= len_obj:
             raise AssertionError(f'Length of "{self.str}" is {len_}, it is not less of "{obj}"({len_obj})')
+        return self
 
     def length_less_than(self, obj: int):
         self._check_has_len(self.__actual)
@@ -104,6 +123,7 @@ class FluentAssert:
             raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
         if len_ >= obj:
             raise AssertionError(f'Length of object is {len_}, it is not less than {obj}')
+        return self
 
     def length_greater_than_length_of(self, obj: Sized):
         self._check_has_len(self.__actual)
@@ -112,6 +132,7 @@ class FluentAssert:
         len_obj = len(obj)
         if len_ <= len_obj:
             raise AssertionError(f'Length of "{self.str}" is {len_}, it is not greater of "{short(obj)}"({len_obj})')
+        return self
 
     def length_greater_than(self, obj: int):
         self._check_has_len(self.__actual)
@@ -120,6 +141,7 @@ class FluentAssert:
             raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
         if len_ <= obj:
             raise AssertionError(f'Length of object is {len_}, it is not greater than {obj}')
+        return self
 
     def is_sorted(self, reverse_order: bool = False):
         """
@@ -137,18 +159,22 @@ class FluentAssert:
                 break
             if not check(element, self.__actual[index + 1]):
                 raise AssertionError(f'Object "{self.str}" is not sorted!')
+        return self
 
     def contains(self, obj: Any):
         contains(obj, self.__actual)
+        return self
 
     def not_contains(self, obj: Any):
         not_contains(obj, self.__actual)
+        return self
 
     def contains_in_any_order(self, obj: Iterable):
         if not isinstance(obj, Iterable):
             raise TestBrokenException(f'Only Iterables can be argument here, not {type(obj)}')
         for element in obj:
             contains(element, self.__actual)
+        return self
 
     def _check_same_type(self, second):
         if self._t is not type(second):
