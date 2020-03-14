@@ -7,17 +7,23 @@ from atest.exceptions import TestBrokenException
 class FluentAssertTest(TestCase):
 
     def test_is_a_ok(self):
-        verify(1).is_a(int)
-        verify('a').is_a(str)
-        verify([]).is_a(list)
+        verify(1).is_a(1)
+        verify('a').is_a('a')
+        a_l = []
+        verify(a_l).is_a(a_l)
 
     def test_is_a_fail(self):
         with self.assertRaises(AssertionError):
-            verify(1).is_a(str)
-
-    def test_is_a_fail_wrong_type(self):
-        with self.assertRaises(TestBrokenException):
             verify(1).is_a(2)
+
+    def test_is_not_ok(self):
+        verify(1).is_not(2)
+        verify(True).is_not(False)
+
+    def test_is_not_failed(self):
+        with self.assertRaises(AssertionError):
+            a_l = []
+            verify(a_l).is_not(a_l)
 
     def test_is_none(self):
         verify(None).is_none()

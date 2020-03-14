@@ -24,17 +24,26 @@ class FluentAssert:
         # Строковое представление объекта в сокращенном виде (не более 50 символов)
         self.str = short(self.__actual)
         # Ссылка на самого себя для читаемой последовательности проверок
-        self.AND= self
+        self.AND = self
 
-    def is_a(self, type_: Type):
+    def is_a(self, obj: Any):
         """
-        Проверяем, является ли наш объект конкретным классом(типом)
-        :param type_: тип для проверки
+        Проверяем, является ли наш объект и данный одним и тем же объектом. Аналогично проверке a is b
+        :param obj: объект для проверки
         :return: None
         """
-        self._check_is_type(type_)
-        if not isinstance(self.__actual, type_):
-            raise AssertionError(f'"{self.str}"{self._t} is not instance of {type_}')
+        if self.__actual is not obj:
+            raise AssertionError(f'"{self.str}"{self._t} is not "{short(obj)}"{type(obj)}')
+        return self
+
+    def is_not(self, obj: Any):
+        """
+        Проверяем, что проверяемый объект не является тем же объектом, что и данный. Аналогично проверке a is not b
+        :param obj: объект для проверки
+        :return: None
+        """
+        if self.__actual is obj:
+            raise AssertionError(f'"{self.str}"{self._t} is the same as "{short(obj)}"{type(obj)}')
         return self
 
     def child_of(self, type_: Type):
