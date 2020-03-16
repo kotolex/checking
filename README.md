@@ -1,12 +1,40 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Простая библиотека для тестирования вашего кода на python.
+Основные особенности:
 
-### What is this repository for? ###
+ * нет сторонних зависимостей, используется только стандартная библиотека
+ * нет необходимости наследоваться от каких-либо классов
+ * нет необходимости называть ваши файли и/или тесты с добавлением префикса test
+ * есть возможность как использовать родные assert пайтон, так и готовые шаблоны проверок
+ * максимально простая и понятная работа с тестами, поставщиками данных, проверками
+ * возможность запуска на основе файла с настройками или передачей аргументов в командной строке
+ * автоматический поиск всех тестов в текущей и вложенных папках
+ * гибкая настройка как тестов так и их групп, возможность группировать тесты и запускать только выбранные группы
+ * возможность как использовать встроенный инструмент обработки результатов, так и написать свой
+ * возможность группировки, остановки теста по таймауту, параллельного запуска без установки дополнительных плагинов
+ 
+### Первый тест ###
+Если библиотека atest установлена, то функция и тест для нее могут выглядеть так:
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+```
+from atest import *
+
+def my_function_to_test(a,b)
+    return a + b
+
+@test
+def any_name_you_like():
+    # Проверяем, что 1+1=2
+    equals(2, my_function_to_test(1,1))
+
+if __name__ == '__main__':
+    # запустим все тесты в этом модуле
+    start()
+```
+Только функции, помеченные аннотацией @test считаются тестами и будут запущены, можете называть свои тесты как удобно
+главное - поставить аннотацию @test
+
 
 ### How do I get set up? ###
 
@@ -14,16 +42,9 @@ This README would normally document whatever steps are necessary to get your app
 * Configuration
 * Dependencies
 * Database configuration
-* How to run tests
+* How to run tests:
 * Deployment instructions
 
-### Contribution guidelines ###
+### Contact me ###
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+Lexman2@yandex.ru
