@@ -109,7 +109,6 @@ def _run_test_with_provider(test, group):
         for param in generator:
             clone = test.clone()
             clone.argument = param
-            clone.name = clone.name + f' [{param}]'
             is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False)
             if is_one_of_before_test_failed:
                 print(f'Because of "before_test" all tests for {test} with data provider "{test.provider}" was IGNORED!')

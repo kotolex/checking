@@ -188,7 +188,8 @@ class DefaultListener(Listener):
             print('.', end='')
         elif self.verbose > 1:
             _print_splitter_line()
-            print(f'"{test}" SUCCESS!')
+            add_ = '' if not test.argument else f'[{short(test.argument)}]'
+            print(f'Test "{test}" {add_} SUCCESS!')
 
     def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
         super().on_broken(group, test, exception_)
@@ -225,6 +226,7 @@ class DefaultListener(Listener):
         else:
             if self.verbose > 0:
                 _print_splitter_line()
-            print(f'Test {test} {_letter}')
+            add_ = '' if not test.argument else f'[{short(test.argument)}]'
+            print(f'Test "{test}" {add_} {_letter}')
             print(get_trace_filtered_by_filename(exception_))
             print(exception_)
