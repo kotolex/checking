@@ -1,5 +1,5 @@
 from unittest import main, TestCase
-from time import sleep
+from time import sleep, time
 
 from atest.runner import start
 from atest.classes.basic_listener import Listener
@@ -29,6 +29,10 @@ def long():
 
 def long_data(it):
     sleep(1.5)
+
+
+def half_second():
+    sleep(0.5)
 
 
 def sa_ok():
@@ -138,7 +142,15 @@ class BehaviourTest(TestCase):
         self.assertEqual(1, TestSuite.get_instance().tests_count())
 
     def test_short(self):
-        self.assertTrue(len(short(list(range(50))))<=50)
+        self.assertTrue(len(short(list(range(50)))) <= 50)
+
+    def test_parallel(self):
+        clear()
+        test(groups=('one',))(half_second)
+        test(groups=('two',))(half_second)
+        st = time()
+        start(listener=Listener(0), threads=2)
+        self.assertTrue(time() - st < 1)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 from typing import Callable, Any, Dict, List
+from concurrent.futures import ThreadPoolExecutor
 
 from .classes.basic_suite import TestSuite
 from .classes.basic_group import TestGroup
@@ -15,7 +16,8 @@ _listener: Listener
 common_parameters: Dict[str, Any] = {}
 
 
-def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None):
+def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
+          threads: int = 1):
     """
     Главная функция запуска тестов.
 
@@ -26,6 +28,10 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     Если не в промежутке от 0 до 3 то принимается 0
     :param groups: список названий групп для выполнения, чтобы выполнять только нужные тесты
     :param params: словарь параметров, доступных во всех тестах (общие параметры прогона)
+    :param threads: количество потоков для выполнения тестов, по умолчанию 1. Каждая группа может выполняться в
+    отдельном потоке при необходимости. Это экспериментальная фича и она может быть полезна только для тестов НЕ
+    выполняющих каких либо сложных вычислений (CPU bound). Лучше всего использовать этот параметр (больше 1) для тестов
+    связанных с использованием I/O операций - работа с диском, запросы по сети. Obey the GIL!
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
@@ -41,10 +47,14 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
         return
     if params:
         common_parameters.update(params)
-    _run(test_suite)
+    if threads < 1:
+        threads = 1
+    _run(test_suite, threads)
 
 
-def _run(test_suite: TestSuite):
+def _run(test_suite: TestSuite, threads: int = 1):
+    # Создаем пул потоков для выполнения тестов, по-умолчанию 1 поточное выполнение
+    pool = ThreadPoolExecutor(max_workers=threads)
     # Проверка все ли используемые имена провайдеров найдены
     _check_data_providers(test_suite)
     _listener.on_suite_starts(test_suite)
@@ -57,14 +67,19 @@ def _run(test_suite: TestSuite):
             # Если в группе нет тестов, то пропускаем ее
             if not group.tests:
                 continue
-            # Если фикстура перед группой упала, то тесты не запускаем
-            if not _run_before_group(group):
-                continue
-            _run_all_tests_in_group(group)
-            _run_after(group)
+            pool.submit(_run_group_before_and_after_at_separate_thread, group)
+        pool.shutdown(wait=True)
         _run_after(test_suite)
     finally:
         _listener.on_suite_ends(test_suite)
+
+
+def _run_group_before_and_after_at_separate_thread(group: TestGroup):
+    # Если фикстура перед группой упала, то тесты не запускаем
+    if not _run_before_group(group):
+        return
+    _run_all_tests_in_group(group)
+    _run_after(group)
 
 
 def _run_before_suite(test_suite: TestSuite) -> bool:

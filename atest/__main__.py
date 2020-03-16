@@ -25,7 +25,7 @@ def read_parameters_from_file() -> Dict:
     """
     with open('options.json') as file:
         result = ''.join([line.rstrip() for line in file.readlines()])
-    params = {'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': []}
+    params = {'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [], 'threads': 1}
     params.update(json.loads(result))
     return params
 
@@ -53,10 +53,13 @@ def check_parameters(parameters: Dict):
     listener = parameters['listener']
     if type(listener) is not str:
         raise ValueError('Listener parameter must be str (even empty)!')
+    threads = parameters['threads']
+    if type(threads) is not int:
+        raise ValueError('Threads parameter must be int (>=1)!')
 
 
 def start_with_parameters(parameters: Dict):
-    params = {'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': []}
+    params = {'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [], 'threads': 1}
     params.update(parameters)
     check_parameters(params)
     verbose = params.get('verbose')
@@ -64,6 +67,7 @@ def start_with_parameters(parameters: Dict):
     groups = params.get('groups')
     modules = params.get('modules')
     listener_ = params.get('listener')
+    threads = params.get('threads')
     real_listener = None
     try:
         if listener_:
@@ -80,7 +84,7 @@ def start_with_parameters(parameters: Dict):
     except Exception:
         print(f'Something wrong with importing! Is that an existing path - {mod}?', file=sys.stderr)
         raise
-    start(verbose, listener=real_listener, groups=groups, params=par)
+    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads)
 
 
 def _is_import_in_file(file_name: str) -> bool:
@@ -116,6 +120,7 @@ def _walk_throw_and_import():
 if __name__ == '__main__':
     # если есть файл настроек то берем все оттуда
     if is_options_exists():
+        print("Options.json found! Work with it...")
         params_ = read_parameters_from_file()
         start_with_parameters(params_)
     # иначе проходим по всем модулям в поисках тестов
