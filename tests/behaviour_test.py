@@ -152,6 +152,12 @@ class BehaviourTest(TestCase):
         start(listener=Listener(0), threads=2)
         self.assertTrue(time() - st < 1)
 
+    def test_mock_print(self):
+        a_list = []
+        with mock_builtins('print', lambda x: a_list.append(x)):
+            print(1)
+        self.assertEqual([1], a_list)
+
 
 if __name__ == '__main__':
     main()

@@ -137,6 +137,26 @@ def no_exception_expected():
         raise AssertionError(f'Expect no exception, but raised {type(e).__name__} ("{e}")')
 
 
+@contextmanager
+def mock_builtins(function_name: str, func):
+    """
+    Мок встроенных функций, таких как print, input и так далее. После выхода из менеджера контекста, оригинальная
+    функция снова обретает прежнее поведение.
+    :param function_name: имя одной из встроенных функций python
+    :param func: функция замена, которая будет вызвана вместо оригинальной
+    :return:
+    """
+    import builtins as b
+    if not hasattr(b, function_name):
+        raise TestBrokenException(f'No build-in function "{function_name}"!')
+    try:
+        temp_ = getattr(b, function_name)
+        setattr(b, function_name, func)
+        yield
+    finally:
+        setattr(b, function_name, temp_)
+
+
 def test_fail(message: str = None):
     """
     Принудительный провал теста, может быть использовано в редких условиях вместо проверки заведомо неверных условий
