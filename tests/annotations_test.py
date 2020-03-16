@@ -5,7 +5,7 @@ from atest.exceptions import *
 from atest.classes.basic_suite import TestSuite
 from atest.runner import start
 from atest.classes.basic_listener import Listener
-from test.fixture_behaviour_test import clear
+from tests.fixture_behaviour_test import clear
 
 
 def valid():

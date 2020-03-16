@@ -5,7 +5,7 @@ from atest.runner import start
 from atest.classes.basic_listener import Listener
 from atest.classes.soft_assert import SoftAssert
 from atest.annotations import *
-from test.fixture_behaviour_test import clear
+from tests.fixture_behaviour_test import clear
 from atest.asserts import *
 from atest.classes.basic_listener import short
 

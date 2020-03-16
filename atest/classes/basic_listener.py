@@ -200,7 +200,7 @@ class DefaultListener(Listener):
 
     def on_ignored(self, group: TestGroup, test: TestCase, fixture_type: str):
         super().on_ignored(group, test, fixture_type)
-        print(f'Because of fixture "{fixture_type}" test {test} was IGNORED!')
+        print(f'Because of fixture "{fixture_type}" tests {test} was IGNORED!')
         _print_splitter_line()
 
     def on_fixture_failed(self, group_name: str, fixture_type: str, exception_: Exception):

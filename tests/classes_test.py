@@ -6,7 +6,7 @@ from atest.classes.basic_case import TestCase
 from atest.classes.basic_test import Test
 from atest.classes.basic_group import TestGroup
 from atest.classes.basic_suite import TestSuite
-from test.fixture_behaviour_test import clear
+from tests.fixture_behaviour_test import clear
 
 
 class TestClasses(TC):

@@ -112,7 +112,7 @@ def _run_test_with_provider(test, group):
             clone.name = clone.name + f' [{param}]'
             is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False)
             if is_one_of_before_test_failed:
-                print(f'Because of "before_test" all test for {test} with data provider "{test.provider}" was IGNORED!')
+                print(f'Because of "before_test" all tests for {test} with data provider "{test.provider}" was IGNORED!')
                 break
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:

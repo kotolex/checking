@@ -22,7 +22,7 @@ class Test(TestCase):
 
     def run(self):
         """
-        Запуск теста (функции, помеченной аннотацией test)
+        Запуск теста (функции, помеченной аннотацией tests)
         :return: None
         """
         if self.argument is not None:
