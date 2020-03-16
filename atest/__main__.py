@@ -3,27 +3,28 @@ import json
 import sys
 import os
 import importlib
+import argparse
 from typing import Dict
 
-from .runner import start
+from atest.runner import start
 
 HOME_FOLDER = sys.path[0]
 look_for = ('import atest', 'from atest')
 
 
-def is_options_exists() -> bool:
+def is_options_exists(file_name: str) -> bool:
     """
     Сообщает есть ли в папке запуска файл с настройками options.json
     :return: True, если файл присутствует
     """
-    return len(glob.glob('options.json')) == 1
+    return len(glob.glob(file_name)) == 1
 
 
-def read_parameters_from_file() -> Dict:
+def read_parameters_from_file(file_name) -> Dict:
     """
     Читает параметры из файла настроек options.json, возвращает в виде словаря параметров
     """
-    with open('options.json') as file:
+    with open(file_name, encoding='utf-8') as file:
         result = ''.join([line.rstrip() for line in file.readlines()])
     params = {'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [], 'threads': 1}
     params.update(json.loads(result))
@@ -93,9 +94,9 @@ def _is_import_in_file(file_name: str) -> bool:
     :param file_name: имя модуля
     :return: True, если в модуле импортируется атест
     """
-    if '.py' not in file_name:
+    if not file_name.endswith('.py'):
         return False
-    with open(file_name) as file:
+    with open(file_name, encoding='utf-8') as file:
         for line in file.readlines():
             line = line.rstrip().replace('  ', ' ')
             if any([element in line for element in look_for]):
@@ -118,12 +119,19 @@ def _walk_throw_and_import():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-o', '--options_file', help="File with the options to run")
+    args = parser.parse_args()
+    file_name = 'options.json'
+    if args.options_file:
+        file_name = args.options_file
     # если есть файл настроек то берем все оттуда
-    if is_options_exists():
-        print("Options.json found! Work with it...")
-        params_ = read_parameters_from_file()
+    if is_options_exists(file_name):
+        print(f"{file_name} found! Work with it...")
+        params_ = read_parameters_from_file(file_name)
         start_with_parameters(params_)
     # иначе проходим по всем модулям в поисках тестов
     else:
+        print(f"No options found! Starts to look for tests in all sub-folders")
         _walk_throw_and_import()
-        start(verbose=3)
+        start(verbose=3, threads=1)
