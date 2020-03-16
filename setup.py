@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="checking",
-    version="0.1.5",
+    version="0.1.6",
     author="Lex Draven",
     author_email="lexman2@yandex.ru",
     description="A small library for testing your code",
