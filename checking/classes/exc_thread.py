@@ -1,8 +1,8 @@
 from threading import Thread, Event
 from typing import Callable
 
-from atest.exceptions import TestBrokenException
-from atest.classes.basic_test import Test
+from checking.exceptions import TestBrokenException
+from checking.classes.basic_test import Test
 
 
 class ExceptionThread(Thread):

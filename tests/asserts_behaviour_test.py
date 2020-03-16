@@ -1,10 +1,10 @@
 from unittest import main, TestCase
 
-from atest.asserts import *
-from atest.annotations import test
-from atest.runner import start
-from atest.classes.basic_suite import TestSuite
-from atest.classes.basic_listener import Listener
+from checking.asserts import *
+from checking.annotations import test
+from checking.runner import start
+from checking.classes.basic_suite import TestSuite
+from checking.classes.basic_listener import Listener
 from tests.fixture_behaviour_test import clear
 
 

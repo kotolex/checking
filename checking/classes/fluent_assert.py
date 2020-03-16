@@ -1,6 +1,6 @@
 from typing import Iterable, Sized, Sequence
 
-from atest.asserts import *
+from checking.asserts import *
 from .basic_listener import short
 
 

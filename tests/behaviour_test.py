@@ -1,13 +1,13 @@
 from unittest import main, TestCase
 from time import sleep, time
 
-from atest.runner import start
-from atest.classes.basic_listener import Listener
-from atest.classes.soft_assert import SoftAssert
-from atest.annotations import *
+from checking.runner import start
+from checking.classes.basic_listener import Listener
+from checking.classes.soft_assert import SoftAssert
+from checking.annotations import *
 from tests.fixture_behaviour_test import clear
-from atest.asserts import *
-from atest.classes.basic_listener import short
+from checking.asserts import *
+from checking.classes.basic_listener import short
 
 
 def _fn(it):

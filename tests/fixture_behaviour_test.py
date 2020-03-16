@@ -1,9 +1,9 @@
 from unittest import main, TestCase
 
-from atest.annotations import *
-from atest.runner import start
-from atest.runner import common_parameters
-from atest.classes.basic_listener import Listener
+from checking.annotations import *
+from checking.runner import start
+from checking.runner import common_parameters
+from checking.classes.basic_listener import Listener
 
 common_str = ''
 

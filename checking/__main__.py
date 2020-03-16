@@ -6,10 +6,10 @@ import importlib
 import argparse
 from typing import Dict
 
-from atest.runner import start
+from checking.runner import start
 
 HOME_FOLDER = sys.path[0]
-look_for = ('import atest', 'from atest')
+look_for = ('import checking', 'from checking')
 
 
 def is_options_exists(file_name: str) -> bool:

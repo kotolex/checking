@@ -1,7 +1,7 @@
 from typing import List, Callable, Any
 
-from atest.helpers.exception_traceback import get_trace_filtered_by_filename
-from atest.asserts import *
+from checking.helpers.exception_traceback import get_trace_filtered_by_filename
+from checking.asserts import *
 
 
 class SoftAssert:

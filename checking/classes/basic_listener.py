@@ -4,7 +4,7 @@ import time
 from .basic_case import TestCase
 from .basic_group import TestGroup
 from .basic_suite import TestSuite
-from atest.helpers.exception_traceback import get_trace_filtered_by_filename
+from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 
 
 def _print_splitter_line():
@@ -95,7 +95,7 @@ class Listener:
 
     def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
         """
-        Вызывается при падении теста по ассерту (встроенному или из модуля atest.asserts)
+        Вызывается при падении теста по ассерту (встроенному или из модуля checking.asserts)
         :param group: TestGroup
         :param test: TestCase
         :param exception_: упавший ассерт

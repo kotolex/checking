@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 
-from atest.classes.fluent_assert import FluentAssert, verify
-from atest.exceptions import TestBrokenException
+from checking.classes.fluent_assert import FluentAssert, verify
+from checking.exceptions import TestBrokenException
 
 
 class FluentAssertTest(TestCase):

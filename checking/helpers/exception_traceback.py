@@ -6,7 +6,7 @@ SEPARATOR = os.path.sep
 
 
 def _is_need_to_hide(name: str) -> bool:
-    parts = (f'atest{SEPARATOR}asserts.py', f'atest{SEPARATOR}classes{SEPARATOR}', f'{SEPARATOR}contextlib.py',)
+    parts = (f'checking{SEPARATOR}asserts.py', f'checking{SEPARATOR}classes{SEPARATOR}', f'{SEPARATOR}contextlib.py',)
     """
     Проверяем строки трейсбека на содержание внутренних модулей проекта и некоторых модулей стандартной библиотеки, 
     чтобы не выводить трейсы ошибок (которые юзеру не интересны)
@@ -33,7 +33,7 @@ def get_trace(exception_: Exception) -> List[Tuple]:
 def get_trace_filtered_by_filename(exception_: Exception) -> str:
     """
     Возвращает строковое представление трейса ошибки, отфильтрованного по имени модуля, то есть остаются только строки,
-    не принадлежащие основным классам atest
+    не принадлежащие основным классам checking
     :param exception_: исключение, чей стектрейс нужен
     :return: строку, где каждая запись отделена \n
     """

@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 
-from atest.asserts import *
-from atest.exceptions import TestBrokenException, ExceptionWrapper
+from checking.asserts import *
+from checking.exceptions import TestBrokenException, ExceptionWrapper
 
 
 class AssertsTest(TestCase):

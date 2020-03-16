@@ -2,6 +2,6 @@
   "verbose": 3,
   "groups": ["third"],
   "params": {"param1": 1},
-  "listener": "atest.classes.basic_listeners.DefaultListener",
+  "listener": "checking.classes.basic_listeners.DefaultListener",
   "modules": ["third"]
 }
