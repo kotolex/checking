@@ -86,7 +86,7 @@ Pay attention - you must check message (if you need to) after exiting context ma
 
 You can't use BaseException here, and it strongly recommended not to use Exception as parent of all exceptions!
 
-In some cases, you nedd just to run some code and make sure no exception raised. There is a special way for that:
+In some cases, you need just to run some code and make sure no exception raised. There is a special way for that:
 
 ```
 #!python
@@ -155,7 +155,7 @@ will be raise.
 
 Fluent assert is just a sugar to make chains of checks for the object, they are simple, readable, but it is NOT a soft asserts!
 If one of the checks will fail - test stops!
-Fluent asserts have analogues of the basic asserts, but also have their own types, you can fimd
+Fluent asserts have analogues of the basic asserts, but also have their own types, you can find
 them all at checking/classes/fluent_asserts.py
 
 ```
