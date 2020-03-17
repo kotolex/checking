@@ -1,5 +1,6 @@
 from unittest import main, TestCase
 from time import sleep, time
+import math
 
 from checking.runner import start
 from checking.classes.basic_listener import Listener
@@ -157,6 +158,26 @@ class BehaviourTest(TestCase):
         with mock_builtins('print', lambda x: a_list.append(x)):
             print(1)
         self.assertEqual([1], a_list)
+
+    def test_mock_builtins_failed(self):
+        with self.assertRaises(TestBrokenException):
+            with mock_builtins('wrong', lambda: 10):
+                pass
+
+    def test_mock_math_abs(self):
+        with mock(math, 'fabs', lambda x: 10):
+            x = math.fabs(1234)
+            self.assertEqual(10, x)
+
+    def test_mock_failed(self):
+        with self.assertRaises(TestBrokenException):
+            with mock(math, 'wrong', lambda: 10):
+                pass
+
+    def test_mock_failed_if_not_module(self):
+        with self.assertRaises(TestBrokenException):
+            with mock('1', 'wrong', lambda: 10):
+                pass
 
 
 if __name__ == '__main__':

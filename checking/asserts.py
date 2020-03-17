@@ -140,6 +140,7 @@ def no_exception_expected():
 @contextmanager
 def mock_builtins(function_name: str, func):
     """
+    EXPERIMENTAL!
     Мок встроенных функций, таких как print, input и так далее. После выхода из менеджера контекста, оригинальная
     функция снова обретает прежнее поведение.
     :param function_name: имя одной из встроенных функций python
@@ -155,6 +156,28 @@ def mock_builtins(function_name: str, func):
         yield
     finally:
         setattr(b, function_name, temp_)
+
+
+@contextmanager
+def mock(module_: Any, function_name: str, func: Any):
+    """
+    EXPERIMENTAL!
+    Менеджер контекста для мокирования(подмены) любой функции или атрибута модуля
+    :param module_: объект модуля (не название! он должен быть импортирован в тесте)
+    :param function_name: название функции
+    :param func: функция-замена, но может быть и атрибут
+    :return:
+    """
+    if str(type(module_)) != "<class 'module'>":
+        raise TestBrokenException(f'"{module_} is not a module!')
+    if not hasattr(module_, function_name):
+        raise TestBrokenException(f'No function "{function_name} at module {module_}"!')
+    try:
+        temp_ = getattr(module_, function_name)
+        setattr(module_, function_name, func)
+        yield
+    finally:
+        setattr(module_, function_name, temp_)
 
 
 def test_fail(message: str = None):
