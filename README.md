@@ -170,5 +170,29 @@ def check_list_valid():
 ```
 
 
+## Data Providers
+
+Often you need to run the same test with different data, there is @data annotation for that purposes. Mark any function with @data and
+you can use it in your tests. The function for data-provider must not have arguments and it myst returns Iterable, Sequence or generator.
+
+**Important!** Name of the provider have to be unique, you can specify it in parameter @data(name='provider') or it takes the function name by default
+It it not necessary to have data-provider with the test (in same module)
+
+Data-provider takes values one by one and push it to your test.
+```
+#!python
+# Create data-provider
+@data
+def pairs():
+    return [(1, 1, 2), (2, 2, 4)]  # Returns list of tuples
+
+
+@test(data_provider='pairs')  # Specify what provider to use
+def check_sum(it):  # Here we must have 1 argument for values of data-provider
+    equals(it[0] + it[1], it[2])  # Checks sum of first and second elements of tuple equal to third element
+
+```
+
+
 ### Contact me ###
 Lexman2@yandex.ru
