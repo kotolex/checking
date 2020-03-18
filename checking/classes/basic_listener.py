@@ -123,6 +123,16 @@ class Listener:
         """
         self._to_results(group, test, 'ignored')
 
+    def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
+        """
+        Вызывается, когда тест проигнорирован из-за условия (only_if)
+        :param group: TestGroup
+        :param test: TestCase
+        :param exc: исключение
+        :return: None
+        """
+        self._to_results(group, test, 'ignored')
+
     def _to_results(self, group: TestGroup, test: TestCase, result: str):
         group.add_result_to(test, result)
 
@@ -201,7 +211,8 @@ class DefaultListener(Listener):
 
     def on_ignored(self, group: TestGroup, test: TestCase, fixture_type: str):
         super().on_ignored(group, test, fixture_type)
-        print(f'Because of fixture "{fixture_type}" tests {test} was IGNORED!')
+        add_ = '' if not test.argument else f'[{short(test.argument)}]'
+        print(f'Because of fixture "{fixture_type}" tests "{test}" {add_} was IGNORED!')
         _print_splitter_line()
 
     def on_fixture_failed(self, group_name: str, fixture_type: str, exception_: Exception):
@@ -218,6 +229,11 @@ class DefaultListener(Listener):
 
     def on_test_starts(self, test: TestCase, group: TestGroup):
         super().on_test_starts(test, group)
+
+    def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
+        super().on_ignored_by_condition(group, test, exc)
+        add_ = '' if not test.argument else f'[{short(test.argument)}]'
+        print(f'Test "{test}" {add_} ignored because of condition!')
 
     def _failed_or_broken(self, test, exception_, _result):
         _letter = f'{_result.upper()}!'

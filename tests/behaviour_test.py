@@ -179,6 +179,25 @@ class BehaviourTest(TestCase):
             with mock('1', 'wrong', lambda: 10):
                 pass
 
+    def test_is_run_if_only_true(self):
+        clear()
+        test(only_if=lambda: True)(sa_ok)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(1, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
+    def test_is_not_run_if_only_false(self):
+        clear()
+        test(only_if=lambda: False)(sa_ok)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, len(TestSuite.get_instance().ignored()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
 
 if __name__ == '__main__':
     main()

@@ -29,6 +29,13 @@ class TestBrokenException(Exception):
     pass
 
 
+class TestIgnoredException(Exception):
+    """
+    Будет брошено для уведомления о том, что тест проигнорирован (не выполнились фикстуры или only_if)
+    """
+    pass
+
+
 class ExceptionWrapper(Exception):
     """
     Обертка для исключений, в которую потом можно передать другое исключение. Используется с waiting_exception

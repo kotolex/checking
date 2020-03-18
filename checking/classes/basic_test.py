@@ -1,6 +1,7 @@
 from typing import Callable, Any
 
 from .basic_case import TestCase
+from ..exceptions import TestIgnoredException
 
 
 class Test(TestCase):
@@ -19,12 +20,16 @@ class Test(TestCase):
         self.group_name: str = '__main__'
         self.argument: Any = None
         self.timeout: int = 0
+        self.only_if: Callable = None
 
     def run(self):
         """
         Запуск теста (функции, помеченной аннотацией tests)
         :return: None
         """
+        if self.only_if:
+            if not self.only_if():
+                raise TestIgnoredException ()
         if self.argument is not None:
             self.test(self.argument)
         else:
@@ -49,4 +54,5 @@ class Test(TestCase):
         clone.priority = self.priority
         clone.argument = self.argument
         clone.timeout = self.timeout
+        clone.only_if = self.only_if
         return clone

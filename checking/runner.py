@@ -6,7 +6,7 @@ from .classes.basic_group import TestGroup
 from .classes.basic_case import TestCase
 from .classes.basic_test import Test
 from .classes.basic_listener import DefaultListener, Listener
-from .exceptions import UnknownProviderName
+from .exceptions import UnknownProviderName, TestIgnoredException
 from .classes.exc_thread import run_with_timeout
 
 # Слушатель для тестов
@@ -165,6 +165,8 @@ def _run_test(test: Test, group: TestGroup) -> bool:
         return True
     except AssertionError as e:
         _listener.on_failed(group, test, e)
+    except TestIgnoredException as e:
+        _listener.on_ignored_by_condition(group, test, e)
     except Exception as e:
         _listener.on_broken(group, test, e)
     return False

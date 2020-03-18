@@ -9,38 +9,8 @@ from .classes.basic_test import Test
 from .exceptions import *
 
 
-def __check_is_function_without_args(func: Callable, annotation_name: str):
-    """
-    Проверка на то, что аннотация стоит над функцией без аргументов, не предполагается использование аннотаций
-    с классами и/или с их методами
-    :param func: функция
-    :param annotation_name: название аннотации (для ошибки)
-    :return: None
-    :raises: WrongAnnotationPlacement
-    """
-    if not isfunction(func) or signature(func).parameters:
-        raise WrongAnnotationPlacement(
-            f"Annotation '{annotation_name}' must be used only with no-argument functions! Its not supposed to work "
-            f"with classes or class methods!")
-
-
-def __check_is_function_for_provider(func: Callable[[Any], None]):
-    """
-    Проверка, что функция пригодна принимать значения (использовать провайдер данных),
-    то есть имеет ровно 1 аргумент.
-    :param func: функция
-    :return: None
-    :raises: WrongAnnotationPlacement
-    """
-    if not isfunction(func) or not signature(func).parameters:
-        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider has no argument!")
-    if len(signature(func).parameters) > 1:
-        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider "
-                                       f"has more than 1 argument!")
-
-
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         groups: Tuple[str] = None, priority: int = 0, timeout: int = 0):
+         groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if:Callable=None):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).
@@ -58,6 +28,8 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
     :param timeout количество секунд в течение которого ожидается завершение теста. Если тест не завершен, то будет
     брошено исключение TestBrokenException, а поток, в котором выполняется тест будет прерван. Из-за возможной утечки
     памяти нужно использовать только при особой необходимости.
+    :param only_if: принимает функцию, которая будет вызвана перед стартом теста и тест будет запущен только если она
+    вернула True. Должно приниматься для фильтрации тестов, например в связи с используемой ОС
     :return: _fake
     """
     if not enabled:
@@ -70,6 +42,8 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
             __check_is_function_for_provider(func)
         name_ = name if name else func.__name__
         _check_func_for_soft_assert(func)
+        if only_if is not None and not callable(only_if):
+            raise ValueError('Only_if parameter of @test annotation must be a function, returning True or False!')
         nonlocal groups
         if not groups:
             groups = [func.__module__]
@@ -78,6 +52,7 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
                 raise ValueError('Group parameter of @test annotation must be a tuple of strings (Tuple[str])!')
         for group in groups:
             test_object = Test(name_, func)
+            test_object.only_if = only_if
             test_object.retries = retries
             test_object.priority = priority
             if timeout:
@@ -266,3 +241,33 @@ def _check_func_for_soft_assert(func):
     except Exception:
         # Осознанно игнорируем, тут мы просто для предупреждения проверяем, это не критично
         pass
+
+
+def __check_is_function_without_args(func: Callable, annotation_name: str):
+    """
+    Проверка на то, что аннотация стоит над функцией без аргументов, не предполагается использование аннотаций
+    с классами и/или с их методами
+    :param func: функция
+    :param annotation_name: название аннотации (для ошибки)
+    :return: None
+    :raises: WrongAnnotationPlacement
+    """
+    if not isfunction(func) or signature(func).parameters:
+        raise WrongAnnotationPlacement(
+            f"Annotation '{annotation_name}' must be used only with no-argument functions! Its not supposed to work "
+            f"with classes or class methods!")
+
+
+def __check_is_function_for_provider(func: Callable[[Any], None]):
+    """
+    Проверка, что функция пригодна принимать значения (использовать провайдер данных),
+    то есть имеет ровно 1 аргумент.
+    :param func: функция
+    :return: None
+    :raises: WrongAnnotationPlacement
+    """
+    if not isfunction(func) or not signature(func).parameters:
+        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider has no argument!")
+    if len(signature(func).parameters) > 1:
+        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider "
+                                       f"has more than 1 argument!")

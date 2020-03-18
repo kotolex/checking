@@ -85,6 +85,11 @@ class TestAnnotations(TestCase):
         test(name='new_name')(valid)
         self.assertTrue('new_name' in [t.name for t in list(TestSuite.get_instance().groups.values())[0].tests])
 
+    def test_raises_if_only_is_not_callable(self):
+        clear()
+        with self.assertRaises(ValueError):
+            test(only_if=False)(valid)
+
     def test_data_works(self):
         clear()
         data(name="any_name")(valid_for_data)
