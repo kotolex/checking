@@ -10,7 +10,7 @@ from .exceptions import *
 
 
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if:Callable=None):
+         groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if: Callable = None):
     """
     Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
     принимающими аргумент на вход (кроме использования дата провайдера).

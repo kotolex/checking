@@ -62,8 +62,8 @@ def checks_basic_asserts():
     not_equals(1, 2, 'Error message') # checks two objects are equal (!=)
     is_none(None, 'Error message') # checks object is None
     not_none('1', 'Error message') # checks object is not None
-    contains(1, [1, 2, 3], 'Error message') # checks that second argement contains first arg
-    not_contains(4, [1, 2, 3], 'Error message') # checks that second argement not contains first arg
+    contains(1, [1, 2, 3], 'Error message') # checks that second argument contains first arg
+    not_contains(4, [1, 2, 3], 'Error message') # checks that second argument not contains first arg
 
 
 ```
@@ -192,6 +192,91 @@ def check_sum(it):  # Here we must have 1 argument for values of data-provider
     equals(it[0] + it[1], it[2])  # Checks sum of first and second elements of tuple equal to third element
 
 ```
+
+## Test Parameters
+
+Test is a function, marked with @test annotation, you can manage them with bunch of parameters:
+
+**enabled** (bool) - if False test will not be run, and all other parameters ignored. By default enabled = True
+
+**name** (str) - name of the test, if not specify the function name will be used
+
+**data_provider** (str) - name of the provider to use with test. If specified, test must have one argument, 
+to get values from provider. If no providers found with that name - exception will raise!
+
+**retries** (int) - how many times to run this test if it is failed. If test not fail, no more runs attempted. By default is 1
+
+**groups** (Tuple[str]) - tuple of group names test belongs to, every test is a part of some group, by default group is the module name, where test placed
+It is the way to manage and collect tests to any groups.
+
+**priority** (int) - priority of the test, by default is 0. The higher value means test will executes later.
+Priority is a way to run tests in some order.
+
+**timeout** (int) - amount of time to wait test ends. If time is over, thread of the test will be interrupted and test will be mark as broken.
+Must be use carefully because of potential memory leaks!
+
+**only_if** (Callable[None, bool]) - function, which will be run just before the test, and must returns bool. Test will only be execute if function returns True!
+It is a way to make condition for some test, for example run only if OS is Linux.
+
+
+## Fixtures
+
+Every test, group or all test-suite can have preconditions and post-actions. For example open DB connection before test and close it after.
+You can easily make it with before/after fixtures. The function, marked with before/after must be without arguments.
+
+@before  - run function before EACH test in group, by default group is current module, but you can specify it with parameter
+
+@after  - run function after EACH test in group, by default group is current module, but you can specify it with parameter.
+This function will not be run if there is @before and it failed!
+
+```
+#!python
+@before(group_name='api')
+def my_func():
+    do_some_precondition()
+
+@after(group_name='api')
+def another_func():
+    do_post_actions()
+
+```
+
+@before_group - function run once before running test in group, by default group is current module, but you can specify it with parameter.
+
+@after_group - function run once after running all test in group, by default group is current module, but you can specify it with parameter. 
+This function will not be run if there is @before_group and it failed, except using parameter always_run = True
+
+```
+#!python
+@before_group(name='api')
+def my_func():
+    do_some_precondition_for_whole_group()
+
+@after_group(name='api', always_run =True)
+def another_func():
+    do_post_actions_for_whole_group()
+
+```
+
+@before_suite - function run once before any group at start of the test-suite
+
+
+@after_suite - function run once after all groups, at the end of the test-suite.
+This function will not be run if there is @before_suite and it failed, except using parameter always_run = True
+
+```
+#!python
+@before_suite
+def my_func():
+    print('start suite!')
+
+@after_suite(always_run =True)
+def another_func():
+    print('will be printed, even if before_suite failed!')
+
+```
+
+
 
 
 ### Contact me ###
