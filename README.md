@@ -276,7 +276,114 @@ def another_func():
 
 ```
 
+##Mock and Spy
 
+For testing purposes you need sometime to fake some behaviour or to isolate your application from any other classes/libraries etc.
+
+If you need your test to use fake object, without doing any real calls, yoy can use mocks:
+
+
+**1. Fake one of the builtin function.**
+
+Let say you need to test function which is use standard input() inside. 
+
+But you cant wait for real user input during the tests, so fake it with mock object.
+
+```
+#!python
+
+def our_weird_function_with_input_inside():
+    text = input()
+    return text.upper()
+
+@test
+def mock_builtins_input():
+    with mock_builtins('input', lambda : 'test'): # Now input() just returns 'test', it is not to wait for user input
+        result_text = our_weird_function_with_input_inside()
+        equals('TEST', result_text)
+    
+
+```
+
+**2. Fake function of the 3-d party library**
+
+For working with other modules and libraries in test module, you need to import this module and to mock it function.
+
+For example, you need to test function, which is using requests.get inside, but you dont want to make real http
+requests. Lets mock it
+
+some_module_to_test.py
+```
+#!python
+import requests
+
+def func_with_get_inside(url):
+    response = requests.get(url)
+    return response.text
+
+```
+
+our_tests.py
+```
+#!python
+import requests # need to import it for mock!
+
+from some_module_to_test import func_with_get_inside
+
+@test
+def mock_requests_get():
+    # Lets create fake object
+    class Fake:
+        def __init__(self):
+            self.text = 'test'
+    
+    with mock(requests, 'get', lambda x:Fake()): # Mock real requests with fake object
+        equals('test', func_with_get_inside('https://yandex.ru')) # Now no real requests be performed!
+
+
+```
+
+3. Spy object
+
+Spy is the object which has all attributes of original, but spy not performed any action, 
+all methods returns None (if not specified what to return). Secondly, spy log all actions and arguments.
+It can be useful if your code have inner object and you need to test what functions were called.
+
+```
+#!python
+
+def function_with_str_inside(value):
+    # Suppose we need to check upper was called here inside
+    return value.upper()
+
+@test
+def spy_for_str():
+    spy = Spy('it is a string') # Spy, which is like str, but it is not str!
+    function_with_str_inside(spy) # Send our spy instead a str
+    is_true(spy.was_function_called('upper')) # Verify upper was called
+    
+
+```
+
+You can even specify what to return when some function of the spy will be called!
+
+```
+#!python
+
+def function_with_str_inside(value):
+    # Suppose we need to check upper was called here inside
+    return value.upper()
+
+
+@test
+def spy_with_return():
+    spy = Spy('string')
+    spy.when_call_function_returns('upper', 'test') # Tells what to return, when upper will be call
+    result = function_with_str_inside(spy)
+    is_true(spy.was_function_called('upper'))
+    equals('test', result) # verify our spy returns 'test'
+
+```
 
 
 ### Contact me ###
