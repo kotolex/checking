@@ -150,12 +150,14 @@ def mock_builtins(function_name: str, func):
     import builtins as b
     if not hasattr(b, function_name):
         raise TestBrokenException(f'No build-in function "{function_name}"!')
+    temp_ = None
     try:
         temp_ = getattr(b, function_name)
         setattr(b, function_name, func)
         yield
     finally:
-        setattr(b, function_name, temp_)
+        if temp_:
+            setattr(b, function_name, temp_)
 
 
 @contextmanager
@@ -172,17 +174,19 @@ def mock(module_: Any, function_name: str, func: Any):
         raise TestBrokenException(f'"{module_} is not a module!')
     if not hasattr(module_, function_name):
         raise TestBrokenException(f'No function "{function_name} at module {module_}"!')
+    temp_ = None
     try:
         temp_ = getattr(module_, function_name)
         setattr(module_, function_name, func)
         yield
     finally:
-        setattr(module_, function_name, temp_)
+        if temp_:
+            setattr(module_, function_name, temp_)
 
 
 def test_fail(message: str = None):
     """
-    Принудительный провал теста, может быть использовано в редких условиях вместо проверки заведомо неверных условий
+    Принудительный провал теста, может быть использовано в редких случаях, вместо проверки заведомо неверных условий
     :param message: опциональное сообщение
     :return: None
     """
