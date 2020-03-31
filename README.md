@@ -1,21 +1,21 @@
 # README #
 
-A simple library to test your python code.
+A simple library for testing your own python code.
 
 Key Features:
 
 
 
- * no third-party dependencies, only the standard library is used
+ * no third-party dependencies, only standard library is used
  * no need to inherit from any classes
- * no need to name your files and/or tests with the prefix or postfix 'test' added
- * it is possible to use native python assert as well as library asserts
- * simple and understandable work with tests, data providers, checks
- * the ability to run based on a file with settings or passing arguments on the command line
- * automatic search for all tests in the current folder and subfolders
+ * no need to name your files and/or tests with a prefix or a postfix called 'test'
+ * it is possible to interract with native python assert as well as library asserts
+ * simple and clear work with tests, data providers, checks, etc.
+ * ability to run based on a file with settings or passing arguments on command line
+ * automatic search for all tests within a current folder and subfolders
  * flexible configuration of both tests and their groups, the ability to group tests and run only selected groups
- * the ability to use both the built-in results processing tool and write your own
- * the ability to group, stop the test by timeout, parallel launch, mocking without installing additional plugins
+ * the ability to use both the built-in results processing tool and write your own one
+ * the ability to group, stop test by timeout, parallel launch, mocking without installing extra plugins
 
 
 ### Installation ###
@@ -43,12 +43,12 @@ if __name__ == '__main__':
     # Runs all tests in current module
     start()
 ```
-Only functions marked with the @test annotation are considered tests and will be run, you can name your tests as you wish,
-the main thing is to put the @test annotation
+Only functions marked with @test annotation can be considered as a test and will be ran, you can name your tests whatever you feel like do,
+the main point is to put @test annotation
 
 ## Basic Asserts
 
-You can use simple python assert if you like, but it recommended to use simple and readable library asserts.
+You can manipulate with simple Python assert if you want, but it is recommended to use simple and readable library asserts.
 
 ###### Standard checks:
 
@@ -56,14 +56,14 @@ You can use simple python assert if you like, but it recommended to use simple a
 #!python
 @test
 def checks_basic_asserts():
-    is_true('1', 'Error message') # checks value is True
-    is_false([], 'Error message') # checks value is False
-    equals(1, 1, 'Error message') # checks two objects are equal (==)
-    not_equals(1, 2, 'Error message') # checks two objects are equal (!=)
-    is_none(None, 'Error message') # checks object is None
-    not_none('1', 'Error message') # checks object is not None
-    contains(1, [1, 2, 3], 'Error message') # checks that second argument contains first arg
-    not_contains(4, [1, 2, 3], 'Error message') # checks that second argument not contains first arg
+    is_true('1', 'Error message') # checks, if value is True
+    is_false([], 'Error message') # checks, if value is False
+    equals(1, 1, 'Error message') # checks, if two objects are equal (==)
+    not_equals(1, 2, 'Error message') # checks, if two objects are equal (!=)
+    is_none(None, 'Error message') # checks, if object is None
+    not_none('1', 'Error message') # checks, if object is not None
+    contains(1, [1, 2, 3], 'Error message') # checks, if the second argument contains the first arg
+    not_contains(4, [1, 2, 3], 'Error message') # checks, if the second argument does not contains the first arg
 
 
 ```
@@ -81,12 +81,12 @@ def check_with_exception():
     assert e.message == 'division by zero' # Check message (using python assert)
 
 ```
-If no exception will be raised or it will be exception of another type - test will fail.
-Pay attention - you must check message (if you need to) after exiting context manager, but not inside its scope!
+If no exception will be raised or it will be exception of another type then test will fail.
+Pay attention that you should check message (if you need) after exiting context manager, but not inside its scope!
 
-You can't use BaseException here, and it strongly recommended not to use Exception as parent of all exceptions!
+You cannot use BaseException here and it strongly recommended not to use Exception as parent of all exceptions!
 
-In some cases, you need just to run some code and make sure no exception raised. There is a special way for that:
+In some cases you have just need to run some code and make sure no exception raised. There is a special way for that:
 
 ```
 #!python
@@ -101,11 +101,11 @@ def check_no_exception_raises():
 
 
 ```
-If any exception will be raised - test will fail
+If any exception will be raised then test will fail
 
 ###### Managing test during execution
 
-Sometime you need to fail or brake test in execution time on some reason (wrong OS, parameters, etc.)
+Sometimes, you need to fail or brake test in execution time on some reason (wrong OS, parameters, etc.)
 
 ```
 #!python
@@ -127,11 +127,11 @@ def must_be_broken():
 
 ###### Soft Assert
 
-Soft Assert is a convenient way to checks a few condition before fail. Standard test is preferably fail fast, 
-and if some check fails - the test stops. But sometime you need to check a list of conditions, and check them to fail only at the end of the test, 
+Soft Assert is a convenient way to check a few conditions before a failure. Standard test is preferably fail fast, 
+and if some checks fail then the test stops. But sometimes you need to check a list of conditions, and check them to fail only at the end of the test, 
 with all information what checks were failed.
-For example you have a json object and want to checks all its fields, but don't want to stop test at first failed check, 
-because you want to know what about all other fields!
+For instance, you have a json object and want to checks all its fields, but also do not want to stop test at first failed check 
+because you want to know the state of all other fields!
 
 ```
 #!python
@@ -147,16 +147,16 @@ def check_all_json_fields():
     soft_assert.assert_all() # If something wrong, test will fail here!
 
 ```
-**Attention!** You always must use assert_all() at the end of the test, only at that moment all exception (if something wrong) 
+**Attention!** You always should use assert_all() at the end of the test, only at the moment all exception (if something went wrong) 
 will be raise.
 
 
 ###### Fluent Assert
 
-Fluent assert is just a sugar to make chains of checks for the object, they are simple, readable, but it is NOT a soft asserts!
+Fluent assert is just a sugar to make chains of checks for the object; they are simple, readable, but it is NOT a soft asserts!
 If one of the checks will fail - test stops!
-Fluent asserts have analogues of the basic asserts, but also have their own types, you can find
-them all at checking/classes/fluent_asserts.py
+Fluent asserts have analogues of the basic asserts, but also have their own types; you can find
+them all in checking/classes/fluent_asserts.py
 
 ```
 #!python
@@ -172,13 +172,13 @@ def check_list_valid():
 
 ## Data Providers
 
-Often you need to run the same test with different data, there is @data annotation for that purposes. Mark any function with @data and
-you can use it in your tests. The function for data-provider must not have arguments and it myst returns Iterable, Sequence or generator.
+Often you need to run the same test with different data, there is @data annotation for that target. Mark function you want with @data annotation and
+you can use it in your tests. The function for data-provider should not have arguments and it has to return iterable, sequence or generator.
 
-**Important!** Name of the provider have to be unique, you can specify it in parameter @data(name='provider') or it takes the function name by default
-It it not necessary to have data-provider with the test (in same module)
+**Important!** Name of the provider has to be unique, you can specify it in parameter @data(name='provider') or it takes the function name by default
+It it not necessary to have data-provider with the test (in the same module)
 
-Data-provider takes values one by one and push it to your test.
+Data-provider takes values one by one and pushes it to your test.
 ```
 #!python
 # Create data-provider
@@ -195,34 +195,34 @@ def check_sum(it):  # Here we must have 1 argument for values of data-provider
 
 ## Test Parameters
 
-Test is a function, marked with @test annotation, you can manage them with bunch of parameters:
+Test is a function that marked with @test annotation, you can manage them with bunch of parameters:
 
-**enabled** (bool) - if False test will not be run, and all other parameters ignored. By default enabled = True
+**enabled** (bool) - if it is False then test will not be run, and all other parameters ignored. By default enabled = True
 
 **name** (str) - name of the test, if not specify the function name will be used
 
-**data_provider** (str) - name of the provider to use with test. If specified, test must have one argument, 
-to get values from provider. If no providers found with that name - exception will raise!
+**data_provider** (str) - name of the provider to use with test. If specified, test should have one argument, 
+to get values from provider. If no providers found with that name then exception will raise!
 
-**retries** (int) - how many times to run this test if it is failed. If test not fail, no more runs attempted. By default is 1
+**retries** (int) - how many times to run the test if it is failed. If test does not fail, no more runs attempted. By defaut it is 1
 
-**groups** (Tuple[str]) - tuple of group names test belongs to, every test is a part of some group, by default group is the module name, where test placed
+**groups** (Tuple[str]) - tuple of group names test belongs to, each test is a part of a some group, by default group is the module name, where test places
 It is the way to manage and collect tests to any groups.
 
-**priority** (int) - priority of the test, by default is 0. The higher value means test will executes later.
+**priority** (int) - priority of the test, by default it is 0. The higher value means that test will execute later.
 Priority is a way to run tests in some order.
 
 **timeout** (int) - amount of time to wait test ends. If time is over, thread of the test will be interrupted and test will be mark as broken.
-Must be use carefully because of potential memory leaks!
+Should be used carefully because of potential memory leaks!
 
-**only_if** (Callable[None, bool]) - function, which will be run just before the test, and must returns bool. Test will only be execute if function returns True!
-It is a way to make condition for some test, for example run only if OS is Linux.
+**only_if** (Callable[None, bool]) - function which will be run before the test, and should return bool. Test will be execute only then if function returns 'True'!
+It is a way to make condition for some test, for instance, run only if the OS is Linux.
 
 
 ## Fixtures
 
-Every test, group or all test-suite can have preconditions and post-actions. For example open DB connection before test and close it after.
-You can easily make it with before/after fixtures. The function, marked with before/after must be without arguments.
+Each test group or all test-suite can have preconditions and post-actions. For example, open DB connection before test starts and close it after that.
+You can easily make it with before/after fixtures. The function that marked with before/after should be without arguments.
 
 @before  - run function before EACH test in group, by default group is current module, but you can specify it with parameter
 
@@ -258,11 +258,11 @@ def another_func():
 
 ```
 
-@before_suite - function run once before any group at start of the test-suite
+@before_suite - function runs once before any group at start of the test-suite
 
 
 @after_suite - function run once after all groups, at the end of the test-suite.
-This function will not be run if there is @before_suite and it failed, except using parameter always_run = True
+This function will not be run if there is @before_suite and it failed, except using parameter 'always_run = True'
 
 ```
 #!python
@@ -278,16 +278,16 @@ def another_func():
 
 ##Mock and Spy
 
-For testing purposes you need sometime to fake some behaviour or to isolate your application from any other classes/libraries etc.
+For testing purposes you sometimes need to fake some behaviour or to isolate your application from any other classes/libraries etc.
 
 If you need your test to use fake object, without doing any real calls, yoy can use mocks:
 
 
 **1. Fake one of the builtin function.**
 
-Let say you need to test function which is use standard input() inside. 
+Let say you need to test function which is using standard input() inside. 
 
-But you cant wait for real user input during the tests, so fake it with mock object.
+But you cannot wait for real user input during the test, so fake it with mock object.
 
 ```
 #!python
@@ -309,8 +309,8 @@ def mock_builtins_input():
 
 For working with other modules and libraries in test module, you need to import this module and to mock it function.
 
-For example, you need to test function, which is using requests.get inside, but you dont want to make real http
-requests. Lets mock it
+For example, you need to test function, which is using requests.get inside, but you do not want to make real http
+request. Let it mock
 
 some_module_to_test.py
 ```
@@ -346,8 +346,8 @@ def mock_requests_get():
 3. Spy object
 
 Spy is the object which has all attributes of original, but spy not performed any action, 
-all methods returns None (if not specified what to return). Secondly, spy log all actions and arguments.
-It can be useful if your code have inner object and you need to test what functions were called.
+all methods return None (if not specified what to return). Therefore, spy log all actions and arguments.
+It can be useful if your code has inner object and you need to test what functions were called.
 
 ```
 #!python
