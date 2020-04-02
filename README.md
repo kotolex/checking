@@ -276,7 +276,7 @@ def another_func():
 
 ```
 
-##Mock and Spy
+## Mock and Spy
 
 For testing purposes you sometimes need to fake some behaviour or to isolate your application from any other classes/libraries etc.
 
@@ -343,7 +343,7 @@ def mock_requests_get():
 
 ```
 
-3. Spy object
+**3. Spy object**
 
 Spy is the object which has all attributes of original, but spy not performed any action, 
 all methods return None (if not specified what to return). Therefore, spy log all actions and arguments.
