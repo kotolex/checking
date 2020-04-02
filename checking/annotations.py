@@ -12,24 +12,27 @@ from .exceptions import *
 def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
          groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if: Callable = None):
     """
-    Аннотация, помечающая функцию в модуле как тест, не работает с классами и методами класса, а также с функциями,
-    принимающими аргумент на вход (кроме использования дата провайдера).
-    :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @test
-    :param enabled: флаг активного теста, если False то тест не попадает в прогон и все прочие его настройки игнорируются
-    :param name: имя теста, если не указано, то берется название функции
-    :param data_provider: строковое имя дата-провайдера, который не обязательно должен быть в текущем модуле с тестом,
-    главное, чтобы он был найден при сборе тестовых сущностей. Если не найден, то будет брошено UnknownProviderName
-    :param retries: количество попыток прогона теста, такое количество раз тест будет запущен снова в случае ошибок.
-    В случае успеха теста, больше попыток не предпринимается, фикстуры перед и после теста прогоняются только 1 раз!
-    :param groups: список имен групп, к которой будет отнесен тест, если пустой, то автоматически создается группа с
-    именем модуля. Данный параметр позволяет группировать тесты из разных модулей в один прогон.
-    :param priority: приоритет, для организации порядка выполнения тестов. САмый высокий 0, чем выше параметр, тем
-    позже выполнится тест
-    :param timeout количество секунд в течение которого ожидается завершение теста. Если тест не завершен, то будет
-    брошено исключение TestBrokenException, а поток, в котором выполняется тест будет прерван. Из-за возможной утечки
-    памяти нужно использовать только при особой необходимости.
-    :param only_if: принимает функцию, которая будет вызвана перед стартом теста и тест будет запущен только если она
-    вернула True. Должно приниматься для фильтрации тестов, например в связи с используемой ОС
+    The annotation that marks a function in a module as a test, does not work with classes and class methods and with
+    functions, that take an argument (except using of data provider).
+    :param args: parameters, in which, among other things, a function may come if the method is marked just with  @test.
+    :param enabled: is the flag of the active test, if False then the test does not fall into the run and all its other
+    settings are ignored too
+    :param name: the name of the test, but if there is no name, then the name is the function name
+    :param data_provider: is the string name of data provider, which is not need to be in current module with test, the
+    main is that it was found during assembling of test entities. If not found, the exception UnknownProviderName will
+    be raised.
+    :param retries: is the total amount of attempts of run test, this is the number of how many times the test will be
+    run again in case of errors. If the test is successful, no more attempts are made, fixtures before and after the
+    test are run just 1 time!
+    :param groups: is the list of group names, to which the test will be assigned, if it empty, group automatically
+    creates with the name of the module. This parameter allows to group tests from different modules to one run.
+    :param priority: is the priority, for organization of tests execution order. The greater is 0, as parameter high the
+    execution of the test will be done later.
+    :param timeout is the number of seconds during waiting the test ends. If the test had not end, then
+    TestBrokenException exception will raised, and the thread, in which the test is executing, will be interrupted.
+    Due to a possible memory leak, it should be used only when there is a special need.
+    :param only_if: accepts a function that will be called before the test starts and the test will only be launched if
+    it returns True. Should be taken to filter tests, for instance in relation to the operating system used.
     :return: _fake
     """
     if not enabled:
@@ -71,15 +74,16 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
 
 def data(*args, enabled: bool = True, name: str = None):
     """
-    Аннотация помечающая поставщик данных, то есть функцию, поставляющую данные в тест. Такая функция должна возвращать
-    Iterable или Sequence, иначе будет брошена ошибка. Невозможно во время компиляции определить возвращает ли функция
-    верный тип, поэтому исключение при неверном типе будет брошено уже во время выполнения. При исключении тесты
-    с таким провайдером добавляются в игнорированные.
-    :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @data
-    :param enabled: флаг активного поставщика, если False то он не попадает в список провайдеров и все прочие его
-     настройки игнорируются
-    :param name: имя, если не указано, то берет имя функции. По этому имени тесты ищут провайдер, потому допустимы
-    только уникальные имена. При дублировании имени бросает DuplicateNameException
+    The annotation that marks a data provider, that is, a function that supplies data to a test. Such a function should
+    return Iterable or Sequence, otherwise will be an error. It is not possible at compile time to determine if the
+    function returns the correct type, so an exception with the wrong type will be thrown at runtime. Exception tests
+    with such provider are added to ignored.
+    :param args: are parameters in which, among other things, a function may come if the method is marked simply with
+    @data
+    :param enabled: the flag of the active provider, if False, then it does not fall into the list of providers and all
+    its other settings are ignored
+    :param name: is the name, if not specified, then takes the name of the function. By this name, tests are searched by
+    the provider, therefore only unique names are allowed. Duplicate name throws DuplicateNameException
     :return: __fake
     """
     if not enabled:
@@ -101,9 +105,10 @@ def data(*args, enabled: bool = True, name: str = None):
 
 def before(*args, group_name: str = None):
     """
-    Помечает функцию, как обязательную к прогону перед каждым тестом модуля/группы
-    :param group_name: имя группы, перед каждым тестом которой будет выполнена функция. Если имя группы не указано,
-    то автоматически создается группа с именем модуля. Функция не обязана быть в том же модуле, что и тесты.
+    It marks the function as mandatory to run before each module/group test.
+    :param group_name: the name of the group before which test the function will be executed. If no group name is
+    specified, a group is automatically created with the module name. A function does not have to be in the same module
+    as the tests.
     :return: __fake
     """
 
@@ -120,10 +125,11 @@ def before(*args, group_name: str = None):
 
 def after(*args, group_name: str = None):
     """
-    Помечает функцию, как обязательную к прогону после каждого теста модуля/группы. Если есть функции, прогоняющиеся
-    перед тестом (@before) и они выполнились с ошибкой, то данные функции запускаться не будут!
-    :param group_name: имя группы, после каждого теста которой будет выполнена функция. Если имя группы не указано,
-    то автоматически создается группа с именем модуля. Функция не обязана быть в том же модуле, что и тесты.
+    It marks the function as mandatory to run after each module/group test. If there are functions running before the
+    test (@before) and they failed, then these functions will not start!
+    :param group_name: the name of the group after each test of which the function will be executed. If the group name
+    is not specified, a group with the module name is automatically created. A function does not have to be in the same
+    module as the tests.
     :return: __fake
     """
 
@@ -140,10 +146,10 @@ def after(*args, group_name: str = None):
 
 def before_group(*args, name: str = None):
     """
-    Помечает функцию, как обязательную к прогону перед выполнением модуля/группы, то есть выполняется один раз до
-    запуска всех тестов модуля/группы
-    :param name: имя модуля или группы, перед выполнением тестов которой будет однократно выполнена функция. Если имя
-    не указано, то берется имя текущего модуля, где использована аннотация.
+    It marks the function as mandatory to run before the module/group is executed, that is, it is executed once before
+    all module/group tests are run.
+    :param name: is the name of the module or group, before which tests the function will be executed once. If no name
+    is specified, then the name of the current module where the annotation is used is taken.
     :return: __fake
     """
 
@@ -160,15 +166,16 @@ def before_group(*args, name: str = None):
 
 def after_group(*args, name: str = None, always_run: bool = False):
     """
-    Помечает функцию, как обязательную к прогону после выполнения модуля/группы, то есть выполняется один раз после
-    выполнения всех тестов модуля/группы. Если есть функция, прогоняющаяся перед модулем/группой (@before_module) и она
-    выполнилась с ошибкой, то данная функция не будет запущена, если не использован флаг always_run = True. При таком
-    флаге функция игнорирует результаты предварительных функций и запускается всегда
-    :param name: имя модуля или группы, после выполнением тестов которой будет однократно выполнена функция. Если имя
-    не указано, то берется имя текущего модуля, где использована аннотация.
-    :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @after_module
-    :param always_run: флаг старта функции независимо от результата выполнения предварительных функций. Если True, то
-    будет запущена в любом случае
+    It marks the function as mandatory for run after the module/group is executed, that is, it is executed once after
+    all module/group tests have been completed. If there is a function running before the module/group
+    (@before_module) and it failed, then this function will not be launched if the always_run=True flag is not used.
+    With this flag, the function ignores the results of preliminary functions and always starts.
+    :param name: is the name of the module or group after which tests will be executed once the function. If no name is
+    specified, then the name of the current module where the annotation is used is taken
+    :param args: are parameters in which, among other things, a function may come if the method is marked simply by
+    @after_module
+    :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
+    will be launched anyway
     :return: __fake
     """
 
@@ -187,9 +194,9 @@ def after_group(*args, name: str = None, always_run: bool = False):
 
 def before_suite(func: Callable[[], None]):
     """
-    Помечает функцию, как обязательную к прогону перед выпонением всего тестового набора (тест-сьюта), то есть
-    выполняется один раз в самом начале тестирования.
-    :param func: функция, не принимающая аргументов
+    Marks the function as mandatory to run before executing the entire test-suite, that is, it is performed
+    once at the very beginning of testing.
+    :param func: is the function that does not take any argument
     :return: None
     """
     __check_is_function_without_args(func, 'before_suite')
@@ -198,13 +205,14 @@ def before_suite(func: Callable[[], None]):
 
 def after_suite(*args, always_run: bool = False):
     """
-    Помечает функцию, как обязательную к прогону после выполнения всего тестового прогона (тест-сьюта), то есть
-    выполняется один раз в самом конце тестирования после всех групп и тестов. Если есть функции перед всем прогоном
-    (@before_suite) и они выполнились с ошибкой, то данная функция не будет выполнена, кроме случая использования флага
-    always_run = True. В таком случае будет запущена всегда.
-    :param args: параметры, в которых в том числе может прийти функция, если метод помечен просто @after_suite
-    :param always_run: флаг старта функции независимо от результата выполнения предварительных функций. Если True, то
-    будет запущена в любом случае
+    It marks the function as mandatory for the run after the entire test run (test suite) has been completed, that is,
+    it is performed once at the very end of the test after all groups and tests. If there are functions before the whole
+    run (@before_suite) and they failed, then this function will not be executed, except when using the
+    always_run=True flag. In this case, it will always be launched.
+    :param args: are parameters in which, among other things, a function may come if the method is marked simply
+    @after_suite
+    :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
+    will be launched anyway
     :return: __fake
     """
 
@@ -222,7 +230,7 @@ def after_suite(*args, always_run: bool = False):
 
 def _fake(*args):
     """
-    Функция-заглушка, не делает ничего
+    Stub function that does nothing
     :param args:
     :return: None
     """
@@ -239,16 +247,16 @@ def _check_func_for_soft_assert(func):
             print(f'WARNING! Function {func.__module__}.{func.__name__} marked with @test seems to contains SoftAssert '
                   f'object without calling assert_all()!', file=stderr)
     except Exception:
-        # Осознанно игнорируем, тут мы просто для предупреждения проверяем, это не критично
+        # Consciously ignore it, just check for a warning, this is not critical
         pass
 
 
 def __check_is_function_without_args(func: Callable, annotation_name: str):
     """
-    Проверка на то, что аннотация стоит над функцией без аргументов, не предполагается использование аннотаций
-    с классами и/или с их методами
-    :param func: функция
-    :param annotation_name: название аннотации (для ошибки)
+    Checking that the annotation is above the function without arguments, it is not intended to use annotations with
+    classes and / or with their methods.
+    :param func: is the function
+    :param annotation_name: is the name of annotation (for errors)
     :return: None
     :raises: WrongAnnotationPlacement
     """
@@ -260,9 +268,8 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
 
 def __check_is_function_for_provider(func: Callable[[Any], None]):
     """
-    Проверка, что функция пригодна принимать значения (использовать провайдер данных),
-    то есть имеет ровно 1 аргумент.
-    :param func: функция
+    Check that the function is suitable to accept values (use a data provider), that is, it has exactly 1 argument.
+    :param func: is the function
     :return: None
     :raises: WrongAnnotationPlacement
     """

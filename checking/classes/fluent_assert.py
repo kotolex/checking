@@ -6,9 +6,9 @@ from .basic_listener import short
 
 class FluentAssert:
     """
-    Класс для гибких, читаемых проверок, которые можно собирать в цепочки (при желании разделяя AND)
-    При провале одной из проверок, тест падает и другие условия не проверяются!
-    Пример:
+    The class for flexible and readable checks, which can be assembled in chains (sharing if desired AND).
+    If there is failure of one of the checks, the test falls and other conditions are not checked.
+    An example:
 
     verify(my_list).is_not_none().AND.is_a(list).AND.contains(2).AND.is_sorted()
 
@@ -16,7 +16,7 @@ class FluentAssert:
 
     def __init__(self, obj: Any):
         """
-        При инициализации принимаем объект, который нужно проверять. Не предполагается, что это будет класс или тип!
+        During initialization receive an object, which need to check. It is not intended to be a class or type!
         :param obj:
         """
         self.__actual = obj
@@ -28,8 +28,8 @@ class FluentAssert:
 
     def is_a(self, obj: Any):
         """
-        Проверяем, является ли наш объект и данный одним и тем же объектом. Аналогично проверке a is b
-        :param obj: объект для проверки
+        Check, if the instance and the current one are the same. Similarly of checking a is b.
+        :param obj: is the instance for checking
         :return: None
         """
         if self.__actual is not obj:
@@ -38,8 +38,8 @@ class FluentAssert:
 
     def is_not(self, obj: Any):
         """
-        Проверяем, что проверяемый объект не является тем же объектом, что и данный. Аналогично проверке a is not b
-        :param obj: объект для проверки
+        Check, if the instance and the current one are not the same. Similarly of checking a is not b.
+        :param obj: is the instance for checking
         :return: None
         """
         if self.__actual is obj:
@@ -48,8 +48,8 @@ class FluentAssert:
 
     def child_of(self, type_: Type):
         """
-        Проверяем, является ли наш объект конкретным классом(типом) или его наследником
-        :param type_: тип для проверки
+        Check, if the instance is a concrete class(type) or his child.
+        :param type_: is the type for checking
         :return: None
         """
         self._check_is_type(type_)
@@ -83,8 +83,8 @@ class FluentAssert:
 
     def less_than(self, obj: Any):
         """
-        Проверка, что проверяемый объект меньше, чем данный
-        :param obj: объект для сравнения
+        Checking that the checking object is less then current.
+        :param obj: is the object for comparing
         :return:
         """
         self._check_same_type(obj)
@@ -154,8 +154,8 @@ class FluentAssert:
 
     def is_sorted(self, reverse_order: bool = False):
         """
-        Проверка, что проверяемый объект отсортирован (применимо, только к list/tuple/str и прочим Sequence)
-        :param reverse_order: если True то проверяет сортировку в обратном порядке (от большего к меньшему)
+        Checking, that checking object is sorted (it can be used just to list/tuple/str and another Sequence).
+        :param reverse_order: if it is True then check sort in reverse (from the biggest to the lowest)
         :return:
         """
         if not isinstance(self.__actual, Sequence):

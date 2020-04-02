@@ -14,15 +14,15 @@ look_for = ('import checking', 'from checking')
 
 def is_options_exists(file_name: str) -> bool:
     """
-    Сообщает есть ли в папке запуска файл с настройками options.json
-    :return: True, если файл присутствует
+    Tells, if there is settings file called options.json inside the start folder.
+    :return: True, if the file exists
     """
     return len(glob.glob(file_name)) == 1
 
 
 def read_parameters_from_file(file_name) -> Dict:
     """
-    Читает параметры из файла настроек options.json, возвращает в виде словаря параметров
+    Reads the parameters from settings file called options.json, returns as a parameter dictionary.
     """
     with open(file_name, encoding='utf-8') as file:
         result = ''.join([line.rstrip() for line in file.readlines()])
@@ -33,10 +33,10 @@ def read_parameters_from_file(file_name) -> Dict:
 
 def check_parameters(parameters: Dict):
     """
-    Проверяет валидность параметров запуска
-    :param parameters: словарь с параметрами
+    Checks the validation of start parameters.
+    :param parameters: the dictionary with parameters
     :return: None
-    :raises ValueError если параметры неверного типа
+    :raises ValueError if the parameters are invalid
     """
     if 'verbose' in parameters:
         verbose = parameters['verbose']
@@ -90,9 +90,9 @@ def start_with_parameters(parameters: Dict):
 
 def _is_import_in_file(file_name: str) -> bool:
     """
-    Есть ли в файле импорт атеста
-    :param file_name: имя модуля
-    :return: True, если в модуле импортируется атест
+    If there checking import within the file.
+    :param file_name: is the name of the module
+    :return: True, if asserts imports inside the module
     """
     if not file_name.endswith('.py'):
         return False
@@ -106,8 +106,8 @@ def _is_import_in_file(file_name: str) -> bool:
 
 def _walk_throw_and_import():
     """
-    Функция проходит по всем модулям в текущей папке и вложенных, ищет и импортирует те модули, где есть упоминание
-    атест, тем самым  формируя тест-сьют
+    The functions runs throw all of the modules in current and nested folder, looks up and imports modules, where is a
+    mention checking, thereby forming the test-suite.
     :return: None
     """
     for root, dirs, files in os.walk(HOME_FOLDER, topdown=True):

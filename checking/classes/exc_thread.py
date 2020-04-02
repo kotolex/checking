@@ -7,8 +7,9 @@ from checking.classes.basic_test import Test
 
 class ExceptionThread(Thread):
     """
-    Класс-потомок потока, для перехватат исключений, которые не поймать обычным способом при многопоочном выполнении.
-    Сохраняет исключение в контейнер Event
+    The sub-class of the thread, for catching exceptions, which do not catch by the usual approach with multi-threaded
+    execution.
+    Saves exceptions within Event container.
     """
 
     def __init__(self, func:Callable, event:Event):
@@ -29,12 +30,12 @@ def run_with_timeout(test: Test):
     t = Thread(target=_start_test_at_daemon_thread, args=(test, event), daemon=True)
     t.start()
     t.join(test.timeout)
-    # Если поток жив, значит он не завершился по таймауту
+    # If the thread is alive, then it had not over by time-out.
     if t.is_alive():
-        # Ставим уведомление что пора прервать работу и бросаем исключение
+        # Put the notification that it is time to abort the work and give up the exception.
         event.set()
         raise TestBrokenException(f'Time ({test.timeout} seconds) is over for test "{test}"!')
-    # Если есть атрибут, значит в потоке-демоне упало исключение, бросаем его
+    # If there is an attribute, then the exception inside the thread-demon, then raise it.
     if hasattr(event, 'attr'):
         raise event.attr
 
@@ -42,7 +43,7 @@ def run_with_timeout(test: Test):
 def _start_test_at_daemon_thread(test: Test, event: Event):
     t = ExceptionThread(test.run, event)
     t.start()
-    # Пока не уведомили через ивент или не завершен поток-демон, работаем
+    # Not yet notified throw the event or the thread-demon has been working now, then work
     while not event.is_set():
         if not t.is_alive():
             break

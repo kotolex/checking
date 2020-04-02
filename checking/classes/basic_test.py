@@ -6,14 +6,14 @@ from ..exceptions import TestIgnoredException
 
 class Test(TestCase):
     """
-    Класс представляющий тест, основная единица тестового прогона
+    The class which representing test, the main point of test run.
     """
 
     def __init__(self, name: str, test: Callable):
         """
-        Инициализация объекта кроме имени требует ссылки на функцию, которая и является тестом
-        :param name: имя теста
-        :param test: функция, которая будет запущена при выполнении теста
+        Object initialization requires not only name, but a function reference, which is a test.
+        :param name: is the name of the test
+        :param test: is the function that will be launch at the test executes
         """
         super().__init__(name)
         self.test = test
@@ -24,7 +24,7 @@ class Test(TestCase):
 
     def run(self):
         """
-        Запуск теста (функции, помеченной аннотацией tests)
+        The launch of the test (functions mark tests annotation).
         :return: None
         """
         if self.only_if:
@@ -40,8 +40,8 @@ class Test(TestCase):
 
     def clone(self) -> TestCase:
         """
-        Клонирование объекта, мутабл поля копируются
-        :return: новый Test
+        Cloning the instance and mutable fields are also coping.
+        :return: a new Test
         """
         clone = Test(self.name, self.test)
         clone.group_name = self.group_name

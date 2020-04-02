@@ -8,8 +8,8 @@ from .classes.basic_listener import short
 
 def is_true(obj: Any, message: str = None):
     """
-    Проверка объекта на истинность (truthy)
-    :param object: любой объект для проверки
+    Checking of the object for truth.
+    :param object: is the object for checking
     :return: None
     """
     if not obj:
@@ -19,8 +19,8 @@ def is_true(obj: Any, message: str = None):
 
 def is_false(obj: Any, message: str = None):
     """
-    Проверка объекта на не истинность (falsy)
-    :param obj: любой объект для проверки
+    Checking an object for non-truth (false).
+    :param obj: is the object for checking
     :return: None
     """
     if obj:
@@ -30,12 +30,12 @@ def is_false(obj: Any, message: str = None):
 
 def equals(expected: Any, actual: Any, message: str = None):
     """
-    Сравнивает равенство двух объектов
-    :param expected: ожидаемый объект
-    :param actual: актуальный объект
-    :param message: сообщение, которое будет указано при провале проверки
+    It compares the equality of two objects.
+    :param expected: is the expected object
+    :param actual: is the actual object
+    :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError если объекты не равны, с указанием объектов и их типов
+    :raises AssertionError if the objects are not equal, indicating the objects and their types
     """
     if (expected is actual) or expected == actual:
         return
@@ -46,12 +46,12 @@ def equals(expected: Any, actual: Any, message: str = None):
 
 def not_equals(expected: Any, actual: Any, message: str = None):
     """
-    Проверяет, что объекты не равны
-    :param expected: ожидаемый объект
-    :param actual: актуальный объект
-    :param message: сообщение, которое будет указано при провале проверки
+    It checks that objects are not equal.
+    :param expected: is the expected object
+    :param actual: is the actual object
+    :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError если объекты равны
+    :raises AssertionError if objects are equal
     """
     if (expected is actual) or expected == actual:
         _message = _mess(message)
@@ -60,11 +60,11 @@ def not_equals(expected: Any, actual: Any, message: str = None):
 
 def is_none(obj: Any, message: str = None):
     """
-    Проверяется, что объект является None, обратная функция для проверки not_none
-    :param obj: проверяемый объект
-    :param message: сообщение, которое будет указано при провале проверки
+    It checks that the object is None, the inverse function for checking not_none.
+    :param obj: is the checked object
+    :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError с указанием типа объекта
+    :raises AssertionError with type of the object
     """
     _message = _mess(message)
     if obj is not None:
@@ -73,9 +73,9 @@ def is_none(obj: Any, message: str = None):
 
 def not_none(obj: Any, message: str = None):
     """
-    Проверяется, что объект не None, обратная функция для is_none
-    :param obj: проверяемый объект
-    :param message: сообщение, которое будет указано при провале проверки
+    It checks that the object is not None, the inverse function for is_none.
+    :param obj: is the checked object
+    :param message: is the message to be indicated when verification fails
     :return: None
     :raises AssertionError
     """
@@ -87,18 +87,19 @@ def not_none(obj: Any, message: str = None):
 @contextmanager
 def waiting_exception(exception: Type[Exception]):
     """
-    Менеджер контекста для проверки падения исключения при определенных действиях. Пример:
+    The context manager to check if an exception is thrown during certain actions. An example:
 
     with waiting_exception(ZeroDivisionError) as exc:
         some_action()
-    print(exc.message) # Выведет сообщение из исключения
+    print(exc.message) # Displays a message from the exception
 
-    :param exception: ожидаемый тип исключения, нельзя использовать BaseException, не рекомендуется использовать
-    Exception (лучше использовать конкретное исключение)
-    :return: контекст ExceptionWrapper, который изначально пуст, а при падении исключения получает его в параметр value
-    :raises TestBrokenException если использовано BaseException или не наследники Exception
-    :raises AssertionError если упало не то исключение, которое ожидалось
-    :raises ExceptionWrapper если не упало исключений
+    :param exception: is the expected exception type, you cannot use BaseException, it is not recommended to use
+    Exception (better use specific exception)
+    :return: ExceptionWrapper context, which is initially empty, and when an exception is thrown, gets it in the value
+    parameter
+    :raises TestBrokenException if BaseException is used or not inheritors of Exception
+    :raises AssertionError if the wrong exception is thrown, which was expected
+    :raises ExceptionWrapper if no exceptions are raised
     """
     fake = ExceptionWrapper()
     try:
@@ -122,14 +123,14 @@ def waiting_exception(exception: Type[Exception]):
 @contextmanager
 def no_exception_expected():
     """
-    Менеджер контекста для ситуаций, когда не ожидается падения исключений, более явно, чем просто писать тест
-    без ассерта. Пример:
+    The context manager for situations where exceptions are not expected to raise is more explicit than just writing a
+    test without an assertion. An example:
 
     with no_exception_expected():
         some_action()
 
     :return: None
-    :raises AssertionError если исключение (любой наследник Exception) все же падает
+    :raises AssertionError if the exception (any descendant of Exception) nevertheless falls
     """
     try:
         yield
@@ -141,10 +142,10 @@ def no_exception_expected():
 def mock_builtins(function_name: str, func):
     """
     EXPERIMENTAL!
-    Мок встроенных функций, таких как print, input и так далее. После выхода из менеджера контекста, оригинальная
-    функция снова обретает прежнее поведение.
-    :param function_name: имя одной из встроенных функций python
-    :param func: функция замена, которая будет вызвана вместо оригинальной
+    Mock of built-in functions like print, input and so on. After exiting the context manager, the original function
+    regains its previous behavior.
+    :param function_name: is the the name of one of the python built-in function
+    :param func: is the replacement function, which will be called instead of the original
     :return:
     """
     import builtins as b
@@ -164,10 +165,10 @@ def mock_builtins(function_name: str, func):
 def mock(module_: Any, function_name: str, func: Any):
     """
     EXPERIMENTAL!
-    Менеджер контекста для мокирования(подмены) любой функции или атрибута модуля
-    :param module_: объект модуля (не название! он должен быть импортирован в тесте)
-    :param function_name: название функции
-    :param func: функция-замена, но может быть и атрибут
+    Context manager for moking (spoofing) any function or module attribute.
+    :param module_: is the module object (not a name! it must be imported in the test)
+    :param function_name: is the function name
+    :param func: is the replacement function, but there may be an attribute
     :return:
     """
     if str(type(module_)) != "<class 'module'>":
@@ -186,8 +187,8 @@ def mock(module_: Any, function_name: str, func: Any):
 
 def test_fail(message: str = None):
     """
-    Принудительный провал теста, может быть использовано в редких случаях, вместо проверки заведомо неверных условий
-    :param message: опциональное сообщение
+    Forced failure of the test, can be used in rare conditions instead of checking obviously wrong conditions.
+    :param message: is the optional message
     :return: None
     """
     raise AssertionError(message if message else 'Test was forcibly failed!')
@@ -195,9 +196,8 @@ def test_fail(message: str = None):
 
 def test_brake(message: str = None):
     """
-    Принудительно приводим тест в сломанное состояние, может быть использовано в редких условиях вместо
-    бросания исключений
-    :param message: опциональное сообщение
+    Forcibly bring the test to a broken state, can be used in rare conditions instead of throwing exceptions.
+    :param message: is the optional message
     :return: None
     """
     raise TestBrokenException(message if message else 'Test was forcibly broken!')
@@ -205,13 +205,13 @@ def test_brake(message: str = None):
 
 def contains(part: Any, whole: Any, message: str = None):
     """
-    Проверяется, что один объект является частью (входит) второго. Аналогично проверке a in b
-    :param part: объект-часть, который входит в целое
-    :param whole: объект-целое, которое содержит часть
-    :param message: опциональное сообщение
+    Checks that one object is part of (enters) another. Similar to check a in b.
+    :param part: is the object-part that is part of the whole
+    :param whole: is the entity that contains a part
+    :param message: is the optional message
     :return: None
-    :raises AssertionError если один объект не является частью второго
-    :raises TestBrokenException если whole не итерабл или объекты не могут быть проверены на содержимое, например
+    :raises AssertionError if one object is part of the second
+    :raises TestBrokenException if whole is not iterable or objects cannot be checked for content, for instance
     1 in '123'
     """
     __contains_or_not(part, whole, message=message)
@@ -219,13 +219,13 @@ def contains(part: Any, whole: Any, message: str = None):
 
 def not_contains(part: Any, whole: Any, message: str = None):
     """
-    Проверяется, что один объект не является частью (не входит) второго. Аналогично проверке a not in b
-    :param part: объект-часть, который входит в целое
-    :param whole: объект-целое, которое содержит часть
-    :param message: опциональное сообщение
+    Checks that one object is not part (not included) of the second. Similar to checking a not in b.
+    :param part: is the part object that is part of the whole
+    :param whole: is the integer object that contains part
+    :param message: is the optional message
     :return: None
-    :raises AssertionError если один объект является частью второго
-    :raises TestBrokenException если whole не итерабл или объекты не могут быть проверены на содержимое, например
+    :raises AssertionError if one object is part of the second
+    :raises TestBrokenException if whole is not iterable or objects cannot be checked for content, for instance
     1 not in '123'
     """
     __contains_or_not(part, whole, is_contains=False, message=message)

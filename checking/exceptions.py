@@ -1,44 +1,45 @@
 class WrongAnnotationPlacement(Exception):
     """
-    Бросается, если аннотация установлена над функцией принимающей аргументы, или над классом/методом класса.
-    При использвании аннотации @test с указанием дата-провайдера будет брошено, если функция не принимает хотя бы один
-    аргумент
+    It throws if the annotation is set over a function that takes arguments, or over a class/class method. When using
+    the @test annotation with the data provider, it will be thrown if the function does not accept at least one
+    argument.
     """
     pass
 
 
 class DuplicateNameException(Exception):
     """
-    Будет брошено, если имя провайдера уже есть в наборе, нужно переименовать метод поставщика данных или задать ему имя
-    через параметр
+    It will be thrown if the provider name is already in the set, you need to rename the data provider method or give
+    it a name through the parameter.
     """
     pass
 
 
 class UnknownProviderName(Exception):
     """
-    Будет брошено, если после формирования тестового прогона (тест-сьюта) не найден провайдер с указанным именем
+    It will be thrown if, after the formation of the test run (test-suite), the provider with the specified name is not
+    found.
     """
     pass
 
 
 class TestBrokenException(Exception):
     """
-    Будет брошено для уведомления о проблемах с тестом, не связанных с ассертом
+    It will be thrown to notify of problems with the test, not related to assert.
     """
     pass
 
 
 class TestIgnoredException(Exception):
     """
-    Будет брошено для уведомления о том, что тест проигнорирован (не выполнились фикстуры или only_if)
+    It will be thrown to notify that the test is ignored (fixtures failed or only_if).
     """
     pass
 
 
 class ExceptionWrapper(Exception):
     """
-    Обертка для исключений, в которую потом можно передать другое исключение. Используется с waiting_exception
+    The wrapper for exceptions to which you can then pass another exception. Used with waiting_exception.
     """
 
     def __init__(self):

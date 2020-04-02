@@ -6,26 +6,26 @@ from .basic_test import Test
 
 class TestSuite:
     """
-    Класс прогона, тест-сьют, всегда в единственном экземпляре (синглтон), включает в себя все наборы.
-    Если есть хоть 1 тест, то включает в себя 1 набор.
+    The run class, test suite, always in a single instance (singleton), includes all sets.
+    If there is at least 1 test, then it includes 1 group.
     """
     instance = None
 
-    # Словарь пар имя набора-набор
+    # The dictionary pairs name of set-set
     groups: Dict[str, TestGroup] = {}
 
-    # Дата провайдеры (доступны всем тестам во всех наборах)
+    # Data providers (allow to all tests in all sets)
     providers: Dict[str, Callable[[None], Iterable]] = {}
 
-    # Списки функций выполняемых перед и после всего прогона
+    # Lists of functions which execute before and after run
     before: List[Callable] = []
     after: List[Callable] = []
     name: str = 'Default Test Suite'
 
-    # Флаг что предварительные функции упали
+    # Flags that preliminary functions fell
     is_before_failed: bool = False
 
-    # Флаг что завершающие функции нужно выполнять независимо от результата предварительных
+    # The flag that the final functions should be performed regardless of the result of preliminary
     always_run_after: bool = False
 
     def __new__(cls):
@@ -48,8 +48,8 @@ class TestSuite:
     @classmethod
     def get_or_create(cls, group_name: str) -> TestGroup:
         """
-        Создает или возврашает набор тестов по имени
-        :param group_name: имя набора
+        It creates and returns a test group by name.
+        :param group_name: is the name of group
         :return: TestGroup
         """
         if group_name not in cls.groups:
@@ -63,16 +63,16 @@ class TestSuite:
     @classmethod
     def is_empty(cls) -> bool:
         """
-        Возвращает пустой ли прогон (нет тестов ни в одной из групп)
-        :return: True если нет тестов
+        It returns whether the suite is empty (no tests in any of the groups).
+        :return: True if there are no tests
         """
         return all([group.is_empty() for group in cls.groups.values()])
 
     @classmethod
     def tests_count(cls) -> int:
         """
-        Возвращает общее количество тестов. В набор попадают только тесты с параметром enabled=True
-        :return: количество тестов
+        Returns the total number of tests. Only tests with the parameter enabled=True get into the set.
+        :return: is the number of the tests
         """
         if cls.is_empty():
             return 0
@@ -81,7 +81,7 @@ class TestSuite:
     @classmethod
     def success(cls) -> List[Test]:
         """
-        Возвращает список успешных тестов
+        Returns the list of successful tests.
         :return:
         """
         return cls._test_result_of('success')
@@ -89,7 +89,7 @@ class TestSuite:
     @classmethod
     def failed(cls) -> List[Test]:
         """
-        Возвращает список упаших тестов
+        Returns the list of fell tests.
         :return:
         """
         return cls._test_result_of('failed')
@@ -97,7 +97,7 @@ class TestSuite:
     @classmethod
     def broken(cls) -> List[Test]:
         """
-        Возвращает список сломанных тестов (упали по исключению, а не ассерту)
+        Returns the list of broken tests (fell by exception, not by assert).
         :return:
         """
         return cls._test_result_of('broken')
@@ -105,7 +105,7 @@ class TestSuite:
     @classmethod
     def ignored(cls) -> List[Test]:
         """
-        Возвращает список проигнорированных тестов (неудачные предварительные функции)
+        Returns the list of ignored tests (unsuccessful preliminary functions).
         :return:
         """
         return cls._test_result_of('ignored')

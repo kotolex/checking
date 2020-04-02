@@ -24,8 +24,8 @@ def _short(x, width: int = 10):
 
 class Listener:
     """
-    Родитель слушателей тестов. Пользователь может написать свой слушатель и изменить поведение по-умолчанию, при этом
-    его слушатель должен быть наследником данного класса.
+    The parent of listeners of tests. Actually, the user can write their own listener and change the behaviour by
+    default, by the way, his listener should be an inheritor of this class.
     """
 
     def __init__(self, verbose: int = 0):
@@ -33,102 +33,102 @@ class Listener:
 
     def on_suite_starts(self, test_suite: TestSuite):
         """
-        Вызывается при старте прогона, после проверки провайдеров
-        :param test_suite: TestSuite
+        It calls at the start of the run, after checking the providers.
+        :param test_suite: is TestSuite
         :return: None
         """
         pass
 
     def on_suite_ends(self, test_suite: TestSuite):
         """
-        Вызывается при завершении прогона, когда уже завершены все тесты и фикстуры
-        :param test_suite: TestSuite
+        It calls at the end of the run, when all tests finished and fixtures.
+        :param test_suite: is TestSuite
         :return: None
         """
         pass
 
     def on_test_starts(self, test: TestCase, group: TestGroup):
         """
-        Вызывается перед стартом теста (уже после предварительных фикстур, но до самого теста).
-        :param test: объект теста со всеми параметрами
-        :param group: группа, к которой тест принадлежит
+        It calls before test starts (after preliminary fixtures, but before the test).
+        :param test: is the instance of the test with all parameters
+        :param group: is the group, to which the test belongs
         :return: None
         """
         pass
 
     def on_empty_suite(self, test_suite: TestSuite):
         """
-        Вызывается перед остановкой прогона в связи с тем, что нет тестов ни в одной из групп.
-        :param test_suite: TestSuite
+        It calls before the run stops because of there are no tests in any of the groups.
+        :param test_suite: is TestSuite
         :return: None
         """
         pass
 
     def on_fixture_failed(self, group_name: str, fixture_type: str, exception_: Exception):
         """
-        Вызывается при неудачном запуске фикстуры (before/after)
-        :param group_name: имя группы тестов
-        :param fixture_type: название фикстуры
-        :param exception_: упавшее исключение
+        It calls when a fixture failed to start (before/after).
+        :param group_name: is the name of the group of tests
+        :param fixture_type: is the name of fixture
+        :param exception_: fell exception
         :return: None
         """
         pass
 
     def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
         """
-        Вызывается, когда функция, помеченная как @data не возвращает Iterable и все тесты, привязанные к данному
-        провайдеру игнорируются
-        :param test: TestCase
-        :param group: TestGroup
+        It calls when the function which marked @data does not return Iterable and all of tests, which tied to the
+        provider is ignored.
+        :param test: is TestCase
+        :param group: is TestGroup
         :return: None
         """
         self._to_results(group, test, 'ignored')
 
     def on_success(self, group: TestGroup, test: TestCase):
         """
-        Вызывается, когда тест завершен успешно
-        :param group: TestGroup
-        :param test: TestCase
+        It calls when the test finished successfully.
+        :param group: is TestGroup
+        :param test: is TestCase
         :return: None
         """
         self._to_results(group, test, 'success')
 
     def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
         """
-        Вызывается при падении теста по ассерту (встроенному или из модуля checking.asserts)
-        :param group: TestGroup
-        :param test: TestCase
-        :param exception_: упавший ассерт
+        It calls if an assert falls at test (embedded or from checking.asserts module)
+        :param group: is TestGroup
+        :param test: is TestCase
+        :param exception_: is fell assert
         :return: None
         """
         self._to_results(group, test, 'failed')
 
     def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
         """
-        Вызывается, когда тест "сломан", то есть падает с исключением, а не по ассерту
-        :param group: TestGroup
-        :param test: TestCase
-        :param exception_: упавшее исключение
+        It calls when the test is 'broken', actually, it falls with an exception, but not by assert.
+        :param group: is TestGroup
+        :param test: is TestCase
+        :param exception_: is fell assert
         :return: None
         """
         self._to_results(group, test, 'broken')
 
     def on_ignored(self, group: TestGroup, test: TestCase, fixture_type: str):
         """
-        Вызывается, когда тест проигнорирован из-за упавшей фикстуры (before)
-        :param group: TestGroup
-        :param test: TestCase
-        :param fixture_type: название фикстуры, вызвавшей игнорирование
+        It calls when the test has been ignored due to fallen fixture (before).
+        :param group: is TestGroup
+        :param test: is TestCase
+        :param fixture_type: is the name of the fixture, called ignore
         :return: None
         """
         self._to_results(group, test, 'ignored')
 
     def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
         """
-        Вызывается, когда тест проигнорирован из-за условия (only_if)
-        :param group: TestGroup
-        :param test: TestCase
-        :param exc: исключение
+        It calls when the test has been ignored by statement (only_if).
+        :param group: is TestGroup
+        :param test: is TestCase
+        :param exc: is the exception
         :return: None
         """
         self._to_results(group, test, 'ignored')
@@ -138,8 +138,8 @@ class Listener:
 
     def on_before_suite_failed(self, test_suite):
         """
-        Вызывается при падении @before_suite фикстуры
-        :param test_suite: TestSuite
+        It calls at the falling of @before_suite fixture.
+        :param test_suite: is TestSuite
         :return: None
         """
         pass
@@ -147,8 +147,8 @@ class Listener:
 
 class DefaultListener(Listener):
     """
-    Слушатель по-умолчанию для стандартного поведения при событиях прогона.
-    Пользователь может написать свои собственные слушатели по образцу данного класса.
+    Listener by default for standard behaviour during for run events.
+    The user can write his own listeners by the class blueprint.
     """
 
     def on_before_suite_failed(self, test_suite):

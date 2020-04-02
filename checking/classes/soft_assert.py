@@ -6,11 +6,11 @@ from checking.asserts import *
 
 class SoftAssert:
     """
-    Класс для применения мягких проверок, то есть проверок, которые не уронят тест сразу, а позволят выполнить и другие
-    проверки. Это может быть удобно для получения информации о различных частях проверяемой системы, например для
-    валидации каких-то полей. Позволит получить информацию о всех упавших проверках, а не о первой, как в случае с
-    простым тестом.
-    Пример:
+    The class for applying soft checks, that is, checks that do not drop the test immediately, but allow others to
+    perform checks. This can be convenient for obtaining information about various parts of the system under test, for
+    instance, for validating some of fields. It allows you to get information about all the fallen checks, and not about
+    the first, as is the case with a simple test.
+    An example:
 
     soft_assert = SoftAssert()
     soft_assert.check(lambda : equals(1, my_json['field1'], 'message'))
@@ -21,10 +21,10 @@ class SoftAssert:
 
     def __init__(self, check_immediately: bool = False):
         """
-        Инициализатор, который принимает по умолчанию, что не нужно делать проверки немедленно. Это может быть критично
-        для тестов, где состояние системы может измениться из-за проверок или иных действий.
-        :param check_immediately: флаг немедленной проверки условий, если True то проверка будет выполнена сразу, но
-        тест не упадет, все результаты в любом случае будут выведены после вызова  assert_all()
+        The initializer that accepts by default that there is no need to do checks immediately. It could be critical
+        for tests, where the system state can change due to checks or other actions.
+        :param check_immediately: is the flag for immediately checking the condition, if it is True, then the check will
+        done right away, but the test does not fall, all results anyway will be displayed after assert_all() calling.
         """
         self.__funcs = []
         self.__result = []
@@ -32,15 +32,15 @@ class SoftAssert:
 
     def check(self, lambda_):
         """
-        Мягкая проверка, принимает лямбду, которая выполнится позже, при проверке всех условий. Если флаг
-        check_immediately=True, то проверяется (выполняется) сразу, но исключения будут брошены при финальной проверке.
-        Рекомендуется использовать именно этот метод, для получения ошибки с трейсом.
-        Пример:
+        Soft check that takes lambda as an argument executes later, when checking all conditions. If flag
+        check_immediately=True, then checked (executed) immediately, but exceptions will be drop during the final run.
+        It is recommended to use this method for obtaining the error with the trace.
+        An example:
 
         soft_assert = SoftAssert()
         soft_assert.put(lambda : equals(1,2,'message'))
 
-        :param lambda_: лямбда не принимающая параметров
+        :param lambda_: the lambda does not take any parameters
         :return: None
         """
         if self.__check_immediately:
@@ -50,11 +50,12 @@ class SoftAssert:
 
     def assert_all(self):
         """
-        Проверяются все условия, полученные ранее и выводится весь список упавших проверок с указанием строк.
-        Предполагается, что это будет финальное действие в любом тесте
+        Checking all conditions, which have been received before and display all list fallen checks with string
+        indicating.
+        Supposed, that it is the final action in any test.
         :return: None
-        :raises AssertionError в случае падения проверок
-        :raises Exception если были другие исключения при выполнении проверок
+        :raises AssertionError in the case of checks fall
+        :raises Exception if there were other exceptions during checks execution
         """
         if not self.__check_immediately:
             for func in self.__funcs:

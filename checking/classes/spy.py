@@ -4,9 +4,9 @@ from functools import partial
 
 class Spy:
     """
-    Тестовый двойник (шпион), который подменяет нужный объект. Его атрибуты возвращают None, если не указано иного,
-    функции ничего не делают, но все вызовы фиксируются. Этот класс используют, чтобы убедиться в вызове соответствующих
-    функций с аргументами
+    The test-double (spy), which replaces the desired object. His attributes return None, and the methods do not do
+    anything if unless otherwise indicated, but all of the calls are fixed. This class in used due to make sure in
+    the call of respectively functions with arguments.
     """
 
     def __init__(self, obj: Any):
@@ -52,7 +52,7 @@ class Spy:
 
 class Call:
     """
-    Класс, представляющий собой один вызов функции, хранит ее имя, и аргументы вызова
+    The class which represents a single function call, stores its name and call arguments
     """
 
     def __init__(self, name: str, *args, **kwargs):

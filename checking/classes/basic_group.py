@@ -6,27 +6,28 @@ from .basic_case import TestCase
 
 class TestGroup(TestCase):
     """
-    Класс тестового набора или группы тестов, представляет собой все тесты из одного модуля, или все тесты одной группы,
-    однако это не тест-сьют (набор всех наборов). Тесть-сьют может быть только один и содержит все наборы тестов,
-    тест-сьют всегда создается при старте тестирования. Если есть хоть 1 тест, то при старте будет создан тестовый набор,
-     который будет помещен в тест-сьют.
+    The test set or group of tests is all tests from one module, or all tests are contained from one group, but it is
+    not a test-suite (the set of all sets). Test-suite might be only one and contains all sets of tests, a test-suite is
+    used to creating during testing starts. If there is at least 1 test, then a test set will be created and placed
+    in a test-suite, during start.
     """
 
     def __init__(self, name: str):
         super().__init__(name)
-        # Список тестов, то есть объектов класса Test
+        # The list of tests, i.e instances of 'Test' class
         self.tests: List[Test] = []
-        # Список функций выполняемых перед каждым тестом
+        # The list of functions that executed before each test
         self.before_all: List[Callable] = []
-        # Список функций выполняемых после каждого теста
+        # The list of functions that executed after each test
         self.after_all: List[Callable] = []
-        # Словарь результатов прогона данного набора
+        # The dictionary of the results of the run of this set
         self.test_results: Dict[str, List[Test]] = {'success': [], 'broken': [], 'failed': [], 'ignored': []}
 
     def add_test(self, test: Test):
         """
-        Добавление теста в набор, при этом он получает имя группы, списки предварительных и последующих функций
-        :param test: объект класса Test
+        Adding the test in the set, wherein receives the name of the group, lists of preliminaries and subsequents
+        functions.
+        :param test: is the instance of 'Test' class
         :return: None
         """
         test.group_name = self.name
@@ -36,42 +37,43 @@ class TestGroup(TestCase):
 
     def add_before_test(self, func: Callable):
         """
-        Добавление еще одной функции в предварительный пул, для выполнения перед каждым тестом.
-        :param func: функция
+        Adding one more function in preliminary pull, for executing before each test.
+        :param func: is the function
         :return: None
         """
         self.before_all.append(func)
 
     def add_after_test(self, func: Callable):
         """
-        Добавление еще одной функции в завершающий пул, для выполнения после каждого теста
-        :param func: функция
+        Adding one more function in final pull, for executing after each test.
+        :param func: is the function
         :return: None
         """
         self.after_all.append(func)
 
     def add_result_to(self, test: TestCase, result: str = 'success'):
         """
-        Добавления теста в соответствующий раздел словаря результатов
-        :param test: объект TestCase
-        :param result: результат, по-умолчанию успешен
+        Adding the test in appropriate section of the results dictionary.
+        :param test: is the instance of the TestCase
+        :param result: is the result, by default it is successful
         :return: None
         """
         self.test_results[result].append(test)
 
     def is_empty(self):
         """
-        Пуст ли набор
-        :return: True если нет тестов в наборе
+        Checking, if the set is empty.
+        :return: True, if there are no tests inside the set
         """
         return len(self.tests) == 0
 
     def tests_count(self):
         """
-        Возвращает количество тестов. Если тесты уже были выполнены и есть результаты, то вернет сумму тестов из
-        результатов, иначе просто количество TestCase в списке tests. Это сделано потому что на момент старта тестов
-        не известно сколько их будет в сумме, благодаря перезапускам (retries) и/или провайдерам.
-        :return: количество тестов
+        Returns the number of tests. If tests have been executed and there are results, it returns the sum of tests from
+        results, otherwise it returns the number of 'TestCase; within 'tests' list. It has done due to at the time of
+        starting the tests it is not know how many of them will be in total, thanks to restarts (retries) and/or to
+        providers.
+        :return: the number of the tests
         """
         run_count = sum([len(e) for e in self.test_results.values()])
         return run_count if run_count else len(self.tests)

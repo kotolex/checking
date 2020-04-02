@@ -9,39 +9,39 @@ from .classes.basic_listener import DefaultListener, Listener
 from .exceptions import UnknownProviderName, TestIgnoredException
 from .classes.exc_thread import run_with_timeout
 
-# Слушатель для тестов
+# Tests listener
 _listener: Listener
 
-# Общие параметры для всего прогона
+# Common prameters for whole test-suite
 common_parameters: Dict[str, Any] = {}
 
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
           threads: int = 1):
     """
-    Главная функция запуска тестов.
+    The main function of tests start
 
-    :param listener: слушатель тестов, по-умолчанию используется DefaultListener. Если задан, то параметр verbose
-    игнорируется (используется тот, что в слушателе).
-    :param verbose: подробность отчетов, 0 - кратко (только точки и 1 буква), 1 - подробно, с указанием только
-    упавших тестов, 2- подробно, с указанием успешных и упавших, 3 - подробно и в конце вывод списка упавших и сломанных
-    Если не в промежутке от 0 до 3 то принимается 0
-    :param groups: список названий групп для выполнения, чтобы выполнять только нужные тесты
-    :param params: словарь параметров, доступных во всех тестах (общие параметры прогона)
-    :param threads: количество потоков для выполнения тестов, по умолчанию 1. Каждая группа может выполняться в
-    отдельном потоке при необходимости. Это экспериментальная фича и она может быть полезна только для тестов НЕ
-    выполняющих каких либо сложных вычислений (CPU bound). Лучше всего использовать этот параметр (больше 1) для тестов
-    связанных с использованием I/O операций - работа с диском, запросы по сети. Obey the GIL!
+    :param listener: is test listener, DefaultListener is used by default. If set, then the verbose parameter is ignored
+    (the one in the listener is used).
+    :param verbose: is the report detail, 0 - briefly (only dots and 1 letter), 1 - detail, indicating only dropped
+    tests, 2 - detail, indicating successful and fallen, 3 - detail and at the end, a list of fallen and broken ones
+    If not between 0 and 3, then 0 is accepted
+    :param groups: is the list of group names to run, to run only the tests you need
+    :param params: is the dictionary of parameters available in all tests (general run parameters)
+    :param threads: is the number of threads to run tests by default is 1. Each group can run in a separate thread if
+    necessary. This is an experimental feature and it can be useful only for tests NOT performing any complex
+    calculations (CPU bound). It is best to use this parameter (more than 1) for tests related to the use of I / O
+    operations - disk work, network requests. Obey the GIL!
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
-    # Если задан слушатель, то используем его, иначе по умолчанию
+    # If a listener is specified, then use it, otherwise by default
     global _listener
     _listener = listener if listener else DefaultListener(verbose)
     test_suite = TestSuite.get_instance()
     if groups:
         test_suite.filter_groups(groups)
-    # Если тестов нет, то останавливаем
+    # If there are no tests, then stop
     if test_suite.is_empty():
         _listener.on_empty_suite(test_suite)
         return
@@ -53,18 +53,18 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
 
 
 def _run(test_suite: TestSuite, threads: int = 1):
-    # Создаем пул потоков для выполнения тестов, по-умолчанию 1 поточное выполнение
+    # Create a pool of threads to run tests, by default 1 thread execution
     pool = ThreadPoolExecutor(max_workers=threads)
-    # Проверка все ли используемые имена провайдеров найдены
+    # Check if all used provider names are found
     _check_data_providers(test_suite)
     _listener.on_suite_starts(test_suite)
     try:
-        # Если фикстура перед тест-сьютом упала, то тесты не запускаем (фикстура после тест-сюта будет выполнена
-        # при соответствующем флаге)
+        # If the fixture before the test suite has fallen, then will not run the tests (fixture after the test suite
+        # will be executed with the appropriate flag)
         if not _run_before_suite(test_suite):
             return
         for group in test_suite.groups.values():
-            # Если в группе нет тестов, то пропускаем ее
+            # If there are no tests in the group, then skip it
             if not group.tests:
                 continue
             pool.submit(_run_group_before_and_after_at_separate_thread, group)
@@ -75,7 +75,7 @@ def _run(test_suite: TestSuite, threads: int = 1):
 
 
 def _run_group_before_and_after_at_separate_thread(group: TestGroup):
-    # Если фикстура перед группой упала, то тесты не запускаем
+    # If the fixture befor the group fell, then we do not run the tests
     if not _run_before_group(group):
         return
     _run_all_tests_in_group(group)

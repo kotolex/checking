@@ -3,24 +3,24 @@ from typing import List, Callable
 
 class TestCase:
     """
-    Родитель для теста и группы тестов (тестового набора), содержит общие методы.
+    Parent for test and group of tests (test set) has the common methods.
     """
 
     def __init__(self, name: str):
         self.name = name
-        # Список функций, выполняемых до теста/набора
+        # The list of the functions that execute before test/group
         self.before: List[Callable] = []
-        # Список функций, выполняемых после теста/набора
+        # The list of the functions that execute after test/group
         self.after: List[Callable] = []
-        # Флаг того, что предварительная операция упала, в таком случае не будет стартовать функция после теста
+        # The flag that the preliminary operation has fallen, in this case the function will not start after the test
         self.is_before_failed: bool = False
-        # Флаг обязательного запуска функций после теста, даже если предварительные упали
+        # The flag of obligatory start of function after the test, even if the preliminary ones has fell down
         self.always_run_after: bool = False
-        # Имя провайдера для дальнейшей поставки данных в тест
+        # The name of the provider for future delivery of data to the test
         self.provider = None
-        # Количество попыток прогона теста
+        # The number of the test run attempts
         self.retries: int = 1
-        # Приоритет теста, 0 - наивысший
+        # Test priority where 0 is highest
         self.priority: int = 0
 
     def add_before(self, func: Callable):
