@@ -1,6 +1,6 @@
 from unittest import main, TestCase
 
-from checking.classes.fluent_assert import FluentAssert, verify
+from checking.classes.fluent_assert import verify
 from checking.exceptions import TestBrokenException
 
 

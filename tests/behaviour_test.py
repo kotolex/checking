@@ -3,12 +3,12 @@ from time import sleep, time
 import math
 
 from checking.runner import start
-from checking.classes.basic_listener import Listener
+from checking.classes.listeners.basic import Listener
 from checking.classes.soft_assert import SoftAssert
 from checking.annotations import *
 from tests.fixture_behaviour_test import clear
 from checking.asserts import *
-from checking.classes.basic_listener import short
+from checking.helpers.others import short
 
 
 def _fn(it):

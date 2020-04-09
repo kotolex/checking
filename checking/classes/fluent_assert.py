@@ -1,7 +1,7 @@
 from typing import Iterable, Sized, Sequence
 
 from checking.asserts import *
-from .basic_listener import short
+from checking.helpers.others import short
 
 
 class FluentAssert:

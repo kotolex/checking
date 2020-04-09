@@ -4,7 +4,7 @@ from checking.annotations import *
 from checking.exceptions import *
 from checking.classes.basic_suite import TestSuite
 from checking.runner import start
-from checking.classes.basic_listener import Listener
+from checking.classes.listeners.basic import Listener
 from tests.fixture_behaviour_test import clear
 
 

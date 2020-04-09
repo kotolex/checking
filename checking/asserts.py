@@ -3,7 +3,7 @@ from typing import Any, Type
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
-from .classes.basic_listener import short
+from .helpers.others import short
 
 
 def is_true(obj: Any, message: str = None):
