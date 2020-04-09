@@ -12,15 +12,16 @@ from .classes.exc_thread import run_with_timeout
 # Tests listener
 _listener: Listener
 
-# Common prameters for whole test-suite
+# Common parameters for whole test-suite
 common_parameters: Dict[str, Any] = {}
 
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
-          threads: int = 1):
+          threads: int = 1, suite_name: str = 'Default Test Suite'):
     """
     The main function of tests start
 
+    :param suite_name: name of the test-suite
     :param listener: is test listener, DefaultListener is used by default. If set, then the verbose parameter is ignored
     (the one in the listener is used).
     :param verbose: is the report detail, 0 - briefly (only dots and 1 letter), 1 - detail, indicating only dropped
@@ -39,6 +40,7 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     global _listener
     _listener = listener if listener else DefaultListener(verbose)
     test_suite = TestSuite.get_instance()
+    test_suite.name = suite_name
     if groups:
         test_suite.filter_groups(groups)
     # If there are no tests, then stop
@@ -75,7 +77,7 @@ def _run(test_suite: TestSuite, threads: int = 1):
 
 
 def _run_group_before_and_after_at_separate_thread(group: TestGroup):
-    # If the fixture befor the group fell, then we do not run the tests
+    # If the fixture before the group fell, then we do not run the tests
     if not _run_before_group(group):
         return
     _run_all_tests_in_group(group)

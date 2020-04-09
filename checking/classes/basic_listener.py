@@ -158,6 +158,7 @@ class DefaultListener(Listener):
     def on_suite_starts(self, test_suite: TestSuite):
         super().on_suite_starts(test_suite)
         self.start_time = time.time()
+        print(f'Starting suite "{test_suite.name}"')
 
     def on_empty_suite(self, test_suite: TestSuite):
         print('No tests were found! Stopped...')

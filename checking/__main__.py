@@ -60,7 +60,8 @@ def check_parameters(parameters: Dict):
 
 
 def start_with_parameters(parameters: Dict):
-    params = {'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [], 'threads': 1}
+    params = {'name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [],
+              'threads': 1}
     params.update(parameters)
     check_parameters(params)
     verbose = params.get('verbose')
@@ -69,6 +70,7 @@ def start_with_parameters(parameters: Dict):
     modules = params.get('modules')
     listener_ = params.get('listener')
     threads = params.get('threads')
+    name = params.get('name')
     real_listener = None
     try:
         if listener_:
@@ -85,7 +87,7 @@ def start_with_parameters(parameters: Dict):
     except Exception:
         print(f'Something wrong with importing! Is that an existing path - {mod}?', file=sys.stderr)
         raise
-    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads)
+    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads, suite_name = name)
 
 
 def _is_import_in_file(file_name: str) -> bool:
