@@ -6,6 +6,67 @@ from checking.exceptions import TestBrokenException, ExceptionWrapper
 
 class AssertsTest(TestCase):
 
+    def test_is_zero(self):
+        is_zero(0)
+
+    def test_is_zero_float(self):
+        is_zero(0.0)
+
+    def test_is_zero_fails_if_wrong_type(self):
+        with self.assertRaises(TestBrokenException):
+            is_zero("0")
+
+    def test_is_zero_fails_if_positive(self):
+        with self.assertRaises(AssertionError):
+            is_zero(1)
+
+    def test_is_zero_fails_if_negative(self):
+        with self.assertRaises(AssertionError):
+            is_zero(-1)
+
+    def test_is_zero_fails_if_positive_float(self):
+        with self.assertRaises(AssertionError):
+            is_zero(0.1)
+
+    def test_is_positive(self):
+        is_positive(1)
+
+    def test_is_positive_str(self):
+        is_positive('1')
+
+    def test_is_positive_list(self):
+        is_positive([1,2])
+
+    def test_is_positive_fail(self):
+        with self.assertRaises(AssertionError):
+            is_positive(0)
+
+    def test_is_positive_fail_if_not_seq(self):
+        with self.assertRaises(TestBrokenException):
+            is_positive((g for g in range(2)))
+
+    def test_is_positive_fail_str(self):
+        with self.assertRaises(AssertionError):
+            is_positive('')
+
+    def test_is_negative(self):
+        is_negative(-1)
+
+    def test_is_negative_float(self):
+        is_negative(-0.213)
+
+    def test_is_negative_fail_zero(self):
+        with self.assertRaises(AssertionError):
+            is_negative(0)
+
+    def test_is_negative_fail(self):
+        with self.assertRaises(AssertionError):
+            is_negative(5)
+
+    def test_is_negative_fail_if_wrong_type(self):
+        with self.assertRaises(TestBrokenException):
+            is_negative('1')
+
     def test_equals_ok(self):
         equals(1, 1)
 
@@ -164,7 +225,7 @@ class AssertsTest(TestCase):
         is_false(1 == 2)
         is_false([])
 
-    def is_false_failed(self):
+    def test_is_false_failed(self):
         with self.assertRaises(AssertionError):
             is_false(True)
 

@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Any, Type
+from typing import Any, Type, Union, Sequence
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
@@ -231,6 +231,46 @@ def not_contains(part: Any, whole: Any, message: str = None):
     __contains_or_not(part, whole, is_contains=False, message=message)
 
 
+def is_zero(actual: Union[int, float]):
+    """
+    Function checks that the object is 0.
+    :param actual: int or float argument
+    :return: None
+    """
+    _check_argument_is_number(actual, 'is_zero')
+    if actual != 0:
+        raise AssertionError(f'"{short(actual)}"<{type(actual).__name__}> is not equal to zero!')
+
+
+def is_positive(actual: Union[int, float, Sequence]):
+    """
+    Function checks that the object is bigger than 0, if it is Sequence(list, str, etc.) checks that length is positive.
+    :param actual: int, float or Sequence argument
+    :return: None
+    """
+    if type(actual) in (int, float):
+        if actual <= 0:
+            raise AssertionError(f'{actual} is not positive!')
+    else:
+        try:
+            len_ = len(actual)
+            if len_ <= 0:
+                raise AssertionError(f'Length of "{short(actual)}"<{type(actual).__name__}> is not positive!')
+        except TypeError:
+            raise TestBrokenException(f'Object "{short(actual)}"<{type(actual).__name__}> has no len!')
+
+
+def is_negative(actual: Union[int, float]):
+    """
+    Function checks that the object is smaller than 0.
+    :param actual: int or float argument
+    :return: None
+    """
+    _check_argument_is_number(actual, 'is_negative')
+    if actual >= 0:
+        raise AssertionError(f'"{short(actual)}"<{type(actual).__name__}> is not negative!')
+
+
 def __contains_or_not(part, whole, is_contains: bool = True, message: str = None):
     try:
         if is_contains and part in whole:
@@ -252,3 +292,9 @@ def __contains_or_not(part, whole, is_contains: bool = True, message: str = None
 
 def _mess(message: str) -> str:
     return f'{message}\n' if message else ''
+
+
+def _check_argument_is_number(actual, name: str):
+    if type(actual) not in (int, float):
+        raise TestBrokenException(f"Only int or float types allowed for {name}," +
+                                  f" but got '{short(actual)}'<{type(actual).__name__}>")
