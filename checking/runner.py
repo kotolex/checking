@@ -18,7 +18,7 @@ common_parameters: Dict[str, Any] = {}
 
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
-          threads: int = 1, suite_name: str = 'Default Test Suite'):
+          threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False):
     """
     The main function of tests start
 
@@ -34,6 +34,8 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     necessary. This is an experimental feature and it can be useful only for tests NOT performing any complex
     calculations (CPU bound). It is best to use this parameter (more than 1) for tests related to the use of I / O
     operations - disk work, network requests. Obey the GIL!
+    :param dry_run: if True runs test-suite with fake function except of real tests and fixtures, can be useful to
+    find out order, number of tests, params of provider etc.
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
@@ -52,7 +54,27 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
         common_parameters.update(params)
     if threads < 1:
         threads = 1
+    if dry_run:
+        _dry_run(test_suite)
     _run(test_suite, threads)
+
+
+def _dry_run(test_suite):
+    """
+    Clear all fixtures and replace real test with fake function
+    :param test_suite: is TestSuite
+    :return: None
+    """
+    _listener.on_dry_run(test_suite)
+    test_suite.before = []
+    test_suite.after = []
+    for group in test_suite.groups.values():
+        group.before = []
+        group.after = []
+        for test in group.tests:
+            test.before = []
+            test.after = []
+            test.test = _fake
 
 
 def _run(test_suite: TestSuite, threads: int = 1):
@@ -114,7 +136,8 @@ def _run_test_with_provider(test, group):
             clone.argument = param
             is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False)
             if is_one_of_before_test_failed:
-                print(f'Because of "before_test" all tests for {test} with data provider "{test.provider}" was IGNORED!')
+                print(f'Because of "before_test" all tests for {test} with data provider '
+                      f'"{test.provider}" was IGNORED!')
                 break
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
@@ -208,3 +231,7 @@ def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
         _listener.on_fixture_failed(group_name, fixture_type, error)
         is_failed = True
     return is_failed
+
+
+def _fake(*args):
+    pass

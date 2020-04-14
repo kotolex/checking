@@ -45,6 +45,14 @@ class Listener:
         """
         pass
 
+    def on_dry_run(self, test_suite: TestSuite):
+        """
+        It calls if suite is run in dry mode (no real tests executes)
+        :param test_suite: is TestSuite
+        :return: None
+        """
+        pass
+
     def on_fixture_failed(self, group_name: str, fixture_type: str, exception_: Exception):
         """
         It calls when a fixture failed to start (before/after).

@@ -25,7 +25,14 @@ class DefaultListener(Listener):
         print(f'Starting suite "{test_suite.name}"')
 
     def on_empty_suite(self, test_suite: TestSuite):
+        super().on_empty_suite(test_suite)
         print('No tests were found! Stopped...')
+
+    def on_dry_run(self, test_suite: TestSuite):
+        super().on_dry_run(test_suite)
+        print_splitter_line()
+        print("DRY RUN MODE! No real tests will be execute! All fixtures ignored!")
+        print_splitter_line()
 
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)
