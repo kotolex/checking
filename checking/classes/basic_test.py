@@ -21,6 +21,7 @@ class Test(TestCase):
         self.argument: Any = None
         self.timeout: int = 0
         self.only_if: Callable = None
+        self.description = test.__doc__
 
     def run(self):
         """
@@ -29,14 +30,18 @@ class Test(TestCase):
         """
         if self.only_if:
             if not self.only_if():
-                raise TestIgnoredException ()
+                raise TestIgnoredException()
         if self.argument is not None:
             self.test(self.argument)
         else:
             self.test()
 
     def __str__(self):
-        return f'{self.group_name}.{self.name}'
+        description = self.description if self.description else ''
+        if description:
+            description = description.replace('\n','').replace('  ', '')
+            description = f"('{description}')"
+        return f'{self.group_name}.{self.name} {description}'
 
     def clone(self) -> TestCase:
         """
@@ -55,4 +60,5 @@ class Test(TestCase):
         clone.argument = self.argument
         clone.timeout = self.timeout
         clone.only_if = self.only_if
+        clone.description = self.description
         return clone

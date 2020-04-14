@@ -9,8 +9,8 @@ from .classes.basic_test import Test
 from .exceptions import *
 
 
-def test(*args, enabled: bool = True, name: str = None, data_provider: str = None, retries: int = 1,
-         groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if: Callable = None):
+def test(*args, enabled: bool = True, name: str = None, description: str = None, data_provider: str = None,
+         retries: int = 1, groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if: Callable = None):
     """
     The annotation that marks a function in a module as a test, does not work with classes and class methods and with
     functions, that take an argument (except using of data provider).
@@ -18,6 +18,8 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
     :param enabled: is the flag of the active test, if False then the test does not fall into the run and all its other
     settings are ignored too
     :param name: the name of the test, but if there is no name, then the name is the function name
+    :param description: Test description, if None will be taken from function docs. If both description and function
+    doc exists, description wins.
     :param data_provider: is the string name of data provider, which is not need to be in current module with test, the
     main is that it was found during assembling of test entities. If not found, the exception UnknownProviderName will
     be raised.
@@ -58,6 +60,8 @@ def test(*args, enabled: bool = True, name: str = None, data_provider: str = Non
             test_object.only_if = only_if
             test_object.retries = retries
             test_object.priority = priority
+            if description:
+                test_object.description = description
             if timeout:
                 test_object.timeout = int(timeout)
                 if test_object.timeout < 0:

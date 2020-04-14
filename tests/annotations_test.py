@@ -29,6 +29,11 @@ class T:
         pass
 
 
+def f():
+    """Test"""
+    pass
+
+
 class TestAnnotations(TestCase):
 
     def test_valid_func_works(self):
@@ -155,6 +160,31 @@ class TestAnnotations(TestCase):
         clear()
         test(timeout=-1)(valid)
         self.assertEqual(0, list(TestSuite.get_instance().groups.values())[0].tests[0].timeout)
+
+    def test_description_empty(self):
+        clear()
+        test(valid)
+        self.assertIsNone(list(TestSuite.get_instance().groups.values())[0].tests[0].description)
+        self.assertEqual('annotations_test.valid ', str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
+
+    def test_description_from_param(self):
+        clear()
+        test(description='test')(valid)
+        self.assertEqual(list(TestSuite.get_instance().groups.values())[0].tests[0].description, 'test')
+        self.assertEqual("annotations_test.valid ('test')",
+                         str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
+
+    def test_description_from_docs(self):
+        clear()
+        test(f)
+        self.assertEqual(list(TestSuite.get_instance().groups.values())[0].tests[0].description, 'Test')
+        self.assertEqual("annotations_test.f ('Test')", str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
+
+    def test_description_from_param_wins_docs(self):
+        clear()
+        test(description='test')(f)
+        self.assertEqual(list(TestSuite.get_instance().groups.values())[0].tests[0].description, 'test')
+        self.assertEqual("annotations_test.f ('test')", str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
 
 
 if __name__ == '__main__':

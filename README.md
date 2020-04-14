@@ -203,6 +203,9 @@ Test is a function that marked with @test annotation, you can manage them with b
 
 **name** (str) - name of the test, if not specify the function name will be used
 
+**description** (str) - test description. If absent, will be taken from function docs. If both description and function
+    doc exists, description wins.
+
 **data_provider** (str) - name of the provider to use with test. If specified, test should have one argument, 
 to get values from provider. If no providers found with that name then exception will raise!
 
