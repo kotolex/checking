@@ -39,8 +39,10 @@ class TestClasses(TC):
         self.assertEqual('__main__', test.group_name)
 
     def test_str_for_Test(self):
-        test = Test('name', print)
-        self.assertEqual('__main__.name', str(test))
+        def f():
+            pass
+        test = Test('name', f)
+        self.assertEqual('__main__.name ', str(test))
 
     def test_run_for_Test(self):
         test = Test('name', self.fake_runner)
@@ -84,7 +86,7 @@ class TestClasses(TC):
         test = Test('name', self.fake_runner)
         group.add_test(test)
         self.assertEqual(test, group.tests[0])
-        self.assertEqual('default.name', str(test))
+        self.assertEqual('default.name ', str(test))
         self.assertFalse(any([group.after_all, group.before_all, group.after, group.before, test.after, test.before]))
 
     def test_add_test_to_group_with_before_test(self):
