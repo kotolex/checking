@@ -165,7 +165,7 @@ class TestAnnotations(TestCase):
         clear()
         test(valid)
         self.assertIsNone(list(TestSuite.get_instance().groups.values())[0].tests[0].description)
-        self.assertEqual('annotations_test.valid ', str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
+        self.assertEqual('annotations_test.valid', str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
 
     def test_description_from_param(self):
         clear()

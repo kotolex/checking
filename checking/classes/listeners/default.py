@@ -31,7 +31,7 @@ class DefaultListener(Listener):
     def on_dry_run(self, test_suite: TestSuite):
         super().on_dry_run(test_suite)
         print_splitter_line()
-        print("DRY RUN MODE! No real tests will be execute! All fixtures ignored!")
+        print("DRY RUN MODE! No real tests will be executed! All fixtures will be ignored!")
         print_splitter_line()
 
     def on_suite_ends(self, test_suite: TestSuite):

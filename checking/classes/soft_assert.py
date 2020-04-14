@@ -6,8 +6,8 @@ from checking.asserts import *
 
 class SoftAssert:
     """
-    The class for applying soft checks, that is, checks that do not drop the test immediately, but allow others to
-    perform checks. This can be convenient for obtaining information about various parts of the system under test, for
+    The class for applying soft checks, that is, checks that do not stop the test immediately, but allow to perform
+    other checks. This can be convenient for obtaining information about various parts of the system under test, for
     instance, for validating some of fields. It allows you to get information about all the fallen checks, and not about
     the first, as is the case with a simple test.
     An example:

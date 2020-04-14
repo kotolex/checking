@@ -40,8 +40,8 @@ class Test(TestCase):
         description = self.description if self.description else ''
         if description:
             description = description.replace('\n','').replace('  ', '')
-            description = f"('{description}')"
-        return f'{self.group_name}.{self.name} {description}'
+            description = f" ('{description}')"
+        return f'{self.group_name}.{self.name}{description}'
 
     def clone(self) -> TestCase:
         """

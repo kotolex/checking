@@ -38,6 +38,11 @@ class DefaultFileListener(Listener):
         logger.info(f'Test-suite "{test_suite.name}" started!')
         self.start_time = time.time()
 
+    def on_dry_run(self, test_suite: TestSuite):
+        super().on_dry_run(test_suite)
+        logger = logging.getLogger()
+        logger.warning("DRY RUN MODE! No real tests will be executed! All fixtures will be ignored!")
+
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)
         elapsed = time.time() - self.start_time

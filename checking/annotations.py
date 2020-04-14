@@ -18,8 +18,9 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     :param enabled: is the flag of the active test, if False then the test does not fall into the run and all its other
     settings are ignored too
     :param name: the name of the test, but if there is no name, then the name is the function name
-    :param description: Test description, if None will be taken from function docs. If both description and function
-    doc exists, description wins.
+    :param description: Test description, if None will be taken from function documentation. If there are description
+    and documentation, then the parameter has the advantage, to wit this is in use, otherwise, documentation will be
+    taken from documentation of the function (Test).
     :param data_provider: is the string name of data provider, which is not need to be in current module with test, the
     main is that it was found during assembling of test entities. If not found, the exception UnknownProviderName will
     be raised.
