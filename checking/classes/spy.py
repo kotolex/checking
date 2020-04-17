@@ -9,18 +9,25 @@ class Spy:
     the call of respectively functions with arguments.
     """
 
-    def __init__(self, obj: Any):
+    def __init__(self, obj: Any = None):
         self.chain: List[Call] = []
         self.returns = {}
-        for name in dir(obj):
-            if callable(getattr(obj, name)):
-                if name != '__class__':
-                    setattr(self, name, partial(self.__function, name))
+        if obj is not None:
+            for name in dir(obj):
+                if callable(getattr(obj, name)):
+                    if name != '__class__':
+                        setattr(self, name, partial(self.__function, name))
+                    else:
+                        setattr(self, name, self.__class__)
                 else:
-                    setattr(self, name, self.__class__)
-            else:
-                setattr(self, name, None)
+                    setattr(self, name, None)
         self.basic = obj
+
+    def __call__(self, *args, **kwargs):
+        self.__function('', *args, **kwargs)
+        if '' in self.returns.keys():
+            return self.returns['']
+        return None
 
     def __function(self, name, *args, **kwargs):
         self.chain.append(Call(name, *args, **kwargs))
@@ -28,10 +35,21 @@ class Spy:
             return self.returns[name]
 
     def __str__(self):
+        if self.basic is None:
+            return f'Empty Test Spy'
         return f'Test spy of the "{self.basic}" {type(self.basic)}'
 
     def all_calls(self):
         return self.chain
+
+    def was_called(self) -> bool:
+        return self.was_function_called('')
+
+    def was_called_with_argument(self, arg: Any) -> bool:
+        return self.was_function_with_argument_called('', arg)
+
+    def when_call_returns(self, result: Any):
+        self.when_call_function_returns('', result)
 
     def was_function_called(self, name: str) -> bool:
         return any([e for e in self.chain if e.name == name])
@@ -43,7 +61,6 @@ class Spy:
 
     def was_exact_function_called(self, name, *args, **kwargs):
         call = Call(name, *args, **kwargs)
-        print([e for e in self.chain if e == call])
         return any([e for e in self.chain if e == call])
 
     def when_call_function_returns(self, name: str, result: Any):
