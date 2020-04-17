@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from checking.classes.spy import Spy
+from checking.classes.spy import Spy, Double, Call
 
 
 class SpyTest(TestCase):
@@ -71,6 +71,25 @@ class SpyTest(TestCase):
         spy = Spy('string')
         spy.when_call_function_returns('upper', 22)
         self.assertEqual(22, spy.upper())
+
+    def test_double_str(self):
+        d = Double('str')
+        self.assertEqual('Test Double of the "str" <class \'str\'>', str(d))
+
+    def test_double_has_same_behaviour(self):
+        d = Double('str')
+        self.assertEqual('STR', d.upper())
+
+    def test_double_record_calls(self):
+        d = Double('str')
+        d.upper()
+        self.assertTrue(len(d.all_calls()) == 1)
+        self.assertEqual(d.all_calls(), [Call('upper')])
+
+    def test_double_replace_returns(self):
+        d = Double('str')
+        d.when_call_function_returns('upper', 'UPS')
+        self.assertEqual('UPS',d.upper())
 
 
 if __name__ == '__main__':

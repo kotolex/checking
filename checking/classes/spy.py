@@ -67,6 +67,35 @@ class Spy:
         self.returns[name] = result
 
 
+class Double(Spy):
+    """
+        The full test-double (twin of the object), the main difference with Spy is behaviour. Behaviour stays the same
+        as original object has, but all calls fixed and you can change return result of the methods.
+        This class in used due to make sure in the call of respectively functions with arguments.
+    """
+
+    def __init__(self, obj: Any = None):
+        super().__init__()
+        if obj is not None:
+            for name in dir(obj):
+                if callable(getattr(obj, name)):
+                    if name != '__class__':
+                        setattr(self, name, partial(self.__function, name))
+                    else:
+                        setattr(self, name, self.__class__)
+        self.basic = obj
+
+    def __function(self, name, *args, **kwargs):
+        self.chain.append(Call(name, *args, **kwargs))
+        if name in self.returns:
+            return self.returns[name]
+        else:
+            return getattr(self.basic, name)(*args, **kwargs)
+
+    def __str__(self):
+        return f'Test Double of the "{self.basic}" {type(self.basic)}'
+
+
 class Call:
     """
     The class which represents a single function call, stores its name and call arguments
