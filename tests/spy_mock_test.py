@@ -89,7 +89,48 @@ class SpyTest(TestCase):
     def test_double_replace_returns(self):
         d = Double('str')
         d.when_call_function_returns('upper', 'UPS')
-        self.assertEqual('UPS',d.upper())
+        self.assertEqual('UPS', d.upper())
+
+    def test_all_calls_args(self):
+        s = Spy('str')
+        s.replace('t', 'T')
+        s.upper()
+        s.lower(1)
+        self.assertEqual([('t', 'T'), (), (1,)], s.all_calls_args())
+
+    def test_all_calls_args_flatten(self):
+        s = Spy('str')
+        s.replace('t', 'T')
+        s.upper()
+        s.lower(1)
+        self.assertEqual(['t', 'T', 1], s.all_calls_args_flatten())
+
+    def test_len_for_str(self):
+        s = Double('str')
+        self.assertEqual(3, len(s))
+
+    def test_len_for_str_with_mock(self):
+        s = Double('str')
+        s.when_call_function_returns('__len__', 120)
+        self.assertEqual(120, len(s))
+
+    def test_bool_for_str(self):
+        s = Double('str')
+        self.assertEqual(True, bool(s))
+
+    def test_bool_for_str_with_mock(self):
+        s = Double('str')
+        s.when_call_function_returns('__bool__', False)
+        self.assertEqual(False, bool(s))
+
+    def test_iter_for_str(self):
+        s = Double('str')
+        self.assertEqual('str', ''.join(iter(s)))
+
+    def test_iter_for_str_with_mock(self):
+        s = Double('str')
+        s.when_call_function_returns('__iter__', iter('test'))
+        self.assertEqual('test', ''.join(iter(s)))
 
 
 if __name__ == '__main__':

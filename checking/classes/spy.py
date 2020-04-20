@@ -1,5 +1,31 @@
-from typing import Any, List
+from typing import Any, List, Tuple
 from functools import partial
+
+
+class Call:
+    """
+    The class which represents a single function call, stores its name and call arguments
+    """
+
+    def __init__(self, name: str, *args, **kwargs):
+        self.name = name
+        self.args = args
+        self.kwargs = kwargs
+
+    def __str__(self):
+        args = self.args if self.args else 'no args'
+        kwargs = self.kwargs if self.kwargs else 'no keyword args'
+        return f'Call of "{self.name}" with {args}, {kwargs}'
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+        if type(other) != type(self):
+            return False
+        return self.name == other.name and self.args == other.args and self.kwargs == other.kwargs
 
 
 class Spy:
@@ -39,22 +65,51 @@ class Spy:
             return f'Empty Test Spy'
         return f'Test spy of the "{self.basic}" {type(self.basic)}'
 
-    def all_calls(self):
+    def all_calls(self) -> List[Call]:
+        """
+        Returns list of Call objects (all method calls of the spied object)
+        :return: List[Call]
+        """
         return self.chain
 
     def was_called(self) -> bool:
+        """
+        Returns True if spy object was called itself
+        :return: bool
+        """
         return self.was_function_called('')
 
     def was_called_with_argument(self, arg: Any) -> bool:
+        """
+        Returns True if spy object was called itself with exact argument
+        :param arg: Any argument to look for
+        :return: bool
+        """
         return self.was_function_with_argument_called('', arg)
 
     def when_call_returns(self, result: Any):
+        """
+        If spy object will be called itself return result
+        :param result: any type to return when call
+        :return: None
+        """
         self.when_call_function_returns('', result)
 
     def was_function_called(self, name: str) -> bool:
+        """
+        Returns True if exact function/method was called on spied object
+        :param name: name of the function/method
+        :return: bool
+        """
         return any([e for e in self.chain if e.name == name])
 
     def was_function_with_argument_called(self, name: str, arg: Any) -> bool:
+        """
+        Returns True if exact function/method was called with exact argument on spied object
+        :param name: name of the function/method
+        :param arg: any argument
+        :return: bool
+        """
         if not self.was_function_called(name):
             return False
         return any([e for e in self.chain if e.name == name and arg in e.args])
@@ -64,7 +119,27 @@ class Spy:
         return any([e for e in self.chain if e == call])
 
     def when_call_function_returns(self, name: str, result: Any):
+        """
+        Replace result of the function/method call with some new result
+        :param name: name of the function
+        :param result: any result to return
+        :return: None
+        """
         self.returns[name] = result
+
+    def all_calls_args(self) -> List[Tuple]:
+        """
+        Returns all called function/method arguments
+        :return: List[Tuple]
+        """
+        return [e.args for e in self.chain]
+
+    def all_calls_args_flatten(self) -> List[Any]:
+        """
+        Returns flat list of all arguments of all called functions
+        :return: List[Any]
+        """
+        return [arg for call in self.chain for arg in call.args]
 
 
 class Double(Spy):
@@ -95,28 +170,11 @@ class Double(Spy):
     def __str__(self):
         return f'Test Double of the "{self.basic}" {type(self.basic)}'
 
+    def __len__(self):
+        return len(self.basic) if '__len__' not in self.returns else self.returns['__len__']
 
-class Call:
-    """
-    The class which represents a single function call, stores its name and call arguments
-    """
+    def __bool__(self):
+        return bool(self.basic) if '__bool__' not in self.returns else self.returns['__bool__']
 
-    def __init__(self, name: str, *args, **kwargs):
-        self.name = name
-        self.args = args
-        self.kwargs = kwargs
-
-    def __str__(self):
-        args = self.args if self.args else 'no args'
-        kwargs = self.kwargs if self.kwargs else 'no keyword args'
-        return f'Call of "{self.name}" with {args}, {kwargs}'
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __eq__(self, other):
-        if other is None:
-            return False
-        if type(other) != type(self):
-            return False
-        return self.name == other.name and self.args == other.args and self.kwargs == other.kwargs
+    def __iter__(self):
+        return iter(self.basic) if '__iter__' not in self.returns else self.returns['__iter__']
