@@ -106,7 +106,11 @@ class DefaultFileListener(Listener):
         super().on_ignored_by_condition(group, test, exc)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         logger = logging.getLogger(currentThread().getName())
-        logger.warning(f'Test "{test}" {add_} ignored because of condition!')
+        if type(exc) is SystemExit:
+            logger.warning(f'Test "{test}" {add_} ignored because of sys.exit() call inside function!')
+        else:
+            logger.warning(f'Test "{test}" {add_} ignored because of condition'
+                           f' ({test.only_if.__module__}.{test.only_if})!')
 
     def on_before_suite_failed(self, test_suite):
         super().on_before_suite_failed(test_suite)

@@ -198,6 +198,21 @@ class BehaviourTest(TestCase):
         self.assertEqual(1, len(TestSuite.get_instance().ignored()))
         self.assertEqual(1, TestSuite.get_instance().tests_count())
 
+    def test_ignored_on_sys_exit(self):
+        clear()
+
+        def exit_():
+            import sys
+            sys.exit(1)
+
+        test(exit_)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, len(TestSuite.get_instance().ignored()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
 
 if __name__ == '__main__':
     main()

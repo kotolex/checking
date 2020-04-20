@@ -191,7 +191,7 @@ def _run_test(test: Test, group: TestGroup) -> bool:
         return True
     except AssertionError as e:
         _listener.on_failed(group, test, e)
-    except TestIgnoredException as e:
+    except (TestIgnoredException, SystemExit) as e:
         _listener.on_ignored_by_condition(group, test, e)
     except Exception as e:
         _listener.on_broken(group, test, e)

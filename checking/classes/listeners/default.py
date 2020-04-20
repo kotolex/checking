@@ -105,7 +105,10 @@ class DefaultListener(Listener):
     def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
         super().on_ignored_by_condition(group, test, exc)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
-        print(f'Test "{test}" {add_} ignored because of condition!')
+        if type(exc) is SystemExit:
+            print(f'Test "{test}" {add_} ignored because of sys.exit() call inside function!')
+        else:
+            print(f'Test "{test}" {add_} ignored because of condition ({test.only_if.__module__}.{test.only_if})!')
 
     def _failed_or_broken(self, test, exception_, _result):
         _letter = f'{_result.upper()}!'
