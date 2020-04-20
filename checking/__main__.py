@@ -14,7 +14,7 @@ look_for = ('import checking', 'from checking')
 
 def is_options_exists(file_name: str) -> bool:
     """
-    Tells, if there is settings file called options.json inside the start folder.
+    Tells, if there is settings file called *.json inside the start folder.
     :return: True, if the file exists
     """
     return len(glob.glob(file_name)) == 1
@@ -22,7 +22,7 @@ def is_options_exists(file_name: str) -> bool:
 
 def read_parameters_from_file(file_name) -> Dict:
     """
-    Reads the parameters from settings file called options.json, returns as a parameter dictionary.
+    Reads the parameters from settings file *.json, returns as a parameter dictionary.
     """
     with open(file_name, encoding='utf-8') as file:
         result = ''.join([line.rstrip() for line in file.readlines()])
@@ -57,11 +57,15 @@ def check_parameters(parameters: Dict):
     threads = parameters['threads']
     if type(threads) is not int:
         raise ValueError('Threads parameter must be int (>=1)!')
+    if 'dry_run' in parameters:
+        dry_run = parameters['dry_run']
+        if type(dry_run) is not bool:
+            raise ValueError('Dry_run parameter must be bool (True or False)!')
 
 
 def start_with_parameters(parameters: Dict):
     params = {'name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [],
-              'threads': 1}
+              'threads': 1, 'dry_run': False}
     params.update(parameters)
     check_parameters(params)
     verbose = params.get('verbose')
@@ -71,6 +75,7 @@ def start_with_parameters(parameters: Dict):
     listener_ = params.get('listener')
     threads = params.get('threads')
     name = params.get('name')
+    dry_run = params.get('dry_run')
     real_listener = None
     try:
         if listener_:
@@ -87,7 +92,7 @@ def start_with_parameters(parameters: Dict):
     except Exception:
         print(f'Something wrong with importing! Is that an existing path - {mod}?', file=sys.stderr)
         raise
-    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads, suite_name = name)
+    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads, suite_name=name, dry_run=dry_run)
 
 
 def _is_import_in_file(file_name: str) -> bool:
@@ -113,8 +118,10 @@ def _walk_throw_and_import():
     :return: None
     """
     for root, dirs, files in os.walk(HOME_FOLDER, topdown=True):
-        for file in (f for f in files if _is_import_in_file(f'{root}\\{f}')):
-            package_ = root.replace(HOME_FOLDER, '').replace('\\', '')
+        if root.endswith(os.sep+'checking') or os.sep + 'checking' + os.sep in root:
+            continue
+        for file in (f for f in files if _is_import_in_file(f'{root}{os.sep}{f}')):
+            package_ = root.replace(HOME_FOLDER, '').replace(os.sep, '')
             file_name = file.replace('.py', '')
             name = package_ + '.' + file_name if package_ else file_name
             importlib.import_module(name, package=HOME_FOLDER)
@@ -123,14 +130,23 @@ def _walk_throw_and_import():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--options_file', help="File with the options to run")
+    parser.add_argument('-a', '--arg', help="Any Argument for test-suite")
     args = parser.parse_args()
     file_name = 'options.json'
     if args.options_file:
         file_name = args.options_file
+    p_ = {}
+    if args.arg:
+        if '=' in args.arg:
+            p_[args.arg.split('=')[0]] = args.arg.split('=')[1]
+        else:
+            p_[args.arg] = None
     # если есть файл настроек то берем все оттуда
     if is_options_exists(file_name):
         print(f"{file_name} found! Work with it...")
         params_ = read_parameters_from_file(file_name)
+        if p_:
+            params_.get("params").update(p_)
         start_with_parameters(params_)
     # иначе проходим по всем модулям в поисках тестов
     else:
