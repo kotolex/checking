@@ -118,7 +118,7 @@ def _walk_throw_and_import():
     :return: None
     """
     for root, dirs, files in os.walk(HOME_FOLDER, topdown=True):
-        if root.endswith(os.sep+'checking') or os.sep + 'checking' + os.sep in root:
+        if root.endswith(os.sep + 'checking') or os.sep + 'checking' + os.sep in root:
             continue
         for file in (f for f in files if _is_import_in_file(f'{root}{os.sep}{f}')):
             package_ = root.replace(HOME_FOLDER, '').replace(os.sep, '')
@@ -131,6 +131,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--options_file', help="File with the options to run")
     parser.add_argument('-a', '--arg', help="Any Argument for test-suite")
+    parser.add_argument('-d', '--dry_run', help="Boolean arg for dry_run (run without actual functions executed!",
+                        type=bool)
     args = parser.parse_args()
     file_name = 'options.json'
     if args.options_file:
@@ -141,6 +143,7 @@ if __name__ == '__main__':
             p_[args.arg.split('=')[0]] = args.arg.split('=')[1]
         else:
             p_[args.arg] = None
+    dry_run = args.dry_run if args.dry_run else False
     # если есть файл настроек то берем все оттуда
     if is_options_exists(file_name):
         print(f"{file_name} found! Work with it...")
@@ -152,4 +155,4 @@ if __name__ == '__main__':
     else:
         print(f"No options found! Starts to look for tests in all sub-folders")
         _walk_throw_and_import()
-        start(verbose=3, threads=1)
+        start(verbose=3, threads=1, params=p_, dry_run=dry_run)
