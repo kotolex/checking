@@ -1,14 +1,14 @@
 from typing import Callable, Any, Dict, List
 from concurrent.futures import ThreadPoolExecutor
 
+from .classes.basic_test import Test
+from .classes.basic_case import TestCase
 from .classes.basic_suite import TestSuite
 from .classes.basic_group import TestGroup
-from .classes.basic_case import TestCase
-from .classes.basic_test import Test
 from .classes.listeners.basic import Listener
+from .classes.exc_thread import run_with_timeout
 from .classes.listeners.default import DefaultListener
 from .exceptions import UnknownProviderName, TestIgnoredException
-from .classes.exc_thread import run_with_timeout
 
 # Tests listener
 _listener: Listener
@@ -80,14 +80,14 @@ def _dry_run(test_suite):
 def _run(test_suite: TestSuite, threads: int = 1):
     # Create a pool of threads to run tests, by default 1 thread execution
     pool = ThreadPoolExecutor(max_workers=threads)
-    # Check if all used provider names are found
-    _check_data_providers(test_suite)
     _listener.on_suite_starts(test_suite)
     try:
         # If the fixture before the test suite has fallen, then will not run the tests (fixture after the test suite
         # will be executed with the appropriate flag)
         if not _run_before_suite(test_suite):
             return
+        # Check if all used provider names are found
+        _check_data_providers(test_suite)
         for group in test_suite.groups.values():
             # If there are no tests in the group, then skip it
             if not group.tests:
@@ -131,7 +131,9 @@ def _run_before_group(group: TestGroup) -> bool:
 def _run_test_with_provider(test, group):
     generator = _provider_next(test.provider)
     try:
+        is_any_value_provides = False
         for param in generator:
+            is_any_value_provides = True
             clone = test.clone()
             clone.argument = param
             is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False)
@@ -139,6 +141,9 @@ def _run_test_with_provider(test, group):
                 print(f'Because of "before_test" all tests for {test} with data provider '
                       f'"{test.provider}" was IGNORED!')
                 break
+        # If no values at provider - ignore test
+        if not is_any_value_provides:
+            _listener.on_ignored_with_provider(test, group)
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
             raise e

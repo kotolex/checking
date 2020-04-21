@@ -1,4 +1,3 @@
-import glob
 import json
 import sys
 import os
@@ -7,17 +6,10 @@ import argparse
 from typing import Dict
 
 from checking.runner import start
+from checking.helpers.others import is_file_exists
 
 HOME_FOLDER = sys.path[0]
 look_for = ('import checking', 'from checking')
-
-
-def is_options_exists(file_name: str) -> bool:
-    """
-    Tells, if there is settings file called *.json inside the start folder.
-    :return: True, if the file exists
-    """
-    return len(glob.glob(file_name)) == 1
 
 
 def read_parameters_from_file(file_name) -> Dict:
@@ -145,7 +137,7 @@ if __name__ == '__main__':
             p_[args.arg] = None
     dry_run = args.dry_run if args.dry_run else False
     # если есть файл настроек то берем все оттуда
-    if is_options_exists(file_name):
+    if is_file_exists(file_name):
         print(f"{file_name} found! Work with it...")
         params_ = read_parameters_from_file(file_name)
         if p_:

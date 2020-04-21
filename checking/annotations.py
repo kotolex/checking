@@ -1,12 +1,13 @@
-from inspect import isfunction
+from sys import stderr
 from inspect import signature
 from inspect import getsource
-from sys import stderr
+from inspect import isfunction
 from typing import Callable, Any, Iterable, Tuple
 
-from .classes.basic_suite import TestSuite
-from .classes.basic_test import Test
 from .exceptions import *
+from .classes.basic_test import Test
+from .classes.basic_suite import TestSuite
+from .helpers.others import is_file_exists
 
 
 def test(*args, enabled: bool = True, name: str = None, description: str = None, data_provider: str = None,
@@ -283,3 +284,23 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
     if len(signature(func).parameters) > 1:
         raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider "
                                        f"has more than 1 argument!")
+
+
+def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8'):
+    """
+    Function to use text file as data provider for test. All \n at the line ends will be deleted! Reads file lazily,
+    do not get it to memory. The function name explicitly stays uppercase for user to pay attention to it. User must
+    call it at the global module namespace or at @before_suite fixture, but not at other fixtures or in tests!
+    :param provider_name: name of the data-provider for use it in test
+    :param file_path: file name or path-to-file with name, it is better to specify full path
+    :param encoding: encoding of the text file (default UTF-8)
+    :return: None
+    :raises: ValueError if file is not exists!
+    """
+    def read_file():
+        with open(file_path, encoding=encoding) as file:
+            return (line.rstrip() for line in file.readlines())
+
+    if not is_file_exists(file_path):
+        raise ValueError(f'Cant find file! Is file "{file_path}" exists?')
+    data(name=provider_name)(read_file)

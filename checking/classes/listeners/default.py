@@ -1,12 +1,13 @@
-import traceback
 import time
+import traceback
 
 from .basic import Listener
 from ..basic_case import TestCase
 from ..basic_group import TestGroup
 from ..basic_suite import TestSuite
+from checking.helpers.others import short
+from checking.helpers.others import print_splitter_line
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename
-from checking.helpers.others import short, print_splitter_line
 
 
 class DefaultListener(Listener):
@@ -97,7 +98,8 @@ class DefaultListener(Listener):
 
     def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
         super().on_ignored_with_provider(test, group)
-        print(f'Provider "{test.provider}" for {test} not returns iterable! All tests with provider were IGNORED!')
+        print(f'Provider "{test.provider}" for {test} not returns iterable or empty!'
+              f' All tests with provider were IGNORED!')
 
     def on_test_starts(self, test: TestCase, group: TestGroup):
         super().on_test_starts(test, group)

@@ -194,6 +194,27 @@ def check_sum(it):  # Here we must have 1 argument for values of data-provider
     equals(it[0] + it[1], it[2])  # Checks sum of first and second elements of tuple equal to third element
 
 ```
+If you need to use text file as a provider and get data line by line, you can use DATA_FILE function:
+
+```
+#!python
+from checking import *
+
+# Create data-provider
+@before_suite
+def set_up():
+    DATA_FILE('provider', 'files/data.txt')
+
+
+@test(data_provider='provider')
+def try_prov(it):
+    print(it)
+    is_true(it)
+```
+In that case file will be read line by line lazily, all \n at the lines end will be deleted, if no
+file found - exception will be raised!
+
+**Important!** You can use DATA_FILE function only at the module global scope or at @before_suite fixture!
 
 ## Test Parameters
 
@@ -281,7 +302,7 @@ def another_func():
 
 ```
 
-## Mock and Spy
+## Mock, Double and Spy
 
 For testing purposes you sometimes need to fake some behaviour or to isolate your application from any other classes/libraries etc.
 
@@ -390,6 +411,32 @@ def spy_with_return():
 
 ```
 
+Spy object can be created without original inner object and can be call itself, it can be useful when you need
+some dumb object to know it was called.
+```
+#!python
+@test
+def check_spy():
+    spy = Spy()  # Create "empty" spy
+    spy()  # Call it
+    is_true(spy.was_called())  # Checks spy was called
+
+```
+
+**3. Double object**
+Double object is like the Spy, but it saves original object behaviour, so its methods returns 
+real object methods results if not specified otherwise.
+
+```
+#!python
+@test
+def check_double():
+    spy = Double("string")  # Create str double-object
+    equals(6, len(spy))  # Len returns 6 - the real length of original object ("string")
+    spy.when_call_function_returns('__len__', 100)  # Fake len result
+    equals(100, len(spy))  # Len now returns 100
+
+```
 
 ### Contact me ###
 Lexman2@yandex.ru

@@ -1,7 +1,7 @@
-import logging
-from threading import currentThread
 import time
+import logging
 from datetime import datetime
+from threading import currentThread
 
 from .basic import Listener
 from ..basic_case import TestCase
@@ -75,8 +75,8 @@ class DefaultFileListener(Listener):
     def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
         super().on_ignored_with_provider(test, group)
         logger = logging.getLogger(currentThread().getName())
-        logger.warning(
-            f'Provider "{test.provider}" for {test} not returns iterable! All tests with provider were IGNORED!')
+        logger.warning(f'Provider "{test.provider}" for {test} not returns iterable or empty! '
+                       f'All tests with provider were IGNORED!')
 
     def on_success(self, group: TestGroup, test: TestCase):
         super().on_success(group, test)

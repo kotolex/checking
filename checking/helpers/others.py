@@ -1,3 +1,4 @@
+import glob
 from typing import Any
 
 
@@ -22,3 +23,11 @@ def print_splitter_line():
     :return: None
     """
     print('-' * 10)
+
+
+def is_file_exists(file_name: str) -> bool:
+    """
+    Tells, if the file with name exists
+    :return: True, if the file exists
+    """
+    return len(glob.glob(file_name)) == 1
