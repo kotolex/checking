@@ -424,6 +424,7 @@ def check_spy():
 ```
 
 **3. Double object**
+
 Double object is like the Spy, but it saves original object behaviour, so its methods returns 
 real object methods results if not specified otherwise.
 

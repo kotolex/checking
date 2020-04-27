@@ -235,6 +235,20 @@ class FluentAssertTest(TestCase):
         with self.assertRaises(TestBrokenException):
             verify(1).length_greater_than(2)
 
+    def test_is_in_ok(self):
+        verify(1).is_in([1, 2])
+
+    def test_is_in_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(1).is_in([2, 2])
+
+    def test_is_not_in_ok(self):
+        verify(1).is_not_in([2, 2])
+
+    def test_is_not_in_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(1).is_not_in([1, 2])
+
 
 if __name__ == '__main__':
     main()

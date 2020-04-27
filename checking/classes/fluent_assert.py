@@ -154,7 +154,7 @@ class FluentAssert:
 
     def is_sorted(self, reverse_order: bool = False):
         """
-        Checking, that checking object is sorted (it can be used just to list/tuple/str and another Sequence).
+        Checking, that object is sorted (it can be used just to list/tuple/str and another Sequence).
         :param reverse_order: if it is True then check sort in reverse (from the biggest to the lowest)
         :return:
         """
@@ -183,6 +183,14 @@ class FluentAssert:
             raise TestBrokenException(f'Only Iterables can be argument here, not {type(obj)}')
         for element in obj:
             contains(element, self.__actual)
+        return self
+
+    def is_in(self, container:Any):
+        contains(self.__actual, container)
+        return self
+
+    def is_not_in(self, container:Any):
+        not_contains(self.__actual, container)
         return self
 
     def _check_same_type(self, second):
