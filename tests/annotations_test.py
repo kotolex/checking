@@ -35,6 +35,7 @@ def f():
 
 
 class TestAnnotations(TestCase):
+    _listener = Listener(0)
 
     def test_valid_func_works(self):
         clear()
@@ -185,6 +186,26 @@ class TestAnnotations(TestCase):
         test(description='test')(f)
         self.assertEqual(list(TestSuite.get_instance().groups.values())[0].tests[0].description, 'test')
         self.assertEqual("annotations_test.f ('test')", str(list(TestSuite.get_instance().groups.values())[0].tests[0]))
+
+    def test_data_file(self):
+        clear()
+        DATA_FILE('new', 'test_data.txt')
+        test(data_provider='new')(valid_for_provider)
+        self.assertTrue('new' in TestSuite.get_instance().providers)
+
+    def test_data_file_has_three_tests(self):
+        clear()
+        DATA_FILE('new', 'test_data.txt')
+        test(data_provider='new')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
+
+    def test_data_file_has_three_tests_with_long_path(self):
+        clear()
+        DATA_FILE('new', 'files/test_data.txt')
+        test(data_provider='new')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from typing import Any, Type, Union, Sequence
+from inspect import ismodule
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
@@ -171,7 +172,7 @@ def mock(module_: Any, function_name: str, func: Any):
     :param func: is the replacement function, but there may be an attribute
     :return:
     """
-    if str(type(module_)) != "<class 'module'>":
+    if not ismodule(module_):
         raise TestBrokenException(f'"{module_} is not a module!')
     if not hasattr(module_, function_name):
         raise TestBrokenException(f'No function "{function_name} at module {module_}"!')

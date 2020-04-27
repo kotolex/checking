@@ -1,7 +1,10 @@
+from os import path
 from sys import stderr
 from inspect import signature
 from inspect import getsource
 from inspect import isfunction
+from inspect import getmembers
+from inspect import currentframe
 from typing import Callable, Any, Iterable, Tuple
 
 from .exceptions import *
@@ -290,17 +293,23 @@ def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8'):
     """
     Function to use text file as data provider for test. All \n at the line ends will be deleted! Reads file lazily,
     do not get it to memory. The function name explicitly stays uppercase for user to pay attention to it. User must
-    call it at the global module namespace or at @before_suite fixture, but not at other fixtures or in tests!
+    call it at the global module namespace, but not at fixtures or in tests!
     :param provider_name: name of the data-provider for use it in test
-    :param file_path: file name or path-to-file with name, it is better to specify full path
+    :param file_path: file name or path-to-file with name, it can be full or relative path, but it must be "visible"
+    (accessible from module, where it is used)
     :param encoding: encoding of the text file (default UTF-8)
     :return: None
     :raises: ValueError if file is not exists!
     """
     def read_file():
-        with open(file_path, encoding=encoding) as file:
+        with open(real_path, encoding=encoding) as file:
             return (line.rstrip() for line in file.readlines())
 
-    if not is_file_exists(file_path):
-        raise ValueError(f'Cant find file! Is file "{file_path}" exists?')
+    frame_ = [fr for fr in getmembers(currentframe()) if fr[0] == 'f_back']
+    assert frame_  # It can't be no last frame!
+    frame = frame_[0]
+    first_path = path.split(frame[1].f_globals['__file__'])[0]
+    real_path = path.join(first_path, file_path)
+    if not is_file_exists(real_path):
+        raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
     data(name=provider_name)(read_file)

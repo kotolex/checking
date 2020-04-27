@@ -201,9 +201,7 @@ If you need to use text file as a provider and get data line by line, you can us
 from checking import *
 
 # Create data-provider
-@before_suite
-def set_up():
-    DATA_FILE('provider', 'files/data.txt')
+DATA_FILE('provider', 'files/data.txt') # file at <current folder>/files/data.txt
 
 
 @test(data_provider='provider')
@@ -214,7 +212,7 @@ def try_prov(it):
 In that case file will be read line by line lazily, all \n at the lines end will be deleted, if no
 file found - exception will be raised!
 
-**Important!** You can use DATA_FILE function only at the module global scope or at @before_suite fixture!
+**Important!** You can use DATA_FILE function only at the module global scope, but not at fixtures!
 
 ## Test Parameters
 
