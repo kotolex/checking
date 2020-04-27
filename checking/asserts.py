@@ -41,8 +41,9 @@ def equals(expected: Any, actual: Any, message: str = None):
     if (expected is actual) or expected == actual:
         return
     _message = _mess(message)
-    raise AssertionError(f'{_message}Expected "{short(expected)}" <{type(expected).__name__}>, '
-                         f'but got "{short(actual)}"<{type(actual).__name__}>!')
+    raise AssertionError(f'{_message}Objects are not equal!\n'
+                         f'Expected:"{short(expected,150)}" <{type(expected).__name__}>\n'
+                         f'Actual:  "{short(actual,150)}" <{type(actual).__name__}>!')
 
 
 def not_equals(expected: Any, actual: Any, message: str = None):
@@ -56,7 +57,7 @@ def not_equals(expected: Any, actual: Any, message: str = None):
     """
     if (expected is actual) or expected == actual:
         _message = _mess(message)
-        raise AssertionError(f'Objects are equal ({short(expected)}, {short(actual)})!')
+        raise AssertionError(f'Objects are equal: ({short(expected)}, {short(actual)})!')
 
 
 def is_none(obj: Any, message: str = None):
@@ -136,7 +137,7 @@ def no_exception_expected():
     try:
         yield
     except Exception as e:
-        raise AssertionError(f'Expect no exception, but raised {type(e).__name__} ("{e}")')
+        raise AssertionError(f'Expect no exception, but raised {type(e).__name__} ("{e}")!')
 
 
 @contextmanager
@@ -281,14 +282,14 @@ def __contains_or_not(part, whole, is_contains: bool = True, message: str = None
     except TypeError as e:
         if 'requires' in e.args[0]:
             raise TestBrokenException(f'Object "{short(part)}" <{type(part).__name__}> and '
-                                      f'"{short(whole)}"<{type(whole).__name__}> are of different types and cant be check '
-                                      f'for contains!')
+                                      f'"{short(whole)}"<{type(whole).__name__}> are of different types and '
+                                      f'cant be check for contains!')
         raise TestBrokenException(
             f'"{short(whole)}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
     _message = _mess(message)
     add_ = 'is a' if not is_contains else 'is not'
-    raise AssertionError(f'{_message}Object "{short(part)}" <{type(part).__name__}>, {add_} part of '
-                         f'"{short(whole)}"<{type(whole).__name__}>!')
+    raise AssertionError(f'{_message}Object "{short(part)}" <{type(part).__name__}>, {add_} part of \n'
+                         f'"{short(whole, 150)}"<{type(whole).__name__}>!')
 
 
 def _mess(message: str) -> str:

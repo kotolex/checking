@@ -143,7 +143,7 @@ class BehaviourTest(TestCase):
         self.assertEqual(1, TestSuite.get_instance().tests_count())
 
     def test_short(self):
-        self.assertTrue(len(short(list(range(50)))) <= 50)
+        self.assertTrue(len(short(list(range(50)))) <= 55)
 
     def test_parallel(self):
         clear()

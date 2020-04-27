@@ -73,12 +73,12 @@ class AssertsTest(TestCase):
     def test_equals_failed(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2)
-        self.assertEqual('Expected "1" <int>, but got "2"<int>!', e.exception.args[0])
+        self.assertEqual('Objects are not equal!\nExpected:"1" <int>\nActual:  "2" <int>!', e.exception.args[0])
 
     def test_equals_failed_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2, 'message')
-        self.assertEqual('message\nExpected "1" <int>, but got "2"<int>!', e.exception.args[0])
+        self.assertEqual('message\nObjects are not equal!\nExpected:"1" <int>\nActual:  "2" <int>!', e.exception.args[0])
 
     def test_is_none_ok(self):
         is_none(None)
@@ -171,7 +171,7 @@ class AssertsTest(TestCase):
         with self.assertRaises(AssertionError) as e:
             with no_exception_expected():
                 raise ValueError('message')
-        self.assertEqual("Expect no exception, but raised ValueError (\"message\")", e.exception.args[0])
+        self.assertEqual("Expect no exception, but raised ValueError (\"message\")!", e.exception.args[0])
 
     def test_contains_ok_for_str(self):
         contains('1', '123')
@@ -198,12 +198,12 @@ class AssertsTest(TestCase):
     def test_contains_failed_if_not_contains_str(self):
         with self.assertRaises(AssertionError) as e:
             contains('1', '234')
-        self.assertEqual("Object \"1\" <str>, is not part of \"234\"<str>!", e.exception.args[0])
+        self.assertEqual("Object \"1\" <str>, is not part of \n\"234\"<str>!", e.exception.args[0])
 
     def test_contains_failed_if_not_contains_list(self):
         with self.assertRaises(AssertionError) as e:
             contains('1', [2, 3])
-        self.assertEqual("Object \"1\" <str>, is not part of \"[2, 3]\"<list>!", e.exception.args[0])
+        self.assertEqual("Object \"1\" <str>, is not part of \n\"[2, 3]\"<list>!", e.exception.args[0])
 
     def test_contains_failed_if_wrong_types(self):
         with self.assertRaises(TestBrokenException) as e:

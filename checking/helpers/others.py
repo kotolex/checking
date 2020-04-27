@@ -3,18 +3,19 @@ from typing import Any
 from datetime import datetime
 
 
-def short(message: Any, width: int = 10) -> str:
+def short(obj: Any, width: int = 45) -> str:
     """
     Reduces the string representation to a specific length, replacing all characters after the specified length with
-    three dots ([...]).
+    three dots ([...]) plus symbols count to end.
     If the string representation is shorter than the specified length, it returns it unchanged.
-    :param message: String or object[Any]
+    :param obj: String or object[Any]
     :param width: Maximum string representation length
     :return: shortened string
     """
-    str_ = str(message)
-    if len(str_) > width:
-        return str_[:45] + '[...]'
+    str_ = str(obj)
+    len_ = len(str_) - width
+    if len_ > 0:
+        return str_[:width] + f'[...+{len_}]'
     return str_
 
 
