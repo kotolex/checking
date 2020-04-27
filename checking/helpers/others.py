@@ -1,5 +1,6 @@
 import glob
 from typing import Any
+from datetime import datetime
 
 
 def short(message: Any, width: int = 10) -> str:
@@ -31,3 +32,11 @@ def is_file_exists(file_name: str) -> bool:
     :return: True, if the file exists
     """
     return len(glob.glob(file_name)) == 1
+
+
+def str_date_time():
+    """
+    Generates current date and time for using at file names
+    :return: str like 2020-02-22_12_58_58
+    """
+    return datetime.strftime(datetime.now(), '%Y-%m-%d_%H-%M-%S')

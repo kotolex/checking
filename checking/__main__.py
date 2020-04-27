@@ -6,7 +6,7 @@ import argparse
 from typing import Dict
 
 from checking.runner import start
-from checking.helpers.others import is_file_exists
+from checking.helpers.others import is_file_exists, str_date_time
 
 HOME_FOLDER = sys.path[0]
 look_for = ('import checking', 'from checking')
@@ -55,9 +55,14 @@ def check_parameters(parameters: Dict):
             raise ValueError('Dry_run parameter must be bool (True or False)!')
 
 
-def start_with_parameters(parameters: Dict):
+def _get_default_params():
     params = {'name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [],
               'threads': 1, 'dry_run': False}
+    return params
+
+
+def start_with_parameters(parameters: Dict):
+    params = _get_default_params()
     params.update(parameters)
     check_parameters(params)
     verbose = params.get('verbose')
@@ -119,32 +124,47 @@ def _walk_throw_and_import():
             importlib.import_module(name, package=HOME_FOLDER)
 
 
+def _generate_options():
+    """
+    Generates default options<date+time>.json file at current folder
+    :return: None
+    """
+    with open(f'options_{str_date_time()}.json', 'wt') as file:
+        json.dump(_get_default_params(), file)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--options_file', help="File with the options to run")
     parser.add_argument('-a', '--arg', help="Any Argument for test-suite")
     parser.add_argument('-d', '--dry_run', help="Boolean arg for dry_run (run without actual functions executed!",
                         type=bool)
+    parser.add_argument('-g', '--generate_options',
+                        help="Not doing any work, just generates options.json in current folder!", action='store_const',
+                        const=True)
     args = parser.parse_args()
-    file_name = 'options.json'
-    if args.options_file:
-        file_name = args.options_file
-    p_ = {}
-    if args.arg:
-        if '=' in args.arg:
-            p_[args.arg.split('=')[0]] = args.arg.split('=')[1]
-        else:
-            p_[args.arg] = None
-    dry_run = args.dry_run if args.dry_run else False
-    # если есть файл настроек то берем все оттуда
-    if is_file_exists(file_name):
-        print(f"{file_name} found! Work with it...")
-        params_ = read_parameters_from_file(file_name)
-        if p_:
-            params_.get("params").update(p_)
-        start_with_parameters(params_)
-    # иначе проходим по всем модулям в поисках тестов
+    if args.generate_options:
+        _generate_options()
     else:
-        print(f"No options found! Starts to look for tests in all sub-folders")
-        _walk_throw_and_import()
-        start(verbose=3, threads=1, params=p_, dry_run=dry_run)
+        file_name = 'options.json'
+        if args.options_file:
+            file_name = args.options_file
+        p_ = {}
+        if args.arg:
+            if '=' in args.arg:
+                p_[args.arg.split('=')[0]] = args.arg.split('=')[1]
+            else:
+                p_[args.arg] = None
+        dry_run = args.dry_run if args.dry_run else False
+        # если есть файл настроек то берем все оттуда
+        if is_file_exists(file_name):
+            print(f"{file_name} found! Work with it...")
+            params_ = read_parameters_from_file(file_name)
+            if p_:
+                params_.get("params").update(p_)
+            start_with_parameters(params_)
+        # иначе проходим по всем модулям в поисках тестов
+        else:
+            print(f"No options found! Starts to look for tests in all sub-folders")
+            _walk_throw_and_import()
+            start(verbose=3, threads=1, params=p_, dry_run=dry_run)

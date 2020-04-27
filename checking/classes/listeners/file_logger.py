@@ -1,13 +1,12 @@
 import time
 import logging
-from datetime import datetime
 from threading import currentThread
 
 from .basic import Listener
 from ..basic_case import TestCase
 from ..basic_group import TestGroup
 from ..basic_suite import TestSuite
-from checking.helpers.others import short
+from checking.helpers.others import short, str_date_time
 
 
 class DefaultFileListener(Listener):
@@ -26,7 +25,7 @@ class DefaultFileListener(Listener):
         """
         super().__init__(0)
         name_ = 'test_suite' if not name else name
-        str_time = datetime.strftime(datetime.now(), '%Y-%m-%d_%H-%M-%S')
+        str_time = str_date_time()
         time_ = f'_{str_time}' if use_time else ''
         format_ = '%(asctime)-15s Thread[%(threadName)s] %(levelname)s: %(message)s'
         handler = logging.FileHandler(f'{name_}{time_}.log', 'w', encoding='utf-8')
