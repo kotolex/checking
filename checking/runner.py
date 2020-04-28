@@ -18,7 +18,7 @@ common_parameters: Dict[str, Any] = {}
 
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
-          threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False):
+          threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None):
     """
     The main function of tests start
 
@@ -36,6 +36,7 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     operations - disk work, network requests. Obey the GIL!
     :param dry_run: if True runs test-suite with fake function except of real tests and fixtures, can be useful to
     find out order, number of tests, params of provider etc.
+    :param filter_by_name if specified - runs only tests with name containing this parameter
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
@@ -46,6 +47,8 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     test_suite.name = suite_name
     if groups:
         test_suite.filter_groups(groups)
+    if filter_by_name:
+        test_suite.filter_tests(filter_by_name)
     # If there are no tests, then stop
     if test_suite.is_empty():
         _listener.on_empty_suite(test_suite)

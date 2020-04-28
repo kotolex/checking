@@ -213,6 +213,28 @@ class BehaviourTest(TestCase):
         self.assertEqual(1, len(TestSuite.get_instance().ignored()))
         self.assertEqual(1, TestSuite.get_instance().tests_count())
 
+    def test_name_filter(self):
+        clear()
+        test(name='one')(sa_ok)
+        test(name='ane')(sa_ok)
+        start(listener=Listener(0), filter_by_name='on')
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(1, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(0, len(TestSuite.get_instance().ignored()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
+    def test_name_filter_empty(self):
+        clear()
+        test(name='one')(sa_ok)
+        test(name='ane')(sa_ok)
+        start(listener=Listener(0), filter_by_name='empty')
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(0, len(TestSuite.get_instance().ignored()))
+        self.assertEqual(0, TestSuite.get_instance().tests_count())
+
 
 if __name__ == '__main__':
     main()

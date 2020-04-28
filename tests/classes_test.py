@@ -41,6 +41,7 @@ class TestClasses(TC):
     def test_str_for_Test(self):
         def f():
             pass
+
         test = Test('name', f)
         self.assertEqual('__main__.name', str(test))
 
@@ -248,6 +249,31 @@ class TestClasses(TC):
         suite.get_or_create("b")
         suite.filter_groups(['a'])
         self.assertEqual(list(suite.groups), ['a'])
+
+    def test_filter_tests_TestSuite(self):
+        clear()
+        suite = TestSuite.get_instance()
+        suite.get_or_create('gr_name').add_test(Test('a__2', print))
+        suite.get_or_create('gr_name').add_test(Test('a__3', print))
+        initial_count = suite.tests_count()
+        suite.filter_tests('a')
+        self.assertEqual(initial_count, suite.tests_count())
+
+    def test_filter_tests_TestSuite_must_clear_if_not_present(self):
+        clear()
+        suite = TestSuite.get_instance()
+        suite.get_or_create('gr_name').add_test(Test('a__2', print))
+        suite.get_or_create('gr_name').add_test(Test('a__3', print))
+        suite.filter_tests('b')
+        self.assertEqual(0, suite.tests_count())
+
+    def test_filter_tests_TestSuite_must_be_one(self):
+        clear()
+        suite = TestSuite.get_instance()
+        suite.get_or_create('gr_name').add_test(Test('a__2', print))
+        suite.get_or_create('gr_name').add_test(Test('a__3', print))
+        suite.filter_tests('2')
+        self.assertEqual(1, suite.tests_count())
 
 
 if __name__ == '__main__':

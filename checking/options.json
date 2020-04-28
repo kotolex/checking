@@ -1,8 +1,0 @@
-{
-  "name": "My Suite",
-  "verbose": 3,
-  "groups": ["third"],
-  "params": {"param1": 1},
-  "listener": "checking.classes.basic_listeners.DefaultListener",
-  "modules": ["third"]
-}

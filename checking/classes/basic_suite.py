@@ -58,7 +58,22 @@ class TestSuite:
 
     @classmethod
     def filter_groups(cls, groups: List[str]):
+        """
+        Leaves in the test_suite only those groups, whose names match the ones listed
+        :param groups: list of group names
+        :return: None
+        """
         cls.groups = {name: tests for name, tests in cls.groups.items() if name in groups}
+
+    @classmethod
+    def filter_tests(cls, filter_by_name: str):
+        """
+        Leaves in the test_suite only those test whose names contains parameter (no full match necessary)
+        :param filter_by_name: string, test stays in suite if its name contains this parameter
+        :return: None
+        """
+        for group in cls.groups.values():
+            group.tests = [test for test in group.tests if filter_by_name in test.name]
 
     @classmethod
     def is_empty(cls) -> bool:

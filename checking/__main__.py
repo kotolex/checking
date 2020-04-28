@@ -1,16 +1,18 @@
-import json
-import sys
 import os
-import importlib
+import sys
+import json
 import argparse
+import importlib
 from typing import Dict, Union
 
 from checking.runner import start
-from checking.helpers.others import is_file_exists, str_date_time
+from checking.helpers.others import str_date_time
+from checking.helpers.others import is_file_exists
 
 HOME_FOLDER = sys.path[0]
 LOOK_FOR = ('import checking', 'from checking')
 
+# TODO need tests for functions!
 
 def read_parameters_from_file(file_name) -> Dict:
     """
@@ -24,6 +26,7 @@ def read_parameters_from_file(file_name) -> Dict:
 
 
 def check_parameters(parameters: Dict):
+    # TODO change it
     """
     Checks the validation of start parameters.
     :param parameters: the dictionary with parameters
@@ -56,23 +59,25 @@ def check_parameters(parameters: Dict):
 
 
 def _get_default_params():
-    params = {'name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [],
-              'threads': 1, 'dry_run': False}
-    return params
+    parameters = {'name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '', 'modules': [],
+                  'threads': 1, 'dry_run': False, 'filter_by_name': ''}
+    return parameters
 
 
 def start_with_parameters(parameters: Dict):
-    params = _get_default_params()
-    params.update(parameters)
-    check_parameters(params)
-    verbose = params.get('verbose')
-    par = params.get('params')
-    groups = params.get('groups')
-    modules = params.get('modules')
-    listener_ = params.get('listener')
-    threads = params.get('threads')
-    name = params.get('name')
-    dry_run = params.get('dry_run')
+    # TODO refactoring
+    params_ = _get_default_params()
+    params_.update(parameters)
+    check_parameters(params_)
+    verbose = params_.get('verbose')
+    par = params_.get('params')
+    groups = params_.get('groups')
+    modules = params_.get('modules')
+    listener_ = params_.get('listener')
+    threads = params_.get('threads')
+    name = params_.get('name')
+    dry_ = params_.get('dry_run')
+    filter_by_name_ = params_.get('filter_by_name')
     real_listener = None
     try:
         if listener_:
@@ -89,19 +94,20 @@ def start_with_parameters(parameters: Dict):
     except Exception:
         print(f'Something wrong with importing! Is that an existing path - {mod}?', file=sys.stderr)
         raise
-    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads, suite_name=name, dry_run=dry_run)
+    start(verbose, listener=real_listener, groups=groups, params=par, threads=threads, suite_name=name, dry_run=dry_,
+          filter_by_name=filter_by_name_)
 
 
-def _is_import_in_file(file_name: str) -> bool:
+def _is_import_in_file(file_name_: str) -> bool:
     """
     If there checking import within the file.
-    :param file_name: is the name of the module
+    :param file_name_: is the name of the module
     :return: True, if asserts imports inside the module
     """
-    if not file_name.endswith('.py'):
+    if not file_name_.endswith('.py'):
         return False
-    with open(file_name, encoding='utf-8') as file:
-        for line in file.readlines():
+    with open(file_name_, encoding='utf-8') as file:
+        for line in file:
             line = line.rstrip().replace('  ', ' ')
             if any([element in line for element in LOOK_FOR]):
                 return True
@@ -155,17 +161,20 @@ def _get_arg_dict(arg: Union[str, None]) -> Dict:
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--options_file', help="File with the options to run")
-    parser.add_argument('-a', '--arg', help="Any argument for test-suite")
-    parser.add_argument('-d', '--dry_run', help="Boolean arg for dry_run (run without actual functions executed)!",
-                        type=bool)
+    parser.add_argument('-o', '--options_file', help="File with the options to run. "
+                                                     "If specified, -d and -f options will be ignored!")
+    parser.add_argument('-f', '--filter_test', help="Filter tests by name, only tests, whose names"
+                                                    " contain this value will run!")
+    parser.add_argument('-a', '--arg', help="Any argument for your test-suite")
+    parser.add_argument('-d', '--dry_run', help="Dry-run for test-suite(run without actual functions executed)!",
+                        action='store_const', const=True)
     parser.add_argument('-g', '--generate_options',
                         help="Not doing any work, just generates options.json in current folder!", action='store_const',
                         const=True)
     return parser.parse_args()
 
 
-def _main_run(file_name_: str, p_: Dict, dry_run: bool):
+def _main_run(file_name_: str, p_: Dict, dry_run: bool, filter_by_name_: str):
     # if options file exists get all from there
     if is_file_exists(file_name_):
         print(f"{file_name_} found! Work with it...")
@@ -178,7 +187,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run: bool):
         if file_name_ == 'options.json':
             print(f"No options found! Starts to look for tests in all sub-folders")
             _walk_throw_and_import()
-            start(verbose=3, threads=1, params=p_, dry_run=dry_run)
+            start(verbose=3, threads=1, params=p_, dry_run=dry_run, filter_by_name=filter_by_name_)
         else:
             raise ValueError(f"{file_name_} not found! Stopped")
 
@@ -189,6 +198,7 @@ if __name__ == '__main__':
         _generate_options()
     else:
         file_name = _get_file_name(args.options_file)
-        p_ = _get_arg_dict(args.arg)
+        params = _get_arg_dict(args.arg)
         dry_run = args.dry_run if args.dry_run else False
-        _main_run(file_name, p_, dry_run)
+        filter_by_name = args.filter_test if args.filter_test else ''
+        _main_run(file_name, params, dry_run, filter_by_name)
