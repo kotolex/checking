@@ -9,6 +9,7 @@ from typing import Callable, Any, Iterable, Tuple
 
 from .exceptions import *
 from .classes.basic_test import Test
+from .classes.data_file import DataFile
 from .classes.basic_suite import TestSuite
 from .helpers.others import is_file_exists
 
@@ -289,20 +290,22 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
                                        f"has more than 1 argument!")
 
 
-def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8'):
+def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8', map_function: Callable = None):
     """
-    Function to use text file as data provider for test. All \n at the line ends will be deleted! Reads file lazily,
-    do not get it to memory. The function name explicitly stays uppercase for user to pay attention to it. User must
-    call it at the global module namespace, but not at fixtures or in tests!
+    Function to use text file as data provider for test. Reads file lazily, do not get it to memory.
+    The function name explicitly stays uppercase for user to pay attention to it.
+    User must call it at the global module namespace, but not at fixtures or in tests!
     :param provider_name: name of the data-provider for use it in test
     :param file_path: file name or path-to-file with name, it can be full or relative path, but it must be "visible"
-    (accessible from module, where it is used)
+    (accessible from module, where it is declared)
     :param encoding: encoding of the text file (default UTF-8)
+    :param map_function: function, which map line from text file
     :return: None
     :raises: ValueError if file is not exists!
     """
-    def read_file():
-        return (line.rstrip() for line in open(real_path, encoding=encoding))
+
+    def wrapper():
+        return DataFile(real_path, encoding=encoding, map_function=map_function)
 
     frame_ = [fr for fr in getmembers(currentframe()) if fr[0] == 'f_back']
     assert frame_  # It can't be no last frame!
@@ -311,4 +314,4 @@ def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8'):
     real_path = path.join(first_path, file_path)
     if not is_file_exists(real_path):
         raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
-    data(name=provider_name)(read_file)
+    data(name=provider_name)(wrapper)

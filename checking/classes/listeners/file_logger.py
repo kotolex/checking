@@ -79,19 +79,19 @@ class DefaultFileListener(Listener):
 
     def on_success(self, group: TestGroup, test: TestCase):
         super().on_success(group, test)
-        add_ = '' if not test.argument else f'[{short(test.argument)}]'
+        add_ = Listener._get_test_arg_short_without_new_line(test)
         logger = logging.getLogger(currentThread().getName())
         logger.info(f'Test "{test}" {add_} SUCCESS!')
 
     def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
         super().on_failed(group, test, exception_)
-        add_ = '' if not test.argument else f'[{short(test.argument)}]'
+        add_ = Listener._get_test_arg_short_without_new_line(test)
         logger = logging.getLogger(currentThread().getName())
         logger.exception(f'Test "{test}" {add_} FAILED!', exc_info=exception_)
 
     def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
         super().on_broken(group, test, exception_)
-        add_ = '' if not test.argument else f'[{short(test.argument)}]'
+        add_ = Listener._get_test_arg_short_without_new_line(test)
         logger = logging.getLogger(currentThread().getName())
         logger.exception(f'Test "{test}" {add_} BROKEN!', exc_info=exception_)
 

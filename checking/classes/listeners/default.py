@@ -76,7 +76,7 @@ class DefaultListener(Listener):
                 self.counts = 0
         elif self.verbose > 1:
             print_splitter_line()
-            add_ = '' if not test.argument else f'[{short(test.argument)}]'
+            add_ = Listener._get_test_arg_short_without_new_line(test)
             print(f'Test "{test}" {add_} SUCCESS!')
 
     def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
@@ -128,7 +128,7 @@ class DefaultListener(Listener):
         else:
             if self.verbose > 0:
                 print_splitter_line()
-            add_ = '' if not test.argument else f'[{short(test.argument)}]'
+            add_ = Listener._get_test_arg_short_without_new_line(test)
             print(f'Test "{test}" {add_} {_letter}')
             print(get_trace_filtered_by_filename(exception_))
             print(exception_)

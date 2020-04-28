@@ -2,6 +2,8 @@ from ..basic_case import TestCase
 from ..basic_group import TestGroup
 from ..basic_suite import TestSuite
 
+from checking.helpers.others import short
+
 
 class Listener:
     """
@@ -132,3 +134,10 @@ class Listener:
         :return: None
         """
         pass
+
+    @staticmethod
+    def _get_test_arg_short_without_new_line(test: TestCase):
+        if test.argument:
+            short_ = short(test.argument).replace('\n', '')
+            return f'[{short_}]'
+        return ''

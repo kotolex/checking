@@ -209,8 +209,23 @@ def try_prov(it):
     print(it)
     is_true(it)
 ```
-In that case file will be read line by line lazily, all \n at the lines end will be deleted, if no
-file found - exception will be raised!
+In that case file will be read line by line lazily, if no file found - exception will be raised!
+
+If you need all lines be transform in some way, you can use mapping function for that. For example deleting trailing \n
+at line end:
+```
+#!python
+from checking import *
+
+# Create data-provider
+DATA_FILE('provider', 'files/data.txt', map_function=str.rstrip) # use rstrip() of str to transform
+
+
+@test(data_provider='provider')
+def try_prov(it):
+    is_true(it)
+
+```
 
 **Important!** You can use DATA_FILE function only at the module global scope, but not at fixtures!
 

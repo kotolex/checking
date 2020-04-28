@@ -150,7 +150,8 @@ def _run_test_with_provider(test, group):
             _listener.on_ignored_with_provider(test, group)
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
-            raise e
+            print(e)
+            raise
         else:
             _listener.on_ignored_with_provider(test, group)
 
@@ -185,8 +186,17 @@ def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_before_
 
 
 def _provider_next(provider_name: str) -> Any:
-    for param in TestSuite.get_instance().providers[provider_name]():
+    iter_ = TestSuite.get_instance().providers[provider_name]()
+    for param in iter_:
         yield param
+    # If it were file at provider - try to close it
+    if hasattr(iter_, 'close'):
+        try:
+            iter_.close()
+        except Exception as ex:
+            print(ex)
+            pass
+            # explicitly ignore
 
 
 def _run_test(test: Test, group: TestGroup) -> bool:
