@@ -302,8 +302,7 @@ def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8'):
     :raises: ValueError if file is not exists!
     """
     def read_file():
-        with open(real_path, encoding=encoding) as file:
-            return (line.rstrip() for line in file.readlines())
+        return (line.rstrip() for line in open(real_path, encoding=encoding))
 
     frame_ = [fr for fr in getmembers(currentframe()) if fr[0] == 'f_back']
     assert frame_  # It can't be no last frame!

@@ -143,7 +143,6 @@ def no_exception_expected():
 @contextmanager
 def mock_builtins(function_name: str, func):
     """
-    EXPERIMENTAL!
     Mock of built-in functions like print, input and so on. After exiting the context manager, the original function
     regains its previous behavior.
     :param function_name: is the the name of one of the python built-in function
@@ -166,8 +165,7 @@ def mock_builtins(function_name: str, func):
 @contextmanager
 def mock(module_: Any, function_name: str, func: Any):
     """
-    EXPERIMENTAL!
-    Context manager for moking (spoofing) any function or module attribute.
+    Context manager for mocking (spoofing) any function or module attribute.
     :param module_: is the module object (not a name! it must be imported in the test)
     :param function_name: is the function name
     :param func: is the replacement function, but there may be an attribute

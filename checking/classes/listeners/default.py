@@ -23,6 +23,7 @@ class DefaultListener(Listener):
     def on_suite_starts(self, test_suite: TestSuite):
         super().on_suite_starts(test_suite)
         self.start_time = time.time()
+        self.counts = 0
         print(f'Starting suite "{test_suite.name}"')
 
     def on_empty_suite(self, test_suite: TestSuite):
@@ -69,6 +70,10 @@ class DefaultListener(Listener):
         super().on_success(group, test)
         if not self.verbose:
             print('.', end='')
+            self.counts += 1
+            if self.counts > 100:
+                print('')
+                self.counts = 0
         elif self.verbose > 1:
             print_splitter_line()
             add_ = '' if not test.argument else f'[{short(test.argument)}]'
@@ -116,6 +121,10 @@ class DefaultListener(Listener):
         _letter = f'{_result.upper()}!'
         if not self.verbose:
             print(_letter[0], end='')
+            self.counts += 1
+            if self.counts > 100:
+                print('')
+                self.counts = 0
         else:
             if self.verbose > 0:
                 print_splitter_line()
