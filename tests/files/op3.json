@@ -1,0 +1,2 @@
+{"suite_name": "Test", "verbose": 3, "groups": ["one"], "params": {"1": 1}, "listener": "default", "modules": ["test"],
+                  "threads": 2, "dry_run": true, "filter_by_name": "test"}

@@ -18,7 +18,8 @@ common_parameters: Dict[str, Any] = {}
 
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
-          threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None):
+          threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None,
+          **kwargs):
     """
     The main function of tests start
 
