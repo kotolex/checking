@@ -8,6 +8,8 @@ class Test(TestCase):
     """
     The class which representing test, the main point of test run.
     """
+    __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after', 'provider', 'retries', 'priority',
+                 'test', 'group_name', 'argument', 'timeout', 'only_if', 'description')
 
     def __init__(self, name: str, test: Callable):
         """
@@ -16,12 +18,23 @@ class Test(TestCase):
         :param test: is the function that will be launch at the test executes
         """
         super().__init__(name)
+        # Function to run (the test itself)
         self.test = test
         self.group_name: str = '__main__'
+        # Argument for data-provider run
         self.argument: Any = None
+        # Time in seconds to finish test
         self.timeout: int = 0
+        # Function-predicate, if return False - test will not runs
         self.only_if: Callable = None
+        # Description of the test
         self.description = test.__doc__
+        # The name of the provider for future delivery of data to the test
+        self.provider = None
+        # The number of the test run attempts
+        self.retries: int = 1
+        # Test priority where 0 is highest
+        self.priority: int = 0
 
     def run(self):
         """
@@ -39,20 +52,20 @@ class Test(TestCase):
     def __str__(self):
         description = self.description if self.description else ''
         if description:
-            description = description.replace('\n','').replace('  ', '')
+            description = description.replace('\n', '').replace('  ', '')
             description = f" ('{description}')"
         return f'{self.group_name}.{self.name}{description}'
 
-    def clone(self) -> TestCase:
+    def clone(self):
         """
-        Cloning the instance and mutable fields are also coping.
+        Cloning the instance
         :return: a new Test
         """
         clone = Test(self.name, self.test)
         clone.group_name = self.group_name
         clone.provider = self.provider
-        clone.after = self.after[:]
-        clone.before = self.before[:]
+        clone.after = self.after
+        clone.before = self.before
         clone.is_before_failed = self.is_before_failed
         clone.always_run_after = self.always_run_after
         clone.retries = self.retries

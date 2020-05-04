@@ -166,7 +166,7 @@ def _run_all_tests_in_group(group: TestGroup):
             is_one_of_before_test_failed = _run_test_with_before_and_after(test, group, is_one_of_before_test_failed)
 
 
-def _run_test_with_before_and_after(test: TestCase, group: TestGroup, is_before_failed: bool) -> bool:
+def _run_test_with_before_and_after(test: Test, group: TestGroup, is_before_failed: bool) -> bool:
     if not is_before_failed:
         _run_before(test)
     else:

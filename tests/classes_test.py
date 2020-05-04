@@ -18,7 +18,7 @@ class TestClasses(TC):
 
     def test_init_for_Test_Case(self):
         case = TestCase('default')
-        self.assertFalse(any([case.before, case.after, case.always_run_after, case.is_before_failed, case.provider]))
+        self.assertFalse(any([case.before, case.after, case.always_run_after, case.is_before_failed]))
 
     def test_add_before_Test_Case(self):
         test_case = TestCase('default')
@@ -73,8 +73,8 @@ class TestClasses(TC):
         self.assertEqual(test.timeout, new_test.timeout)
         self.assertEqual(test.always_run_after, new_test.always_run_after)
         self.assertEqual(test.only_if, new_test.only_if)
-        self.assertFalse(test.before is new_test.before)
-        self.assertFalse(test.after is new_test.after)
+        self.assertEqual(test.before, new_test.before)
+        self.assertEqual(test.after, new_test.after)
 
     def test_init_for_TestGroup(self):
         group = TestGroup('default')

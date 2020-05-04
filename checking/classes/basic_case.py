@@ -5,6 +5,7 @@ class TestCase:
     """
     Parent for test and group of tests (test set) has the common methods.
     """
+    __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after')
 
     def __init__(self, name: str):
         self.name = name
@@ -16,12 +17,6 @@ class TestCase:
         self.is_before_failed: bool = False
         # The flag of obligatory start of function after the test, even if the preliminary ones has fell down
         self.always_run_after: bool = False
-        # The name of the provider for future delivery of data to the test
-        self.provider = None
-        # The number of the test run attempts
-        self.retries: int = 1
-        # Test priority where 0 is highest
-        self.priority: int = 0
 
     def add_before(self, func: Callable):
         self.before.append(func)

@@ -12,6 +12,9 @@ class TestGroup(TestCase):
     in a test-suite, during start.
     """
 
+    __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after', 'tests', 'before_all', 'after_all',
+                 'test_results')
+
     def __init__(self, name: str):
         super().__init__(name)
         # The list of tests, i.e instances of 'Test' class
