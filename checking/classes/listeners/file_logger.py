@@ -52,8 +52,8 @@ class DefaultFileListener(Listener):
         all_count = f_count + b_count + i_count + success_count
         logger = logging.getLogger()
         logger.info(f'Test-suite "{test_suite.name}" finished!')
-        logger.info(f'Total tests:{all_count}, success tests : {success_count}, failed tests:{f_count}, broken tests:'
-                    f'{b_count}, ignored tests:{i_count}')
+        logger.info(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
+                    f'{b_count}, ignored tests: {i_count}')
         logger.info(f'Time elapsed: {elapsed:.2f} seconds.')
 
     def on_test_starts(self, test: TestCase, group: TestGroup):

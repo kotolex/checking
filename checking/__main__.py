@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 import importlib
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from checking.runner import start
 from checking.helpers.others import str_date_time
@@ -44,6 +44,10 @@ def check_parameters(parameters: Dict):
             continue
         if any(filter(lambda x: type(x) is not str, parameters[name])):
             raise ValueError(f'{name.capitalize()} parameter must be list of strings (List[str])!')
+    listener_ = parameters.get('listener')
+    if listener_:
+        if '.' not in listener_:
+            raise ValueError(f'Listener parameter must contains module and class name, like "my_module.MyListener"!')
 
 
 def _get_default_params():
@@ -59,21 +63,32 @@ def start_with_parameters(parameters: Dict):
     modules = params_.get('modules')
     listener_ = params_.get('listener')
     try:
+        if listener_ and modules:
+            modules.append('.'.join(listener_.split('.')[:-1]))
+        _walk_throw_and_import(modules)
         if listener_:
-            pack = '.'.join(listener_.split('.')[:-1])
-            cl_ = listener_.split('.')[-1]
-            mod = importlib.import_module(pack)
-            class_ = getattr(mod, cl_)
+            class_ = _get_class_from_imported_modules(listener_)
+            # Instantiate listener-class object
             params_['listener'] = class_(params_['verbose'])
-        if modules:
-            for mod in modules:
-                importlib.import_module(mod)
-        else:
-            _walk_throw_and_import()
     except Exception:
-        print(f'Something wrong with importing! Is that an existing path - {mod}?', file=sys.stderr)
+        print(f'Something wrong with importing!', file=sys.stderr)
         raise
     start(**params_)
+
+
+def _get_class_from_imported_modules(listener_name: str):
+    """
+    Get class of test-listener from imported modules in system
+    :param listener_name: full name like module.Listener
+    :return: class for instantiation
+    """
+    pack = listener_name.split('.')[-2]
+    cl_ = listener_name.split('.')[-1]
+    keys = [key for key in sys.modules.keys() if key.endswith(pack)]
+    if not keys:
+        raise ValueError(f'Cant find listener {listener_name}')
+    mod = sys.modules.get(keys[0])
+    return getattr(mod, cl_)
 
 
 def _is_import_in_file(file_name_: str) -> bool:
@@ -90,7 +105,7 @@ def _is_import_in_file(file_name_: str) -> bool:
     return False
 
 
-def _walk_throw_and_import():
+def _walk_throw_and_import(filter_modules: List[str] = None):
     """
     The functions runs throw all of the modules in current and nested folder, looks up and imports modules, where is a
     mention checking, thereby forming the test-suite.
@@ -102,6 +117,9 @@ def _walk_throw_and_import():
         files = (file for file in files if file.endswith(".py"))
         for file in (f for f in files if _is_import_in_file(f'{root}{os.sep}{f}')):
             file_name_ = file.replace('.py', '')
+            if filter_modules:
+                if not _is_in_filter_list(filter_modules, file_name_, root):
+                    continue
             try:
                 package_ = root.replace(HOME_FOLDER, '').replace(os.sep, '')
                 name = package_ + '.' + file_name_ if package_ else file_name_
@@ -109,6 +127,18 @@ def _walk_throw_and_import():
             except ModuleNotFoundError:
                 sys.path.append(root)
                 importlib.import_module(file_name_)
+
+
+def _is_in_filter_list(filter_modules: List[str], file_name_: str, root: str) -> bool:
+    filtered = [mod for mod in filter_modules if mod.endswith(f'{file_name_}')]
+    if not filtered:
+        return False
+    if '.' in filtered[0]:
+        filtered_with_package = [mod for mod in filtered
+                                 if root.replace(os.sep, '.').endswith('.'.join(mod.split('.')[:-1]))]
+        if not filtered_with_package:
+            return False
+    return True
 
 
 def _generate_options():
@@ -175,7 +205,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str):
             raise ValueError(f"{file_name_} not found! Stopped")
 
 
-if __name__ == '__main__':
+def run():
     args = parse_arguments()
     if args.generate_options:
         _generate_options()
@@ -185,3 +215,7 @@ if __name__ == '__main__':
         dry_run = args.dry_run if args.dry_run else False
         filter_by_name = args.filter_test if args.filter_test else ''
         _main_run(file_name, params, dry_run, filter_by_name)
+
+
+if __name__ == '__main__':
+    run()

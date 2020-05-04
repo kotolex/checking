@@ -452,5 +452,57 @@ def check_double():
 
 ```
 
+### Command Line Options ###
+
+You can run all your tests in current folder and all subfolders with your terminal:
+
+```commandline
+python -m checking
+```
+There are few parameters for run in terminal:
+
+**-o options.json**  tells to look at the file options.json for test-suite parameters. 
+If specified, **-d** and **-f** options will be ignored!
+
+**-g** just generates default .json file for your options! If specified, all other options will be ignored!
+
+**-a arg** or **-a key=value**   add argument to common parameters of the suite to use later at tests
+
+**-d**    dry-run mode, no real tests will be executed, just collects and counts.
+
+**-f name**    filters test name, only test whose name contains filter will be executed
+
+
+### Options File Parameters ###
+
+Options file is a way to manage your suite(s), you can have a few of them with different names to use in any case you need, for example 1 file for
+run all tests, anoter to run only api test etc. File must have .json extension and contains valid json.
+For your convinience you can generate one with
+```commandline
+python -m checking -g
+```
+In current working folder a file will appear with content like:
+```json
+{"suite_name": "Default Test Suite", 
+"verbose": 0, 
+"groups": [], 
+"params": {}, 
+"listener": "", 
+"modules": [], 
+"threads": 1, 
+"dry_run": false, 
+"filter_by_name": ""}
+```
+Changing this parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.
+Some rules for parameters:
+1) All types must be as in example, so you cant put string to "verbose" it must be int, etc.
+2) if groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests wil executed
+3) Listener must be specified with module, like "listener": "my_module.MyListener". It is not necessary
+to specify whole path, just module name and class name. If not specified, default listener will be used.
+4) Modules must be specified without ".py"! If modules is empty than all found modules with tests will be imported. If modules spicified("modules":["my_package.my_module"]) 
+only that modules be imported, and tests wil be collected from it. You can specify just module names or package.module (no nedd to specify full path)
+
+
+
 ### Contact me ###
 Lexman2@yandex.ru

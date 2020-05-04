@@ -48,8 +48,8 @@ class DefaultListener(Listener):
         b_count = len(test_suite.broken())
         i_count = len(test_suite.ignored())
         all_count = f_count + b_count + i_count + success_count
-        print(f'Total tests:{all_count}, success tests : {success_count}, failed tests:{f_count}, broken tests:'
-              f'{b_count}, ignored tests:{i_count}')
+        print(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
+              f'{b_count}, ignored tests: {i_count}')
         print(f'Time elapsed: {elapsed:.2f} seconds.')
         if self.verbose == 3:
             if f_count:

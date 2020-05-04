@@ -129,8 +129,13 @@ class MainTest(TestCase):
         with self.assertRaises(ValueError):
             m.check_parameters(dic_)
 
+    def test_check_param_listener_fail_if_no_module(self):
+        with self.assertRaises(ValueError):
+            dic_ = {'listener': "1"}
+            m.check_parameters(dic_)
+
     def test_check_param_listener_ok(self):
-        dic_ = {'listener': "1"}
+        dic_ = {'listener': "module.1"}
         m.check_parameters(dic_)
 
     def test_check_param_threads_failed_None(self):
