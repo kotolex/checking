@@ -101,10 +101,14 @@ def _walk_throw_and_import():
             continue
         files = (file for file in files if file.endswith(".py"))
         for file in (f for f in files if _is_import_in_file(f'{root}{os.sep}{f}')):
-            package_ = root.replace(HOME_FOLDER, '').replace(os.sep, '')
             file_name_ = file.replace('.py', '')
-            name = package_ + '.' + file_name_ if package_ else file_name_
-            importlib.import_module(name, package=HOME_FOLDER)
+            try:
+                package_ = root.replace(HOME_FOLDER, '').replace(os.sep, '')
+                name = package_ + '.' + file_name_ if package_ else file_name_
+                importlib.import_module(name, package=HOME_FOLDER)
+            except ModuleNotFoundError:
+                sys.path.append(root)
+                importlib.import_module(file_name_)
 
 
 def _generate_options():
@@ -130,8 +134,8 @@ def _get_arg_dict(arg: Union[str, None]) -> Dict:
     dic_ = {}
     if arg:
         if '=' in arg:
-            pair = arg.split("=")
-            dic_[pair[0]] = pair[1]
+            key, value = arg.split("=")
+            dic_[key] = value
         else:
             dic_[arg] = None
     return dic_

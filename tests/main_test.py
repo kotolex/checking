@@ -4,7 +4,7 @@ from unittest import TestCase
 from checking import __main__ as m
 
 PARAMETERS = {'suite_name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '',
-              'modules': [],'threads': 1, 'dry_run': False, 'filter_by_name': ''}
+              'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': ''}
 
 
 class MainTest(TestCase):
