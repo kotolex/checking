@@ -399,7 +399,7 @@ def function_with_str_inside(value):
 def spy_for_str():
     spy = Spy('it is a string') # Spy, which is like str, but it is not str!
     function_with_str_inside(spy) # Send our spy instead a str
-    is_true(spy.was_function_called('upper')) # Verify upper was called
+    is_true(spy.upper.was_called()) # Verify upper was called
     
 
 ```
@@ -417,9 +417,9 @@ def function_with_str_inside(value):
 @test
 def spy_with_return():
     spy = Spy('string')
-    spy.when_call_function_returns('upper', 'test') # Tells what to return, when upper will be call
+    spy.upper.returns('test') # Tells what to return, when upper will be call
     result = function_with_str_inside(spy)
-    is_true(spy.was_function_called('upper'))
+    is_true(spy.upper.was_called())
     equals('test', result) # verify our spy returns 'test'
 
 ```
@@ -447,14 +447,14 @@ real object methods results if not specified otherwise.
 def check_double():
     spy = Double("string")  # Create str double-object
     equals(6, len(spy))  # Len returns 6 - the real length of original object ("string")
-    spy.when_call_function_returns('__len__', 100)  # Fake len result
+    spy.len.returns(100)  # Fake len result
     equals(100, len(spy))  # Len now returns 100
 
 ```
 
 ### Command Line Options ###
 
-You can run all your tests in current folder and all subfolders with your terminal:
+You can run all your tests in current folder and all sub-folders with your terminal:
 
 ```commandline
 python -m checking
@@ -475,9 +475,10 @@ If specified, **-d** and **-f** options will be ignored!
 
 ### Options File Parameters ###
 
-Options file is a way to manage your suite(s), you can have a few of them with different names to use in any case you need, for example 1 file for
-run all tests, anoter to run only api test etc. File must have .json extension and contains valid json.
-For your convinience you can generate one with
+Options file is a way to manage your suite(s), you can have a few of them with different names to use in any case you 
+need, for example 1 file for run all tests, another to run only api tests etc. 
+File must have .json extension and contains valid json.
+For your convenience you can generate one with
 ```commandline
 python -m checking -g
 ```
@@ -498,7 +499,7 @@ Some rules for parameters:
 
 1) All types must be as in example, so you cant put string to "verbose" it must be int, etc.
 
-2) if groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests wil executed
+2) if groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests will executed
 
 3) Listener must be specified with module, like "listener": "my_module.MyListener". It is not necessary
 to specify whole path, just module name and class name. If not specified, default listener will be used. You can use

@@ -1,7 +1,7 @@
 from .asserts import *
 from .runner import start
 from .annotations import *
-from .classes.spy import Spy, Double
+from .classes.mocking import *
 from .runner import common_parameters
 from .classes.fluent_assert import verify
 from .classes.soft_assert import SoftAssert

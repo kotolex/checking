@@ -1,34 +1,11 @@
 from typing import Any, List, Tuple
-from functools import partial
+
+from .calls import Call
+from .interfaces import Observer
+from .wrapper import AttributeWrapper
 
 
-class Call:
-    """
-    The class which represents a single function call, stores its name and call arguments
-    """
-
-    def __init__(self, name: str, *args, **kwargs):
-        self.name = name
-        self.args = args
-        self.kwargs = kwargs
-
-    def __str__(self):
-        args = self.args if self.args else 'no args'
-        kwargs = self.kwargs if self.kwargs else 'no keyword args'
-        return f'Call of "{self.name}" with {args}, {kwargs}'
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __eq__(self, other):
-        if other is None:
-            return False
-        if type(other) != type(self):
-            return False
-        return self.name == other.name and self.args == other.args and self.kwargs == other.kwargs
-
-
-class Spy:
+class Spy(Observer):
     """
     The test-double (spy), which replaces the desired object. His attributes return None, and the methods do not do
     anything if unless otherwise indicated, but all of the calls are fixed. This class in used due to make sure in
@@ -36,29 +13,26 @@ class Spy:
     """
 
     def __init__(self, obj: Any = None):
+        super().__init__()
         self.chain: List[Call] = []
-        self.returns = {}
+        self._returns = None
         if obj is not None:
             for name in dir(obj):
                 if callable(getattr(obj, name)):
                     if name != '__class__':
-                        setattr(self, name, partial(self.__function, name))
+                        setattr(self, name, AttributeWrapper(name, self))
                     else:
                         setattr(self, name, self.__class__)
                 else:
                     setattr(self, name, None)
         self.basic = obj
 
-    def __call__(self, *args, **kwargs):
-        self.__function('', *args, **kwargs)
-        if '' in self.returns.keys():
-            return self.returns['']
-        return None
+    def notify(self, _call: Call):
+        self.chain.append(_call)
 
-    def __function(self, name, *args, **kwargs):
-        self.chain.append(Call(name, *args, **kwargs))
-        if name in self.returns:
-            return self.returns[name]
+    def __call__(self, *args, **kwargs):
+        self.chain.append(Call('', *args, **kwargs))
+        return self._returns
 
     def __str__(self):
         if self.basic is None:
@@ -87,13 +61,13 @@ class Spy:
         """
         return self.was_function_with_argument_called('', arg)
 
-    def when_call_returns(self, result: Any):
+    def returns(self, result: Any):
         """
         If spy object will be called itself return result
         :param result: any type to return when call
         :return: None
         """
-        self.when_call_function_returns('', result)
+        self._returns = result
 
     def was_function_called(self, name: str) -> bool:
         """
@@ -118,15 +92,6 @@ class Spy:
         call = Call(name, *args, **kwargs)
         return any([e for e in self.chain if e == call])
 
-    def when_call_function_returns(self, name: str, result: Any):
-        """
-        Replace result of the function/method call with some new result
-        :param name: name of the function
-        :param result: any result to return
-        :return: None
-        """
-        self.returns[name] = result
-
     def all_calls_args(self) -> List[Tuple]:
         """
         Returns all called function/method arguments
@@ -144,37 +109,50 @@ class Spy:
 
 class Double(Spy):
     """
-        The full test-double (twin of the object), the main difference with Spy is behaviour. Behaviour stays the same
-        as original object has, but all calls fixed and you can change return result of the methods.
-        This class in used due to make sure in the call of respectively functions with arguments.
+    The full test-double (twin of the object), the main difference with Spy is behaviour. Behaviour stays the same
+    as original object has, but all calls fixed and you can change return result of the methods.
+    This class in used due to make sure in the call of respectively functions with arguments.
     """
 
     def __init__(self, obj: Any = None):
         super().__init__()
         if obj is not None:
             for name in dir(obj):
-                if callable(getattr(obj, name)):
+                attr = getattr(obj, name)
+                if callable(attr):
                     if name != '__class__':
-                        setattr(self, name, partial(self.__function, name))
+                        wrapper = AttributeWrapper(name, self)
+                        wrapper.use_function(attr)
+                        setattr(self, name, wrapper)
                     else:
                         setattr(self, name, self.__class__)
+                else:
+                    setattr(self, name, attr)
+        wrapper = AttributeWrapper('len', self)
+        setattr(self, 'len', wrapper)
+        wrapper = AttributeWrapper('bool', self)
+        setattr(self, 'bool', wrapper)
+        wrapper = AttributeWrapper('iter', self)
+        setattr(self, 'iter', wrapper)
         self.basic = obj
-
-    def __function(self, name, *args, **kwargs):
-        self.chain.append(Call(name, *args, **kwargs))
-        if name in self.returns:
-            return self.returns[name]
-        else:
-            return getattr(self.basic, name)(*args, **kwargs)
 
     def __str__(self):
         return f'Test Double of the "{self.basic}" {type(self.basic)}'
 
     def __len__(self):
-        return len(self.basic) if '__len__' not in self.returns else self.returns['__len__']
+        if self.len._return is not None or self.len._function:
+            return self.len()
+        self.len()
+        return len(self.basic)
 
     def __bool__(self):
-        return bool(self.basic) if '__bool__' not in self.returns else self.returns['__bool__']
+        if self.bool._return is not None or self.bool._function:
+            return self.bool()
+        self.bool()
+        return bool(self.basic)
 
     def __iter__(self):
-        return iter(self.basic) if '__iter__' not in self.returns else self.returns['__iter__']
+        if self.iter._return is not None or self.iter._function:
+            return self.iter()
+        self.iter()
+        return iter(self.basic)

@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from checking.classes.spy import Spy, Double, Call
+from checking.classes.mocking import Spy, Double, Call
 
 
 class SpyTest(TestCase):
@@ -35,7 +35,7 @@ class SpyTest(TestCase):
 
     def test_returns_on_called_empty(self):
         spy = Spy()
-        spy.when_call_returns(11)
+        spy.returns(11)
         self.assertEqual(11, spy())
 
     def test_str_on_empty(self):
@@ -69,7 +69,7 @@ class SpyTest(TestCase):
 
     def test_returns_when_func_called(self):
         spy = Spy('string')
-        spy.when_call_function_returns('upper', 22)
+        spy.upper.returns(22)
         self.assertEqual(22, spy.upper())
 
     def test_double_str(self):
@@ -88,7 +88,7 @@ class SpyTest(TestCase):
 
     def test_double_replace_returns(self):
         d = Double('str')
-        d.when_call_function_returns('upper', 'UPS')
+        d.upper.returns('UPS')
         self.assertEqual('UPS', d.upper())
 
     def test_all_calls_args(self):
@@ -105,13 +105,22 @@ class SpyTest(TestCase):
         s.lower(1)
         self.assertEqual(['t', 'T', 1], s.all_calls_args_flatten())
 
+    def test_call_count(self):
+        s = Spy('str')
+        s.upper()
+        self.assertEqual(1, s.upper.call_count())
+        s.lower()
+        self.assertEqual(1, s.upper.call_count())
+        s.upper()
+        self.assertEqual(2, s.upper.call_count())
+
     def test_len_for_str(self):
         s = Double('str')
         self.assertEqual(3, len(s))
 
     def test_len_for_str_with_mock(self):
         s = Double('str')
-        s.when_call_function_returns('__len__', 120)
+        s.len.returns(120)
         self.assertEqual(120, len(s))
 
     def test_bool_for_str(self):
@@ -120,7 +129,7 @@ class SpyTest(TestCase):
 
     def test_bool_for_str_with_mock(self):
         s = Double('str')
-        s.when_call_function_returns('__bool__', False)
+        s.bool.returns(False)
         self.assertEqual(False, bool(s))
 
     def test_iter_for_str(self):
@@ -129,7 +138,7 @@ class SpyTest(TestCase):
 
     def test_iter_for_str_with_mock(self):
         s = Double('str')
-        s.when_call_function_returns('__iter__', iter('test'))
+        s.iter.returns(iter('test'))
         self.assertEqual('test', ''.join(iter(s)))
 
 
