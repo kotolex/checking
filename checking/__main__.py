@@ -8,9 +8,12 @@ from typing import Dict, Union, List
 from checking.runner import start
 from checking.helpers.others import str_date_time
 from checking.helpers.others import is_file_exists
+from checking.classes.listeners.default import DefaultListener
+from checking.classes.listeners.file_logger import DefaultFileListener
 
 HOME_FOLDER = sys.path[0]
 LOOK_FOR = ('import checking', 'from checking')
+DEFAULT_LISTENERS = {'DefaultListener': DefaultListener, 'DefaultFileListener': DefaultFileListener}
 
 
 def read_parameters_from_file(file_name_: str) -> Dict:
@@ -46,8 +49,9 @@ def check_parameters(parameters: Dict):
             raise ValueError(f'{name.capitalize()} parameter must be list of strings (List[str])!')
     listener_ = parameters.get('listener')
     if listener_:
-        if '.' not in listener_:
-            raise ValueError(f'Listener parameter must contains module and class name, like "my_module.MyListener"!')
+        if '.' not in listener_ and listener_ not in DEFAULT_LISTENERS:
+            raise ValueError(f'Listener parameter must contains module and class name, like "my_module.MyListener" or'
+                             f' it must be the name of one of the default listeners!')
 
 
 def _get_default_params():
@@ -64,12 +68,19 @@ def start_with_parameters(parameters: Dict):
     listener_ = params_.get('listener')
     try:
         if listener_ and modules:
-            modules.append('.'.join(listener_.split('.')[:-1]))
+            # if used custom listener  -add it module to filter
+            if listener_ not in DEFAULT_LISTENERS:
+                modules.append('.'.join(listener_.split('.')[:-1]))
         _walk_throw_and_import(modules)
         if listener_:
-            class_ = _get_class_from_imported_modules(listener_)
-            # Instantiate listener-class object
-            params_['listener'] = class_(params_['verbose'])
+            # if listener is one of defaults - use it
+            if listener_ in DEFAULT_LISTENERS:
+                params_['listener'] = DEFAULT_LISTENERS[listener_](params_['verbose'])
+            else:
+                # or try to import it from filtered module
+                class_ = _get_class_from_imported_modules(listener_)
+                # Instantiate listener-class object
+                params_['listener'] = class_(params_['verbose'])
     except Exception:
         print(f'Something wrong with importing!', file=sys.stderr)
         raise

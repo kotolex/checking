@@ -138,6 +138,14 @@ class MainTest(TestCase):
         dic_ = {'listener': "module.1"}
         m.check_parameters(dic_)
 
+    def test_check_param_listener_def_listener(self):
+        dic_ = {'listener': "DefaultListener"}
+        m.check_parameters(dic_)
+
+    def test_check_param_listener_def_file_listener(self):
+        dic_ = {'listener': "DefaultFileListener"}
+        m.check_parameters(dic_)
+
     def test_check_param_threads_failed_None(self):
         dic_ = {'threads': None}
         with self.assertRaises(ValueError):

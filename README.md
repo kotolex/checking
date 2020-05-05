@@ -495,12 +495,19 @@ In current working folder a file will appear with content like:
 ```
 Changing this parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.
 Some rules for parameters:
+
 1) All types must be as in example, so you cant put string to "verbose" it must be int, etc.
+
 2) if groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests wil executed
+
 3) Listener must be specified with module, like "listener": "my_module.MyListener". It is not necessary
-to specify whole path, just module name and class name. If not specified, default listener will be used.
-4) Modules must be specified without ".py"! If modules is empty than all found modules with tests will be imported. If modules spicified("modules":["my_package.my_module"]) 
-only that modules be imported, and tests wil be collected from it. You can specify just module names or package.module (no nedd to specify full path)
+to specify whole path, just module name and class name. If not specified, default listener will be used. You can use
+default listener names here, like "listener":"DefaultFileListener"
+
+4) Modules must be specified without ".py"! If modules parameter is empty than all found modules with tests will be imported.
+If modules specified("modules":["my_package.my_module"]) only that modules be imported, and tests wil be collected from it. 
+You can specify just module names or package.module (no need to specify full path)
+
 
 
 
