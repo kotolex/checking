@@ -1,10 +1,9 @@
 from os import path
 from sys import stderr
+from sys import _getframe
 from inspect import signature
 from inspect import getsource
 from inspect import isfunction
-from inspect import getmembers
-from inspect import currentframe
 from typing import Callable, Any, Iterable, Tuple
 
 from .exceptions import *
@@ -307,11 +306,14 @@ def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8', map_f
     def wrapper():
         return DataFile(real_path, encoding=encoding, map_function=map_function)
 
-    frame_ = [fr for fr in getmembers(currentframe()) if fr[0] == 'f_back']
-    assert frame_  # It can't be no last frame!
-    frame = frame_[0]
-    first_path = path.split(frame[1].f_globals['__file__'])[0]
-    real_path = path.join(first_path, file_path)
-    if not is_file_exists(real_path):
-        raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
-    data(name=provider_name)(wrapper)
+    try:
+        # Get last frame to verify file-path
+        frame = _getframe(1)
+        assert frame  # It can't be no last frame!
+        first_path = path.split(frame.f_globals['__file__'])[0]
+        real_path = path.join(first_path, file_path)
+        if not is_file_exists(real_path):
+            raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
+        data(name=provider_name)(wrapper)
+    finally:
+        del frame

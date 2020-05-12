@@ -7,4 +7,4 @@ class Observer:
         pass
 
     def notify(self, call_: Call):
-        pass
+        raise NotImplementedError()
