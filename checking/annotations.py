@@ -93,12 +93,16 @@ def data(*args, enabled: bool = True, name: str = None):
     :param name: is the name, if not specified, then takes the name of the function. By this name, tests are searched by
     the provider, therefore only unique names are allowed. Duplicate name throws DuplicateNameException
     :return: __fake
+    :raises: DuplicateNameException if provider with such name is already exists
+    :raises: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
     """
     if not enabled:
         return _fake
 
     def real_decorator(func: Callable[[None], Iterable]):
         __check_is_function_without_args(func, 'data')
+        if not _has_yield_or_return(func):
+            raise WrongAnnotationPlacement(f'Function marked with @data must returns or yields Iterable!')
         name_ = name if name else func.__name__
         providers = TestSuite.get_instance().providers
         if name_ in providers:
@@ -243,6 +247,11 @@ def _fake(*args):
     pass
 
 
+def _has_yield_or_return(function: Callable) -> bool:
+    code = getsource(function)
+    return ' return ' in code or ' yield ' in code
+
+
 def _check_func_for_soft_assert(func):
     try:
         code = getsource(func)
@@ -328,5 +337,8 @@ def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
     :param name: name for the provider, if empty then 'container' will be used as name
     :return: None
     """
+    def _():
+        return value
+
     name = name if name is not None else 'container'
-    data(name=name)(lambda: value)
+    data(name=name)(_)

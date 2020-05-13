@@ -109,8 +109,11 @@ class TestAnnotations(TestCase):
                          e.exception.args[0])
 
     def test_data_raises_when_two_args(self):
+        def _():
+            return [1, 2]
+
         with self.assertRaises(WrongAnnotationPlacement) as e:
-            data(name='another2')(lambda: [1, 2])
+            data(name='another2')(_)
             test(data_provider='another2')(non_valid_for_provider)
         self.assertEqual("Function 'non_valid_for_provider' marked with data_provider has more than 1 argument!",
                          e.exception.args[0])
@@ -241,6 +244,14 @@ class TestAnnotations(TestCase):
         test(data_provider='text')(valid_for_provider)
         start(listener=self._listener)
         self.assertEqual(3, TestSuite.tests_count())
+
+    def test_data_function_must_have_return_fail(self):
+        def fail():
+            pass
+
+        clear()
+        with self.assertRaises(WrongAnnotationPlacement):
+            data(name='text')(fail)
 
 
 if __name__ == '__main__':

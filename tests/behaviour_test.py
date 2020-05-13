@@ -36,6 +36,10 @@ def half_second():
     sleep(0.5)
 
 
+def return2():
+    return [0, 1, 2]
+
+
 def sa_ok():
     soft = SoftAssert()
     soft.check(lambda: equals(1, 1))
@@ -58,8 +62,11 @@ def raises():
 class BehaviourTest(TestCase):
 
     def test_three_success_when_data(self):
+        def _():
+            return [0, 1, 2]
+
         clear()
-        data(name='three')(lambda: [0, 1, 2])
+        data(name='three')(_)
         test(data_provider='three')(_fn)
         start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
@@ -68,8 +75,11 @@ class BehaviourTest(TestCase):
         self.assertEqual(3, TestSuite.get_instance().tests_count())
 
     def test_three_success_one_failed_when_data(self):
+        def _():
+            return [0, 1, 2, 3]
+
         clear()
-        data(name='four')(lambda: [0, 1, 2, 3])
+        data(name='four')(_)
         test(data_provider='four')(_fn)
         start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
@@ -106,7 +116,7 @@ class BehaviourTest(TestCase):
 
     def test_timeout_ok_with_data(self):
         clear()
-        data(name='three')(lambda: [0, 1, 2])
+        data(name='three')(return2)
         test(timeout=1, data_provider="three")(data_time)
         start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
@@ -116,7 +126,7 @@ class BehaviourTest(TestCase):
 
     def test_timeout_failed_with_data(self):
         clear()
-        data(name='three')(lambda: [0, 1, 2])
+        data(name='three')(return2)
         test(timeout=1, data_provider="three")(long_data)
         start(listener=Listener(0))
         self.assertEqual(3, len(TestSuite.get_instance().broken()))

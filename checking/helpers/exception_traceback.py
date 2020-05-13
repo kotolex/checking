@@ -1,12 +1,15 @@
-import traceback
 import os
+import traceback
 from typing import List, Tuple
 
 SEPARATOR = os.path.sep
 
 
 def _is_need_to_hide(name: str) -> bool:
-    parts = (f'checking{SEPARATOR}asserts.py', f'checking{SEPARATOR}classes{SEPARATOR}', f'{SEPARATOR}contextlib.py',)
+    parts = (f'checking{SEPARATOR}asserts.py',
+             f'checking{SEPARATOR}classes{SEPARATOR}',
+             f'checking{SEPARATOR}runner.py{SEPARATOR}',
+             f'{SEPARATOR}contextlib.py',)
     """
     Check the strings of traceback for the contents of the internal modules of the project and some modules of standard 
     library, to as not to display error traces (which the user is not interested in).

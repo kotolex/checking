@@ -1,7 +1,7 @@
 from typing import Dict, List, Callable, Iterable
 
-from .basic_group import TestGroup
 from .basic_test import Test
+from .basic_group import TestGroup
 
 
 class TestSuite:

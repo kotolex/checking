@@ -1,8 +1,8 @@
-from threading import Thread, Event
 from typing import Callable
+from threading import Thread, Event
 
-from checking.exceptions import TestBrokenException
 from checking.classes.basic_test import Test
+from checking.exceptions import TestBrokenException
 
 
 class ExceptionThread(Thread):
@@ -12,7 +12,7 @@ class ExceptionThread(Thread):
     Saves exceptions within Event container.
     """
 
-    def __init__(self, func:Callable, event:Event):
+    def __init__(self, func: Callable, event: Event):
         super().__init__(target=func, daemon=True)
         self.func = func
         self.daemon = True
