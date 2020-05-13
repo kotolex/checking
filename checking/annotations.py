@@ -4,7 +4,7 @@ from sys import _getframe
 from inspect import signature
 from inspect import getsource
 from inspect import isfunction
-from typing import Callable, Any, Iterable, Tuple, Union, Sequence
+from typing import Callable, Any, Iterable, Tuple, Union, Sequence, Container
 
 from .exceptions import *
 from .classes.basic_test import Test
@@ -18,9 +18,9 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     """
     The annotation that marks a function in a module as a test, does not work with classes and class methods and with
     functions, that take an argument (except using of data provider).
-    :param args: parameters, in which, among other things, a function may come if the method is marked just with  @test.
+    :param args: parameters, in which a function may come if the method is marked just with  @test.
     :param enabled: is the flag of the active test, if False then the test does not fall into the run and all its other
-    settings are ignored too
+    settings are ignored.
     :param name: the name of the test, but if there is no name, then the name is the function name
     :param description: Test description, if None will be taken from function documentation. If there are description
     and documentation, then the parameter has the advantage, to wit this is in use, otherwise, documentation will be
@@ -87,8 +87,7 @@ def data(*args, enabled: bool = True, name: str = None):
     return Iterable or Sequence, otherwise will be an error. It is not possible at compile time to determine if the
     function returns the correct type, so an exception with the wrong type will be thrown at runtime. Exception tests
     with such provider are added to ignored.
-    :param args: are parameters in which, among other things, a function may come if the method is marked simply with
-    @data
+    :param args: are parameters in which a function may come if the method is marked simply with @data
     :param enabled: the flag of the active provider, if False, then it does not fall into the list of providers and all
     its other settings are ignored
     :param name: is the name, if not specified, then takes the name of the function. By this name, tests are searched by
@@ -181,8 +180,7 @@ def after_group(*args, name: str = None, always_run: bool = False):
     With this flag, the function ignores the results of preliminary functions and always starts.
     :param name: is the name of the module or group after which tests will be executed once the function. If no name is
     specified, then the name of the current module where the annotation is used is taken
-    :param args: are parameters in which, among other things, a function may come if the method is marked simply by
-    @after_module
+    :param args: are parameters in which a function may come if the method is marked simply by @after_module
     :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
     will be launched anyway
     :return: __fake
@@ -218,8 +216,7 @@ def after_suite(*args, always_run: bool = False):
     it is performed once at the very end of the test after all groups and tests. If there are functions before the whole
     run (@before_suite) and they failed, then this function will not be executed, except when using the
     always_run=True flag. In this case, it will always be launched.
-    :param args: are parameters in which, among other things, a function may come if the method is marked simply
-    @after_suite
+    :param args: are parameters in which a function may come if the method is marked simply @after_suite
     :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
     will be launched anyway
     :return: __fake
@@ -252,7 +249,7 @@ def _check_func_for_soft_assert(func):
         is_soft_assert_there = 'SoftAssert(' in code
         if not is_soft_assert_there:
             return
-        if not 'assert_all()' in code:
+        if 'assert_all()' not in code:
             print(f'WARNING! Function {func.__module__}.{func.__name__} marked with @test seems to contains SoftAssert '
                   f'object without calling assert_all()!', file=stderr)
     except Exception:
@@ -264,7 +261,7 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
     """
     Checking that the annotation is above the function without arguments, it is not intended to use annotations with
     classes and / or with their methods.
-    :param func: is the function
+    :param func: is the function to test
     :param annotation_name: is the name of annotation (for errors)
     :return: None
     :raises: WrongAnnotationPlacement
@@ -321,13 +318,14 @@ def DATA_FILE(file_path: str, provider_name: str = None, encoding: str = 'UTF-8'
         del frame
 
 
-def CONTAINER(value: Union[Sequence, Iterable], name: str = None):
+def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
     """
     Sugar for simplify providing data, use it when provider is simple and can be written in one-liner, like list
     comprehension or generator expression.
-    The function name explicitly stays uppercase for user to pay attention to it.
-    :param value: sequence or iterable or any object you can use with for
-    :param name: name jf the provider, if empty then 'container' will be used as name
+    The function name explicitly stays uppercase for user to pay attention to it!
+    User must call it at the global module namespace, but not at fixtures or in tests!
+    :param value: sequence/iterable or any object you can use with for
+    :param name: name for the provider, if empty then 'container' will be used as name
     :return: None
     """
     name = name if name is not None else 'container'

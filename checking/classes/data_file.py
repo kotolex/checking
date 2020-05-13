@@ -8,7 +8,7 @@ class DataFile:
 
     def __init__(self, file_name: str, encoding: str = 'UTF-8', map_function: Callable = None):
         self.file = open(file_name, encoding=encoding)
-        self.map_ = map_function if map_function else lambda line: line.rstrip()
+        self.map_ = map_function if map_function else lambda line: line
 
     def __iter__(self):
         return (self.map_(line) for line in self.file)

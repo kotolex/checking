@@ -14,7 +14,7 @@ class TestSuite:
     # The dictionary pairs name of set-set
     groups: Dict[str, TestGroup] = {}
 
-    # Data providers (allow to all tests in all sets)
+    # Data providers (available to all tests in all sets)
     providers: Dict[str, Callable[[None], Iterable]] = {}
 
     # Lists of functions which execute before and after run

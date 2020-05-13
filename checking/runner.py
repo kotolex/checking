@@ -60,6 +60,8 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
         threads = 1
     if dry_run:
         _dry_run(test_suite)
+    # Check if all used provider names are found
+    _check_data_providers(test_suite)
     _run(test_suite, threads)
 
 
@@ -90,8 +92,6 @@ def _run(test_suite: TestSuite, threads: int = 1):
         # will be executed with the appropriate flag)
         if not _run_before_suite(test_suite):
             return
-        # Check if all used provider names are found
-        _check_data_providers(test_suite)
         for group in test_suite.groups.values():
             # If there are no tests in the group, then skip it
             if not group.tests:
