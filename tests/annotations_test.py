@@ -189,21 +189,28 @@ class TestAnnotations(TestCase):
 
     def test_data_file(self):
         clear()
-        DATA_FILE('new', 'test_data.txt')
+        DATA_FILE('test_data.txt', provider_name='new')
         test(data_provider='new')(valid_for_provider)
         self.assertTrue('new' in TestSuite.get_instance().providers)
 
     def test_data_file_has_three_tests(self):
         clear()
-        DATA_FILE('new', 'test_data.txt')
+        DATA_FILE('test_data.txt', provider_name='new')
         test(data_provider='new')(valid_for_provider)
         start(listener=self._listener)
         self.assertEqual(3, TestSuite.tests_count())
 
     def test_data_file_has_three_tests_with_long_path(self):
         clear()
-        DATA_FILE('new', 'files/test_data.txt')
+        DATA_FILE('files/test_data.txt', provider_name='new')
         test(data_provider='new')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
+
+    def test_data_file_when_no_name(self):
+        clear()
+        DATA_FILE('files/test_data.txt')
+        test(data_provider='files/test_data.txt')(valid_for_provider)
         start(listener=self._listener)
         self.assertEqual(3, TestSuite.tests_count())
 

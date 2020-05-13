@@ -289,12 +289,12 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
                                        f"has more than 1 argument!")
 
 
-def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8', map_function: Callable = None):
+def DATA_FILE(file_path: str, provider_name: str = None, encoding: str = 'UTF-8', map_function: Callable = None):
     """
     Function to use text file as data provider for test. Reads file lazily, do not get it to memory.
     The function name explicitly stays uppercase for user to pay attention to it.
     User must call it at the global module namespace, but not at fixtures or in tests!
-    :param provider_name: name of the data-provider for use it in test
+    :param provider_name: name of the data-provider for use it in test, if not specified the file_path be used as name
     :param file_path: file name or path-to-file with name, it can be full or relative path, but it must be "visible"
     (accessible from module, where it is declared)
     :param encoding: encoding of the text file (default UTF-8)
@@ -306,6 +306,8 @@ def DATA_FILE(provider_name: str, file_path: str, encoding: str = 'UTF-8', map_f
     def wrapper():
         return DataFile(real_path, encoding=encoding, map_function=map_function)
 
+    if provider_name is None:
+        provider_name = file_path
     try:
         # Get last frame to verify file-path
         frame = _getframe(1)

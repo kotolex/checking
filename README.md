@@ -201,7 +201,7 @@ If you need to use text file as a provider and get data line by line, you can us
 from checking import *
 
 # Create data-provider
-DATA_FILE('provider', 'files/data.txt') # file at <current folder>/files/data.txt
+DATA_FILE('files/data.txt', provider_name='provider') # file at <module folder>/files/data.txt
 
 
 @test(data_provider='provider')
@@ -218,7 +218,7 @@ at line end:
 from checking import *
 
 # Create data-provider
-DATA_FILE('provider', 'files/data.txt', map_function=str.rstrip) # use rstrip() of str to transform
+DATA_FILE('files/data.txt', provider_name='provider', map_function=str.rstrip) # use rstrip() of str to transform
 
 
 @test(data_provider='provider')
@@ -227,7 +227,23 @@ def try_prov(it):
 
 ```
 
-**Important!** You can use DATA_FILE function only at the module global scope, but not at fixtures!
+If you not specify name for data_file, then file_path will be used for it. For example, it is valid use:
+
+```
+#!python
+from checking import *
+
+# Create data-provider
+DATA_FILE('data.txt') # file at module folder, no name for it
+
+
+@test(data_provider='data.txt') # use file name to find provider
+def try_prov(it):
+    is_true(it)
+
+```
+
+**Important!** You can use DATA_FILE function only at the module global scope, but not at fixtures or tests!
 
 ## Test Parameters
 
