@@ -242,8 +242,38 @@ def try_prov(it):
     is_true(it)
 
 ```
+When you need to provide data from simple one-liner like string, list comprehension or generator expression,
+you don't need to write function, just use syntactic-sugar CONTAINER
 
-**Important!** You can use DATA_FILE function only at the module global scope, but not at fixtures or tests!
+```
+#!python
+from checking import *
+
+CONTAINER([e for e in range(10)], name='range') # Provide data from list, name is 'range'
+
+
+@test(data_provider='range')
+def try_container(it):
+    is_true(it in range(10))
+
+```
+
+If no name specified, the 'container' name will be used. But it is strongly recommended to use unique name here!
+
+```
+#!python
+from checking import *
+
+CONTAINER((e for e in range(10))) # Provide data from generator
+
+
+@test(data_provider='container')
+def try_container(it):
+    is_true(it in range(10))
+
+```
+
+**Important!** You can use DATA_FILE or CONTAINER only at the module global scope, but not at fixtures or tests!
 
 ## Test Parameters
 

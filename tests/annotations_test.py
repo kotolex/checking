@@ -214,6 +214,34 @@ class TestAnnotations(TestCase):
         start(listener=self._listener)
         self.assertEqual(3, TestSuite.tests_count())
 
+    def test_container_has_three_tests_default(self):
+        clear()
+        CONTAINER([_ for _ in range(3)])
+        test(data_provider='container')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
+
+    def test_container_has_three_tests_generator(self):
+        clear()
+        CONTAINER((_ for _ in range(3)))
+        test(data_provider='container')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
+
+    def test_container_has_three_tests_str(self):
+        clear()
+        CONTAINER('123')
+        test(data_provider='container')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
+
+    def test_container_has_three_tests_with_name(self):
+        clear()
+        CONTAINER('123', name='text')
+        test(data_provider='text')(valid_for_provider)
+        start(listener=self._listener)
+        self.assertEqual(3, TestSuite.tests_count())
+
 
 if __name__ == '__main__':
     main()

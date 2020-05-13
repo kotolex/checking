@@ -4,7 +4,7 @@ from sys import _getframe
 from inspect import signature
 from inspect import getsource
 from inspect import isfunction
-from typing import Callable, Any, Iterable, Tuple
+from typing import Callable, Any, Iterable, Tuple, Union, Sequence
 
 from .exceptions import *
 from .classes.basic_test import Test
@@ -319,3 +319,16 @@ def DATA_FILE(file_path: str, provider_name: str = None, encoding: str = 'UTF-8'
         data(name=provider_name)(wrapper)
     finally:
         del frame
+
+
+def CONTAINER(value: Union[Sequence, Iterable], name: str = None):
+    """
+    Sugar for simplify providing data, use it when provider is simple and can be written in one-liner, like list
+    comprehension or generator expression.
+    The function name explicitly stays uppercase for user to pay attention to it.
+    :param value: sequence or iterable or any object you can use with for
+    :param name: name jf the provider, if empty then 'container' will be used as name
+    :return: None
+    """
+    name = name if name is not None else 'container'
+    data(name=name)(lambda: value)
