@@ -1,7 +1,9 @@
-from unittest import main as main_unit
+from os import sep
 from unittest import TestCase
+from unittest import main as main_unit
 
 from checking import __main__ as m
+from checking.classes.listeners.default import DefaultListener
 
 PARAMETERS = {'suite_name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '',
               'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': ''}
@@ -219,6 +221,32 @@ class MainTest(TestCase):
 
     def test_get_arg_dict_simple_value(self):
         self.assertEqual({"1": "1"}, m._get_arg_dict("1=1"))
+
+    def test_get_class_from_imported_modules(self):
+        answer = m._get_class_from_imported_modules('default.DefaultListener')
+        self.assertEqual(answer, DefaultListener)
+
+    def test_get_class_from_imported_modules_raises_if_no_module(self):
+        with self.assertRaises(ValueError) as e:
+            m._get_class_from_imported_modules('wrong.DefaultListener')
+
+        self.assertEqual('Cant find listener wrong.DefaultListener', e.exception.args[0])
+
+    def test_is_in_filter_list_ok(self):
+        result = m._is_in_filter_list(['try'], 'try', '')
+        self.assertTrue(result)
+
+    def test_is_in_filter_list_fail_if_wrong_name(self):
+        result = m._is_in_filter_list(['try'], 'wrong', '')
+        self.assertFalse(result)
+
+    def test_is_in_filter_list_ok_with_package(self):
+        result = m._is_in_filter_list(['mod.try'], 'try', 'one' + sep + 'mod')
+        self.assertTrue(result)
+
+    def test_is_in_filter_list_failed_with_package(self):
+        result = m._is_in_filter_list(['mod.try'], 'try', 'one' + sep + 'mod2')
+        self.assertFalse(result)
 
 
 if __name__ == '__main__':

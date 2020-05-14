@@ -249,6 +249,20 @@ class FluentAssertTest(TestCase):
         with self.assertRaises(AssertionError):
             verify(1).is_not_in([1, 2])
 
+    def test_is_true_ok(self):
+        verify(1 > 0).is_true()
+
+    def test_is_true_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(1 == 0).is_true()
+
+    def test_is_false_ok(self):
+        verify(1 < 0).is_false()
+
+    def test_is_false_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(1 == 1).is_false()
+
 
 if __name__ == '__main__':
     main()

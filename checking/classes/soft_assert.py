@@ -1,7 +1,8 @@
-from typing import List, Callable, Any
+from typing import List, Callable
+from inspect import isfunction
 
-from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 from checking.asserts import *
+from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 
 
 class SoftAssert:
@@ -43,6 +44,8 @@ class SoftAssert:
         :param lambda_: the lambda does not take any parameters
         :return: None
         """
+        if not isfunction(lambda_):
+            raise TestBrokenException(f'Argument for SoftAssert.check function must be function, preferably lambda!')
         if self.__check_immediately:
             self._check(lambda_)
         else:
@@ -85,7 +88,8 @@ class SoftAssert:
     def is_false(self, obj: Any, message: str = None):
         self.check(lambda: is_false(obj, message))
 
-    def _create_message(self, exceptions: List[Exception]) -> str:
+    @staticmethod
+    def _create_message(exceptions: List[Exception]) -> str:
         message = '=' * 20
         message += '\nFAILED ASSERTS:\n'
         for exception in exceptions:

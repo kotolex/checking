@@ -5,6 +5,24 @@ from checking.classes.mocking import Spy, Double, Call
 
 class SpyTest(TestCase):
 
+    def test_call_str_arg(self):
+        call = Call('name', 1)
+        self.assertEqual('Call of "name" with (1,), no keyword args', str(call))
+
+    def test_call_str_arg_kwarg(self):
+        call = Call('name', 1, **{"z": 1})
+        self.assertEqual('Call of "name" with (1,), {\'z\': 1}', str(call))
+
+    def test_call_equal(self):
+        call = Call('name', 1)
+        call2 = Call('name', 1)
+        self.assertEqual(call, call2)
+
+    def test_call_not_equal(self):
+        call = Call('name', 1)
+        call2 = Call('name', 2)
+        self.assertNotEqual(call, call2)
+
     def test_create_spy_empty(self):
         spy = Spy()
 
