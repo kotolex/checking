@@ -1,6 +1,7 @@
 from os import sep
 from unittest import TestCase
 from unittest import main as main_unit
+from unittest.mock import mock_open, patch
 
 from checking import __main__ as m
 from checking.classes.listeners.default import DefaultListener
@@ -247,6 +248,17 @@ class MainTest(TestCase):
     def test_is_in_filter_list_failed_with_package(self):
         result = m._is_in_filter_list(['mod.try'], 'try', 'one' + sep + 'mod2')
         self.assertFalse(result)
+
+    def test_generate_options(self):
+        with patch('builtins.open', mock_open()) as mock_:
+            m._generate_options()
+            self.assertTrue('options' in mock_.call_args_list[0].args[0])
+            self.assertTrue('.json' in mock_.call_args_list[0].args[0])
+
+    def test_main_run_failed_if_no_file(self):
+        with self.assertRaises(ValueError):
+            m._main_run('wrong.path', {}, dry_run_=True, filter_by_name_='')
+
 
 
 if __name__ == '__main__':

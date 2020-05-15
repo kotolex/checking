@@ -157,6 +157,11 @@ def _run_test_with_provider(test, group):
 
 
 def _run_all_tests_in_group(group: TestGroup):
+    """
+    Run all test of the group, after sorting them by priority
+    :param group: TestGroup
+    :return: None
+    """
     is_one_of_before_test_failed = False
     group.sort_test_by_priority()
     for test in group.tests:
@@ -186,6 +191,12 @@ def _run_test_with_before_and_after(test: Test, group: TestGroup, is_before_fail
 
 
 def _provider_next(provider_name: str) -> Any:
+    """
+    Gets provider functions return or yield(generator) and iterate it. If a close attribute exists (for files) try to
+    close recourse after getting all elements.
+    :param provider_name: name of the provider
+    :return: generator
+    """
     iter_ = TestSuite.get_instance().providers[provider_name]()
     for param in iter_:
         yield param
@@ -200,6 +211,12 @@ def _provider_next(provider_name: str) -> Any:
 
 
 def _run_test(test: Test, group: TestGroup) -> bool:
+    """
+    Run actual test
+    :param test: Test (function to run)
+    :param group: TestGroup
+    :return: True if test succeed, False otherwise
+    """
     _listener.on_test_starts(test, group)
     try:
         if test.timeout:
@@ -218,6 +235,12 @@ def _run_test(test: Test, group: TestGroup) -> bool:
 
 
 def _check_data_providers(suite: TestSuite):
+    """
+    Checks if any test use data-provider, this provider is in collected list
+    :param suite: TestSuite
+    :return: None
+    :raises UnknownProviderName if test uses name what is not in providers list
+    """
     all_data_providers = [test.provider for group in suite.groups.values() for test in group.tests if test.provider]
     if not all_data_providers:
         return
@@ -229,6 +252,11 @@ def _check_data_providers(suite: TestSuite):
 
 
 def _run_before(test_case: TestCase):
+    """
+    Runs all fixtures before test case. If failed - set flaf is_before_failed to True
+    :param test_case: Test or TestGroup
+    :return: None
+    """
     for before in test_case.before:
         result = _run_fixture(before, 'before', test_case.name)
         if result:
@@ -236,6 +264,11 @@ def _run_before(test_case: TestCase):
 
 
 def _run_after(test_case: TestCase):
+    """
+    Runs all fixtures after test or group
+    :param test_case: Test or TestGroup
+    :return: None
+    """
     if not test_case.always_run_after and test_case.is_before_failed:
         return
     for after in test_case.after:
@@ -243,6 +276,13 @@ def _run_after(test_case: TestCase):
 
 
 def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
+    """
+    Runs fixture and returns result of the run
+    :param func: fixture-function (marked @before etc.)
+    :param fixture_type: type of the fixture to use in listener (before, after ...)
+    :param group_name: name of the group
+    :return: False if fixture not failed, True otherwise
+    """
     is_failed: bool = False
     try:
         func()
