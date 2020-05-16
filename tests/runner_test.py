@@ -1,4 +1,3 @@
-from os import sep
 from unittest import TestCase
 from unittest import main
 
