@@ -237,13 +237,17 @@ def _run_test(test: Test) -> bool:
             run_with_timeout(test)
         else:
             test.run()
+        test.stop()
         _listener.on_success(test)
         return True
     except AssertionError as e:
+        test.stop()
         _listener.on_failed(test, e)
     except (TestIgnoredException, SystemExit) as e:
+        test.stop()
         _listener.on_ignored_by_condition(test, e)
     except Exception as e:
+        test.stop()
         _listener.on_broken(test, e)
     return False
 

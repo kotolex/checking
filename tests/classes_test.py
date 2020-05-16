@@ -1,6 +1,7 @@
 from unittest import TestCase as TC
 from unittest import main
 from random import randint
+from time import sleep
 
 from checking.classes.basic_case import TestCase
 from checking.classes.basic_test import Test
@@ -284,6 +285,33 @@ class TestClasses(TC):
         self.assertEqual(test_case.group_name, 'new_group')
         self.assertEqual(test_case.group, group)
 
+    def test_default_has_minus_one_timings(self):
+        test_case = Test('test', print)
+        self.assertEqual(test_case._start_time, -1)
+        self.assertEqual(test_case._end_time, -1)
+        self.assertEqual(test_case.duration, -1)
+
+    def test_run_change_start_time(self):
+        test_case = Test('test', lambda: -1)
+        test_case.run()
+        self.assertTrue(test_case._start_time > 0)
+        self.assertEqual(test_case._end_time, -1)
+        self.assertEqual(test_case.duration, -1)
+
+    def test_stop_change_end_time(self):
+        test_case = Test('test', lambda: -1)
+        test_case.run()
+        test_case.stop()
+        self.assertTrue(test_case._end_time >= test_case._start_time)
+        self.assertTrue(test_case.duration >= 0)
+
+    def test_duration_works(self):
+        test_case = Test('test', lambda: -1)
+        test_case.run()
+        sleep(0.2)
+        test_case.stop()
+        self.assertTrue(test_case._end_time >= test_case._start_time)
+        self.assertTrue(test_case.duration >= 0.2)
 
 
 if __name__ == '__main__':

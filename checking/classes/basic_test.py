@@ -1,3 +1,4 @@
+from time import time
 from typing import Callable, Any
 
 from .basic_case import TestCase
@@ -9,7 +10,8 @@ class Test(TestCase):
     The class which representing test, the main point of test run.
     """
     __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after', 'provider', 'retries', 'priority',
-                 'test', 'group', 'group_name', 'argument', 'timeout', 'only_if', 'description')
+                 'test', 'group', 'group_name', 'argument', 'timeout', 'only_if', 'description', '_start_time',
+                 '_end_time', 'duration')
 
     def __init__(self, name: str, test: Callable):
         """
@@ -21,7 +23,7 @@ class Test(TestCase):
         # Function to run (the test itself)
         self.test = test
         self.group_name: str = '__main__'
-        self.group= None
+        self.group = None
         # Argument for data-provider run
         self.argument: Any = None
         # Time in seconds to finish test
@@ -36,6 +38,10 @@ class Test(TestCase):
         self.retries: int = 1
         # Test priority where 0 is highest
         self.priority: int = 0
+        # Start, end and duration parameters of the test
+        self._start_time: float = -1
+        self._end_time: float = -1
+        self.duration: float = -1
 
     def set_group(self, group):
         self.group = group
@@ -49,10 +55,15 @@ class Test(TestCase):
         if self.only_if:
             if not self.only_if():
                 raise TestIgnoredException()
+        self._start_time = time()
         if self.argument is not None:
             self.test(self.argument)
         else:
             self.test()
+
+    def stop(self):
+        self._end_time = time()
+        self.duration = self._end_time - self._start_time
 
     def __str__(self):
         description = self.description if self.description else ''
