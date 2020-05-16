@@ -2,8 +2,7 @@ import time
 import traceback
 
 from .basic import Listener
-from ..basic_case import TestCase
-from ..basic_group import TestGroup
+from ..basic_test import Test
 from ..basic_suite import TestSuite
 from checking.helpers.others import short
 from checking.helpers.others import print_splitter_line
@@ -66,8 +65,8 @@ class DefaultListener(Listener):
                     print(' ' * 4, ignored_test)
         print("=" * 30)
 
-    def on_success(self, group: TestGroup, test: TestCase):
-        super().on_success(group, test)
+    def on_success(self, test: Test):
+        super().on_success(test)
         if not self.verbose:
             print('.', end='')
             self.counts += 1
@@ -79,16 +78,16 @@ class DefaultListener(Listener):
             add_ = Listener._get_test_arg_short_without_new_line(test)
             print(f'Test "{test}" {add_} SUCCESS!')
 
-    def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
-        super().on_broken(group, test, exception_)
+    def on_broken(self, test: Test, exception_: Exception):
+        super().on_broken(test, exception_)
         self._failed_or_broken(test, exception_, 'broken')
 
-    def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
-        super().on_failed(group, test, exception_)
+    def on_failed(self, test: Test, exception_: Exception):
+        super().on_failed(test, exception_)
         self._failed_or_broken(test, exception_, 'failed')
 
-    def on_ignored(self, group: TestGroup, test: TestCase, fixture_type: str):
-        super().on_ignored(group, test, fixture_type)
+    def on_ignored(self, test: Test, fixture_type: str):
+        super().on_ignored(test, fixture_type)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         print(f'Because of fixture "{fixture_type}" tests "{test}" {add_} was IGNORED!')
         print_splitter_line()
@@ -101,23 +100,23 @@ class DefaultListener(Listener):
             print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
         print(exception_)
 
-    def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
-        super().on_ignored_with_provider(test, group)
+    def on_ignored_with_provider(self, test: Test):
+        super().on_ignored_with_provider(test)
         print(f'Provider "{test.provider}" for {test} not returns iterable or empty!'
               f' All tests with provider were IGNORED!')
 
-    def on_test_starts(self, test: TestCase, group: TestGroup):
-        super().on_test_starts(test, group)
+    def on_test_starts(self, test: Test):
+        super().on_test_starts(test)
 
-    def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
-        super().on_ignored_by_condition(group, test, exc)
+    def on_ignored_by_condition(self, test: Test, exc: Exception):
+        super().on_ignored_by_condition(test, exc)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         if type(exc) is SystemExit:
             print(f'Test "{test}" {add_} ignored because of sys.exit() call inside function!')
         else:
             print(f'Test "{test}" {add_} ignored because of condition ({test.only_if.__module__}.{test.only_if})!')
 
-    def _failed_or_broken(self, test, exception_, _result):
+    def _failed_or_broken(self, test: Test, exception_: Exception, _result: str):
         _letter = f'{_result.upper()}!'
         if not self.verbose:
             print(_letter[0], end='')

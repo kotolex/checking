@@ -9,7 +9,7 @@ class Test(TestCase):
     The class which representing test, the main point of test run.
     """
     __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after', 'provider', 'retries', 'priority',
-                 'test', 'group_name', 'argument', 'timeout', 'only_if', 'description')
+                 'test', 'group', 'group_name', 'argument', 'timeout', 'only_if', 'description')
 
     def __init__(self, name: str, test: Callable):
         """
@@ -21,6 +21,7 @@ class Test(TestCase):
         # Function to run (the test itself)
         self.test = test
         self.group_name: str = '__main__'
+        self.group= None
         # Argument for data-provider run
         self.argument: Any = None
         # Time in seconds to finish test
@@ -35,6 +36,10 @@ class Test(TestCase):
         self.retries: int = 1
         # Test priority where 0 is highest
         self.priority: int = 0
+
+    def set_group(self, group):
+        self.group = group
+        self.group_name = group.name
 
     def run(self):
         """
@@ -62,6 +67,7 @@ class Test(TestCase):
         :return: a new Test
         """
         clone = Test(self.name, self.test)
+        clone.group = self.group
         clone.group_name = self.group_name
         clone.provider = self.provider
         clone.after = self.after

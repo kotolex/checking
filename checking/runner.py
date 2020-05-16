@@ -112,6 +112,11 @@ def _run_group_before_and_after_at_separate_thread(group: TestGroup):
 
 
 def _run_before_suite(test_suite: TestSuite) -> bool:
+    """
+    Run fixtures before whole suite.
+    :param test_suite: TestSuite
+    :return: True if fixture is not fail, False otherwise
+    """
     _run_before(test_suite)
     if test_suite.is_before_failed:
         _listener.on_before_suite_failed(test_suite)
@@ -122,17 +127,27 @@ def _run_before_suite(test_suite: TestSuite) -> bool:
 
 
 def _run_before_group(group: TestGroup) -> bool:
+    """
+    Runs before group fixtures
+    :param group: TestGroup
+    :return: True if fixtures not failed, False otherwise
+    """
     _run_before(group)
     if group.is_before_failed:
         for test in group.tests:
-            _listener.on_ignored(group, test, 'before module/group')
+            _listener.on_ignored(test, 'before module/group')
         if group.always_run_after:
             _run_after(group)
         return False
     return True
 
 
-def _run_test_with_provider(test, group):
+def _run_test_with_provider(test):
+    """
+    Run test which has provider
+    :param test: Test
+    :return: None
+    """
     generator = _provider_next(test.provider)
     try:
         is_any_value_provides = False
@@ -140,20 +155,20 @@ def _run_test_with_provider(test, group):
             is_any_value_provides = True
             clone = test.clone()
             clone.argument = param
-            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, group, False)
+            is_one_of_before_test_failed = _run_test_with_before_and_after(clone, False)
             if is_one_of_before_test_failed:
                 print(f'Because of "before_test" all tests for {test} with data provider '
                       f'"{test.provider}" was IGNORED!')
                 break
         # If no values at provider - ignore test
         if not is_any_value_provides:
-            _listener.on_ignored_with_provider(test, group)
+            _listener.on_ignored_with_provider(test)
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
             print(e)
             raise
         else:
-            _listener.on_ignored_with_provider(test, group)
+            _listener.on_ignored_with_provider(test)
 
 
 def _run_all_tests_in_group(group: TestGroup):
@@ -166,24 +181,24 @@ def _run_all_tests_in_group(group: TestGroup):
     group.sort_test_by_priority()
     for test in group.tests:
         if test.provider:
-            _run_test_with_provider(test, group)
+            _run_test_with_provider(test)
         else:
-            is_one_of_before_test_failed = _run_test_with_before_and_after(test, group, is_one_of_before_test_failed)
+            is_one_of_before_test_failed = _run_test_with_before_and_after(test, is_one_of_before_test_failed)
 
 
-def _run_test_with_before_and_after(test: Test, group: TestGroup, is_before_failed: bool) -> bool:
+def _run_test_with_before_and_after(test: Test, is_before_failed: bool) -> bool:
     if not is_before_failed:
         _run_before(test)
     else:
         test.is_before_failed = True
     if test.is_before_failed:
-        _listener.on_ignored(group, test, 'before test')
+        _listener.on_ignored(test, 'before test')
         return True
     for retry in range(test.retries):
         clone = test.clone()
         if retry > 0:
             clone.name = clone.name + f' ({retry})'
-        result = _run_test(clone, group)
+        result = _run_test(clone)
         if result:
             break
     _run_after(test)
@@ -210,27 +225,26 @@ def _provider_next(provider_name: str) -> Any:
             # explicitly ignore
 
 
-def _run_test(test: Test, group: TestGroup) -> bool:
+def _run_test(test: Test) -> bool:
     """
     Run actual test
     :param test: Test (function to run)
-    :param group: TestGroup
     :return: True if test succeed, False otherwise
     """
-    _listener.on_test_starts(test, group)
+    _listener.on_test_starts(test)
     try:
         if test.timeout:
             run_with_timeout(test)
         else:
             test.run()
-        _listener.on_success(group, test)
+        _listener.on_success(test)
         return True
     except AssertionError as e:
-        _listener.on_failed(group, test, e)
+        _listener.on_failed(test, e)
     except (TestIgnoredException, SystemExit) as e:
-        _listener.on_ignored_by_condition(group, test, e)
+        _listener.on_ignored_by_condition(test, e)
     except Exception as e:
-        _listener.on_broken(group, test, e)
+        _listener.on_broken(test, e)
     return False
 
 

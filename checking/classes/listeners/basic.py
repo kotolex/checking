@@ -1,7 +1,6 @@
+from ..basic_test import Test
 from ..basic_case import TestCase
-from ..basic_group import TestGroup
 from ..basic_suite import TestSuite
-
 from checking.helpers.others import short
 
 
@@ -30,11 +29,10 @@ class Listener:
         """
         pass
 
-    def on_test_starts(self, test: TestCase, group: TestGroup):
+    def on_test_starts(self, test: TestCase):
         """
         It calls before test starts (after preliminary fixtures, but before the test).
         :param test: is the instance of the test with all parameters
-        :param group: is the group, to which the test belongs
         :return: None
         """
         pass
@@ -65,67 +63,62 @@ class Listener:
         """
         pass
 
-    def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
+    def on_ignored_with_provider(self, test: Test):
         """
         It calls when the function which marked @data does not return Iterable and all of tests, which tied to the
         provider is ignored.
         :param test: is TestCase
-        :param group: is TestGroup
         :return: None
         """
-        self._to_results(group, test, 'ignored')
+        self._to_results(test, 'ignored')
 
-    def on_success(self, group: TestGroup, test: TestCase):
+    def on_success(self, test: Test):
         """
         It calls when the test finished successfully.
-        :param group: is TestGroup
         :param test: is TestCase
         :return: None
         """
-        self._to_results(group, test, 'success')
+        self._to_results(test, 'success')
 
-    def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
+    def on_failed(self, test: Test, exception_: Exception):
         """
         It calls if an assert falls at test (embedded or from checking.asserts module)
-        :param group: is TestGroup
         :param test: is TestCase
         :param exception_: is fell assert
         :return: None
         """
-        self._to_results(group, test, 'failed')
+        self._to_results(test, 'failed')
 
-    def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
+    def on_broken(self, test: Test, exception_: Exception):
         """
         It calls when the test is 'broken', actually, it falls with an exception, but not by assert.
-        :param group: is TestGroup
         :param test: is TestCase
         :param exception_: is fell assert
         :return: None
         """
-        self._to_results(group, test, 'broken')
+        self._to_results(test, 'broken')
 
-    def on_ignored(self, group: TestGroup, test: TestCase, fixture_type: str):
+    def on_ignored(self, test: Test, fixture_type: str):
         """
         It calls when the test has been ignored due to fallen fixture (before).
-        :param group: is TestGroup
         :param test: is TestCase
         :param fixture_type: is the name of the fixture, called ignore
         :return: None
         """
-        self._to_results(group, test, 'ignored')
+        self._to_results(test, 'ignored')
 
-    def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
+    def on_ignored_by_condition(self, test: Test, exc: Exception):
         """
         It calls when the test has been ignored by statement (only_if).
-        :param group: is TestGroup
         :param test: is TestCase
         :param exc: is the exception
         :return: None
         """
-        self._to_results(group, test, 'ignored')
+        self._to_results(test, 'ignored')
 
-    def _to_results(self, group: TestGroup, test: TestCase, result: str):
-        group.add_result_to(test, result)
+    @staticmethod
+    def _to_results(test: Test, result: str):
+        test.group.add_result_to(test, result)
 
     def on_before_suite_failed(self, test_suite):
         """
@@ -136,7 +129,7 @@ class Listener:
         pass
 
     @staticmethod
-    def _get_test_arg_short_without_new_line(test: TestCase):
+    def _get_test_arg_short_without_new_line(test: Test):
         if test.argument:
             short_ = short(test.argument).replace('\n', '')
             return f'[{short_}]'

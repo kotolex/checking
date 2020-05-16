@@ -62,8 +62,10 @@ class TestClasses(TC):
         test.argument = '1'
         test.timeout = 1
         test.only_if = print
+        test.group = self
         new_test = test.clone()
         self.assertEqual(test.name, new_test.name)
+        self.assertEqual(new_test.group, self)
         self.assertEqual(test.before, new_test.before)
         self.assertEqual(test.after, new_test.after)
         self.assertEqual(test.provider, new_test.provider)
@@ -274,6 +276,14 @@ class TestClasses(TC):
         suite.get_or_create('gr_name').add_test(Test('a__3', print))
         suite.filter_tests('2')
         self.assertEqual(1, suite.tests_count())
+
+    def test_add_test_to_group(self):
+        group = TestGroup("new_group")
+        test_case = Test("test1", print)
+        group.add_test(test_case)
+        self.assertEqual(test_case.group_name, 'new_group')
+        self.assertEqual(test_case.group, group)
+
 
 
 if __name__ == '__main__':

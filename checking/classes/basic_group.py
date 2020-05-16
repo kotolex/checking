@@ -33,7 +33,7 @@ class TestGroup(TestCase):
         :param test: is the instance of 'Test' class
         :return: None
         """
-        test.group_name = self.name
+        test.set_group(self)
         test.before = self.before_all
         test.after = self.after_all
         self.tests.append(test)

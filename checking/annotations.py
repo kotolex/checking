@@ -195,7 +195,7 @@ def after_group(*args, name: str = None, always_run: bool = False):
         group = name if name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_after(func)
         if always_run:
-            TestSuite.get_instance().get_or_create(func.__module__).always_run_after = True
+            TestSuite.get_instance().get_or_create(group).always_run_after = True
         return _fake
 
     if args:
@@ -337,6 +337,7 @@ def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
     :param name: name for the provider, if empty then 'container' will be used as name
     :return: None
     """
+
     def _():
         return value
 

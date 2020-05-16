@@ -3,8 +3,7 @@ import logging
 from threading import currentThread
 
 from .basic import Listener
-from ..basic_case import TestCase
-from ..basic_group import TestGroup
+from ..basic_test import Test
 from ..basic_suite import TestSuite
 from checking.helpers.others import short, str_date_time
 
@@ -56,8 +55,8 @@ class DefaultFileListener(Listener):
                     f'{b_count}, ignored tests: {i_count}')
         logger.info(f'Time elapsed: {elapsed:.2f} seconds.')
 
-    def on_test_starts(self, test: TestCase, group: TestGroup):
-        super().on_test_starts(test, group)
+    def on_test_starts(self, test: Test):
+        super().on_test_starts(test)
         logger = logging.getLogger(currentThread().getName())
         logger.info(f'Test  "{test}" started!')
 
@@ -71,38 +70,38 @@ class DefaultFileListener(Listener):
         logger = logging.getLogger(currentThread().getName())
         logger.exception(f'Fixture {fixture_type} "{group_name}" failed!', exc_info=exception_)
 
-    def on_ignored_with_provider(self, test: TestCase, group: TestGroup):
-        super().on_ignored_with_provider(test, group)
+    def on_ignored_with_provider(self, test: Test):
+        super().on_ignored_with_provider(test)
         logger = logging.getLogger(currentThread().getName())
         logger.warning(f'Provider "{test.provider}" for {test} not returns iterable or empty! '
                        f'All tests with provider were IGNORED!')
 
-    def on_success(self, group: TestGroup, test: TestCase):
-        super().on_success(group, test)
+    def on_success(self, test: Test):
+        super().on_success(test)
         add_ = Listener._get_test_arg_short_without_new_line(test)
         logger = logging.getLogger(currentThread().getName())
         logger.info(f'Test "{test}" {add_} SUCCESS!')
 
-    def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
-        super().on_failed(group, test, exception_)
+    def on_failed(self, test: Test, exception_: Exception):
+        super().on_failed(test, exception_)
         add_ = Listener._get_test_arg_short_without_new_line(test)
         logger = logging.getLogger(currentThread().getName())
         logger.exception(f'Test "{test}" {add_} FAILED!', exc_info=exception_)
 
-    def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
-        super().on_broken(group, test, exception_)
+    def on_broken(self, test: Test, exception_: Exception):
+        super().on_broken(test, exception_)
         add_ = Listener._get_test_arg_short_without_new_line(test)
         logger = logging.getLogger(currentThread().getName())
         logger.exception(f'Test "{test}" {add_} BROKEN!', exc_info=exception_)
 
-    def on_ignored(self, group: TestGroup, test: TestCase, fixture_type: str):
-        super().on_ignored(group, test, fixture_type)
+    def on_ignored(self, test: Test, fixture_type: str):
+        super().on_ignored(test, fixture_type)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         logger = logging.getLogger(currentThread().getName())
         logger.warning(f'Because of fixture "{fixture_type}" tests "{test}" {add_} was IGNORED!')
 
-    def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
-        super().on_ignored_by_condition(group, test, exc)
+    def on_ignored_by_condition(self, test: Test, exc: Exception):
+        super().on_ignored_by_condition(test, exc)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         logger = logging.getLogger(currentThread().getName())
         if type(exc) is SystemExit:

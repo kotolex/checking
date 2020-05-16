@@ -13,15 +13,15 @@ from tests.fixture_behaviour_test import clear
 
 
 class TestListener(Listener):
-    def on_failed(self, group: TestGroup, test: TestCase, exception_: Exception):
+    def on_failed(self, test: Test, exception_: Exception):
         global COUNT
         COUNT = COUNT + 2
 
-    def on_broken(self, group: TestGroup, test: TestCase, exception_: Exception):
+    def on_broken(self, test: Test, exception_: Exception):
         global COUNT
         COUNT = COUNT + 3
 
-    def on_ignored_by_condition(self, group: TestGroup, test: TestCase, exc: Exception):
+    def on_ignored_by_condition(self, test: Test, exc: Exception):
         global COUNT
         COUNT = COUNT + 4
 
@@ -155,21 +155,29 @@ class RunnerTest(TestCase):
 
     def test_run_test_ok(self):
         test_case = Test('test', inc)
+        group = TestGroup('group')
+        group.add_test(test_case)
         count = COUNT
-        self.assertTrue(r._run_test(test_case, TestGroup("group")))
+        self.assertTrue(r._run_test(test_case))
         self.assertEqual(count + 1, COUNT)
 
     def test_run_test_assert_fail(self):
         test_case = Test('test', fail_assert)
-        self.assertFalse(r._run_test(test_case, TestGroup("group")))
+        group = TestGroup('group')
+        group.add_test(test_case)
+        self.assertFalse(r._run_test(test_case))
 
     def test_run_test_assert_broken(self):
         test_case = Test('test', fail_exception)
-        self.assertFalse(r._run_test(test_case, TestGroup("group")))
+        group = TestGroup('group')
+        group.add_test(test_case)
+        self.assertFalse(r._run_test(test_case))
 
     def test_run_test_assert_ignored(self):
         test_case = Test('test', fail_test)
-        self.assertFalse(r._run_test(test_case, TestGroup("group")))
+        group = TestGroup('group')
+        group.add_test(test_case)
+        self.assertFalse(r._run_test(test_case))
 
     def test_provider_next_iter(self):
         clear()
@@ -205,6 +213,17 @@ class RunnerTest(TestCase):
         group.add_test(test_case2)
         r._run_all_tests_in_group(group)
         self.assertEqual(count + 2, COUNT)
+
+    def test_dry_run(self):
+        clear()
+        count = COUNT
+        suite = TestSuite.get_instance()
+        test_case = Test('test', inc)
+        suite.get_or_create("group").add_test(test_case)
+        r._dry_run(suite)
+        self.assertEqual(count, COUNT)
+        self.assertFalse(any([suite.before, suite.after,
+                              suite.get_or_create("group").before, suite.get_or_create("group").after]))
 
 
 if __name__ == '__main__':
