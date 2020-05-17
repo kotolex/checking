@@ -70,7 +70,7 @@ class Listener:
         :param test: is TestCase
         :return: None
         """
-        self._to_results(test, 'ignored')
+        pass
 
     def on_success(self, test: Test):
         """
@@ -78,7 +78,7 @@ class Listener:
         :param test: is TestCase
         :return: None
         """
-        self._to_results(test, 'success')
+        pass
 
     def on_failed(self, test: Test, exception_: Exception):
         """
@@ -87,7 +87,7 @@ class Listener:
         :param exception_: is fell assert
         :return: None
         """
-        self._to_results(test, 'failed')
+        pass
 
     def on_broken(self, test: Test, exception_: Exception):
         """
@@ -96,7 +96,7 @@ class Listener:
         :param exception_: is fell assert
         :return: None
         """
-        self._to_results(test, 'broken')
+        pass
 
     def on_ignored(self, test: Test, fixture_type: str):
         """
@@ -105,7 +105,7 @@ class Listener:
         :param fixture_type: is the name of the fixture, called ignore
         :return: None
         """
-        self._to_results(test, 'ignored')
+        pass
 
     def on_ignored_by_condition(self, test: Test, exc: Exception):
         """
@@ -114,11 +114,7 @@ class Listener:
         :param exc: is the exception
         :return: None
         """
-        self._to_results(test, 'ignored')
-
-    @staticmethod
-    def _to_results(test: Test, result: str):
-        test.group.add_result_to(test, result)
+        pass
 
     def on_before_suite_failed(self, test_suite):
         """

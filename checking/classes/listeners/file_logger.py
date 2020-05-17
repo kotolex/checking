@@ -1,4 +1,3 @@
-import time
 import logging
 from threading import currentThread
 
@@ -34,7 +33,6 @@ class DefaultFileListener(Listener):
         super().on_suite_starts(test_suite)
         logger = logging.getLogger()
         logger.info(f'Test-suite "{test_suite.name}" started!')
-        self.start_time = time.time()
 
     def on_dry_run(self, test_suite: TestSuite):
         super().on_dry_run(test_suite)
@@ -43,7 +41,7 @@ class DefaultFileListener(Listener):
 
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)
-        elapsed = time.time() - self.start_time
+        elapsed = test_suite.suite_duration()
         success_count = len(test_suite.success())
         f_count = len(test_suite.failed())
         b_count = len(test_suite.broken())

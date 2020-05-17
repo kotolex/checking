@@ -1,13 +1,15 @@
 from unittest import TestCase as TC
 from unittest import main
-from random import randint
+from random import choice
 from time import sleep
 
 from checking.classes.basic_case import TestCase
 from checking.classes.basic_test import Test
 from checking.classes.basic_group import TestGroup
 from checking.classes.basic_suite import TestSuite
+from checking.classes.timer import Timer
 from tests.fixture_behaviour_test import clear
+from checking.exceptions import TestIgnoredException
 
 
 class TestClasses(TC):
@@ -64,6 +66,8 @@ class TestClasses(TC):
         test.timeout = 1
         test.only_if = print
         test.group = self
+        test.status = 'FAILED'
+        test.reason = ValueError('1')
         new_test = test.clone()
         self.assertEqual(test.name, new_test.name)
         self.assertEqual(new_test.group, self)
@@ -78,12 +82,14 @@ class TestClasses(TC):
         self.assertEqual(test.only_if, new_test.only_if)
         self.assertEqual(test.before, new_test.before)
         self.assertEqual(test.after, new_test.after)
+        self.assertEqual(test.status, new_test.status)
+        self.assertEqual(test.reason, new_test.reason)
 
     def test_init_for_TestGroup(self):
         group = TestGroup('default')
         self.assertFalse(any([group.after_all, group.before_all, group.after, group.before, group.always_run_after,
                               group.is_before_failed]))
-        self.assertEqual({'success': [], 'broken': [], 'failed': [], 'ignored': []}, group.test_results)
+        self.assertEqual([], group.test_results)
 
     def test_add_test_for_TestGroup(self):
         group = TestGroup('default')
@@ -118,18 +124,19 @@ class TestClasses(TC):
     def test_add_result_to_default(self):
         group = TestGroup('default')
         test = Test('name', print)
-        self.assertFalse(group.test_results['success'])
-        group.add_result_to(test)
-        self.assertEqual(1, len(group.test_results['success']))
+        test.status = 'success'
+        self.assertFalse(group.tests_by_status('success'))
+        group.add_result(test)
+        self.assertEqual(1, len(group.tests_by_status('success')))
 
     def test_add_result_to_other(self):
         group = TestGroup('default')
         test = Test('name', print)
-        index = randint(1, 3)
-        name = list(group.test_results.keys())[index]
-        self.assertFalse(group.test_results[name])
-        group.add_result_to(test, name)
-        self.assertEqual(1, len(group.test_results[name]))
+        stat = choice(['sucess', 'broken', 'failed', 'ignored'])
+        test.status = stat
+        self.assertFalse(group.tests_by_status(stat))
+        group.add_result(test)
+        self.assertEqual(1, len(group.tests_by_status(stat)))
 
     def test_is_empty_default(self):
         group = TestGroup('default')
@@ -150,8 +157,9 @@ class TestClasses(TC):
     def test_count_returns_tests_if_run(self):
         group = TestGroup('empty')
         test = Test('name', print)
+        test.status = 'success'
         group.add_test(test)
-        group.test_results['success'] = [1, 2]
+        group.test_results = [test, test]
         self.assertEqual(2, group.tests_count())
 
     def test_sort_by_priority(self):
@@ -214,7 +222,8 @@ class TestClasses(TC):
         suite = TestSuite.get_instance()
         self.assertFalse(suite.success())
         test_ = Test('any', print)
-        suite.get_or_create('gr_name').test_results['success'].append(test_)
+        test_.status = 'success'
+        suite.get_or_create('gr_name').test_results.append(test_)
         self.assertTrue(suite.success())
         self.assertEqual(test_, suite.success()[0])
 
@@ -223,7 +232,8 @@ class TestClasses(TC):
         suite = TestSuite.get_instance()
         self.assertFalse(suite.failed())
         test_ = Test('any', print)
-        suite.get_or_create('gr_name').test_results['failed'].append(test_)
+        test_.status = 'failed'
+        suite.get_or_create('gr_name').test_results.append(test_)
         self.assertTrue(suite.failed())
         self.assertEqual(test_, suite.failed()[0])
 
@@ -232,7 +242,8 @@ class TestClasses(TC):
         suite = TestSuite.get_instance()
         self.assertFalse(suite.broken())
         test_ = Test('any', print)
-        suite.get_or_create('gr_name').test_results['broken'].append(test_)
+        test_.status = 'broken'
+        suite.get_or_create('gr_name').test_results.append(test_)
         self.assertTrue(suite.broken())
         self.assertEqual(test_, suite.broken()[0])
 
@@ -241,7 +252,8 @@ class TestClasses(TC):
         suite = TestSuite.get_instance()
         self.assertFalse(suite.ignored())
         test_ = Test('any', print)
-        suite.get_or_create('gr_name').test_results['ignored'].append(test_)
+        test_.status = 'ignored'
+        suite.get_or_create('gr_name').test_results.append(test_)
         self.assertTrue(suite.ignored())
         self.assertEqual(test_, suite.ignored()[0])
 
@@ -287,31 +299,104 @@ class TestClasses(TC):
 
     def test_default_has_minus_one_timings(self):
         test_case = Test('test', print)
-        self.assertEqual(test_case._start_time, -1)
-        self.assertEqual(test_case._end_time, -1)
-        self.assertEqual(test_case.duration, -1)
+        self.assertEqual(test_case.duration(), -1)
 
     def test_run_change_start_time(self):
         test_case = Test('test', lambda: -1)
         test_case.run()
-        self.assertTrue(test_case._start_time > 0)
-        self.assertEqual(test_case._end_time, -1)
-        self.assertEqual(test_case.duration, -1)
+        self.assertTrue(test_case.timer.start_time > 0)
 
     def test_stop_change_end_time(self):
         test_case = Test('test', lambda: -1)
         test_case.run()
         test_case.stop()
-        self.assertTrue(test_case._end_time >= test_case._start_time)
-        self.assertTrue(test_case.duration >= 0)
+        self.assertTrue(test_case.timer.end_time >= test_case.timer.start_time)
+        self.assertTrue(test_case.duration() >= 0)
 
     def test_duration_works(self):
         test_case = Test('test', lambda: -1)
         test_case.run()
         sleep(0.2)
         test_case.stop()
-        self.assertTrue(test_case._end_time >= test_case._start_time)
-        self.assertTrue(test_case.duration >= 0.2)
+        self.assertTrue(test_case.duration() >= 0.2)
+
+    def test_created_by_default(self):
+        test_case = Test('test', print)
+        self.assertEqual('created', test_case.status)
+
+    def test_if_run_set_to_success(self):
+        test_case = Test('test', lambda: 1)
+        test_case.run()
+        test_case.stop()
+        self.assertEqual('success', test_case.status)
+        self.assertIsNone(test_case.reason)
+
+    def test_if_fail_stop_time(self):
+        test_case = Test('test', lambda: 1)
+        test_case.stop(Exception())
+        self.assertTrue(test_case.timer.end_time > 0)
+        self.assertTrue(test_case.duration() >= 0)
+        self.assertFalse(test_case.status == 'success')
+        self.assertFalse(test_case.status == 'created')
+
+    def test_if_fail_assert_set_failed(self):
+        test_case = Test('test', lambda: 1)
+        test_case.stop(AssertionError())
+        self.assertEqual(test_case.status, 'failed')
+
+    def test_if_ignored_exception_set_ignore(self):
+        test_case = Test('test', lambda: 1)
+        test_case.stop(TestIgnoredException())
+        self.assertEqual(test_case.status, 'ignored')
+
+    def test_if_sys_exit_exception_set_ignore(self):
+        test_case = Test('test', lambda: 1)
+        test_case.stop(SystemExit())
+        self.assertEqual(test_case.status, 'ignored')
+
+    def test_if_exception_set_broken(self):
+        test_case = Test('test', lambda: 1)
+        test_case.stop(ValueError())
+        self.assertEqual(test_case.status, 'broken')
+
+    def test_start_suite_start_timer_for_Suite(self):
+        clear()
+        test_suite = TestSuite.get_instance()
+        test_suite.start_suite()
+        self.assertTrue(test_suite.timer.start_time > 0)
+
+    def test_stop_suite_stop_timer_for_Suite(self):
+        clear()
+        test_suite = TestSuite.get_instance()
+        test_suite.start_suite()
+        test_suite.stop_suite()
+        self.assertTrue(test_suite.timer.end_time > 0)
+        self.assertTrue(test_suite.suite_duration() >= 0)
+
+    def test_timer_default(self):
+        timer = Timer()
+        self.assertEqual(-1, timer.start_time)
+        self.assertEqual(-1, timer.end_time)
+        self.assertEqual(-1, timer.duration)
+
+    def test_timer_works(self):
+        timer = Timer()
+        timer.start()
+        sleep(0.1)
+        timer.stop()
+        self.assertTrue(timer.start_time > 0)
+        self.assertTrue(timer.end_time > 0)
+        self.assertTrue(timer.duration > 0)
+
+    def test_timer_reset_works(self):
+        timer = Timer()
+        timer.start()
+        sleep(0.1)
+        timer.stop()
+        timer.reset()
+        self.assertEqual(-1, timer.start_time)
+        self.assertEqual(-1, timer.end_time)
+        self.assertEqual(-1, timer.duration)
 
 
 if __name__ == '__main__':

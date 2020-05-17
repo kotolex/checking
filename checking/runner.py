@@ -86,6 +86,7 @@ def _dry_run(test_suite):
 def _run(test_suite: TestSuite, threads: int = 1):
     # Create a pool of threads to run tests, by default 1 thread execution
     pool = ThreadPoolExecutor(max_workers=threads)
+    test_suite.start_suite()
     _listener.on_suite_starts(test_suite)
     try:
         # If the fixture before the test suite has fallen, then will not run the tests (fixture after the test suite
@@ -100,6 +101,7 @@ def _run(test_suite: TestSuite, threads: int = 1):
         pool.shutdown(wait=True)
         _run_after(test_suite)
     finally:
+        test_suite.stop_suite()
         _listener.on_suite_ends(test_suite)
 
 
@@ -135,6 +137,7 @@ def _run_before_group(group: TestGroup) -> bool:
     _run_before(group)
     if group.is_before_failed:
         for test in group.tests:
+            test.stop(TestIgnoredException('Before module/group failed!'))
             _listener.on_ignored(test, 'before module/group')
         if group.always_run_after:
             _run_after(group)
@@ -162,12 +165,14 @@ def _run_test_with_provider(test):
                 break
         # If no values at provider - ignore test
         if not is_any_value_provides:
+            test.stop(TestIgnoredException(f'No values at provider {test.provider}'))
             _listener.on_ignored_with_provider(test)
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
             print(e)
             raise
         else:
+            test.stop(TestIgnoredException(f'Error with provider {test.provider}'))
             _listener.on_ignored_with_provider(test)
 
 
@@ -192,6 +197,7 @@ def _run_test_with_before_and_after(test: Test, is_before_failed: bool) -> bool:
     else:
         test.is_before_failed = True
     if test.is_before_failed:
+        test.stop(TestIgnoredException('Before test failed!'))
         _listener.on_ignored(test, 'before test')
         return True
     for retry in range(test.retries):
@@ -241,13 +247,13 @@ def _run_test(test: Test) -> bool:
         _listener.on_success(test)
         return True
     except AssertionError as e:
-        test.stop()
+        test.stop(e)
         _listener.on_failed(test, e)
     except (TestIgnoredException, SystemExit) as e:
-        test.stop()
+        test.stop(e)
         _listener.on_ignored_by_condition(test, e)
     except Exception as e:
-        test.stop()
+        test.stop(e)
         _listener.on_broken(test, e)
     return False
 

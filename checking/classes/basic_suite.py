@@ -1,5 +1,6 @@
 from typing import Dict, List, Callable, Iterable
 
+from .timer import Timer
 from .basic_test import Test
 from .basic_group import TestGroup
 
@@ -11,7 +12,7 @@ class TestSuite:
     """
     instance = None
 
-    # The dictionary pairs name of set-set
+    # The dictionary pairs name of group - TestGroup
     groups: Dict[str, TestGroup] = {}
 
     # Data providers (available to all tests in all sets)
@@ -27,6 +28,9 @@ class TestSuite:
 
     # The flag that the final functions should be performed regardless of the result of preliminary
     always_run_after: bool = False
+
+    # Timer for suite duration
+    timer = Timer()
 
     def __new__(cls):
         if not cls.instance:
@@ -127,4 +131,16 @@ class TestSuite:
 
     @classmethod
     def _test_result_of(cls, name: str) -> List[Test]:
-        return [test for group in cls.groups.values() for test in group.test_results[name]]
+        return [test for group in cls.groups.values() for test in group.tests_by_status(name)]
+
+    @classmethod
+    def start_suite(cls):
+        cls.timer.start()
+
+    @classmethod
+    def stop_suite(cls):
+        cls.timer.stop()
+
+    @classmethod
+    def suite_duration(cls) -> float:
+        return cls.timer.duration

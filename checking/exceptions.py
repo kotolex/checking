@@ -1,8 +1,7 @@
 class WrongAnnotationPlacement(Exception):
     """
     It throws if the annotation is set over a function that takes arguments, or over a class/class method. When using
-    the @test annotation with the data provider, it will be thrown if the function does not accept at least one
-    argument.
+    the @test annotation with the data provider, it will be thrown if the function does not accept one argument.
     """
     pass
 

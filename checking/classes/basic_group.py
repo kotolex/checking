@@ -1,4 +1,4 @@
-from typing import List, Callable, Dict
+from typing import List, Callable
 
 from .basic_test import Test
 from .basic_case import TestCase
@@ -23,8 +23,8 @@ class TestGroup(TestCase):
         self.before_all: List[Callable] = []
         # The list of functions that executed after each test
         self.after_all: List[Callable] = []
-        # The dictionary of the results of the run of this set
-        self.test_results: Dict[str, List[Test]] = {'success': [], 'broken': [], 'failed': [], 'ignored': []}
+        # The list of the results of the run of this set
+        self.test_results: List[Test] = []
 
     def add_test(self, test: Test):
         """
@@ -54,14 +54,14 @@ class TestGroup(TestCase):
         """
         self.after_all.append(func)
 
-    def add_result_to(self, test: TestCase, result: str = 'success'):
+    def add_result(self, test: Test):
         """
         Adding the test in appropriate section of the results dictionary.
         :param test: is the instance of the TestCase
         :param result: is the result, by default it is successful
         :return: None
         """
-        self.test_results[result].append(test)
+        self.test_results.append(test)
 
     def is_empty(self):
         """
@@ -78,8 +78,10 @@ class TestGroup(TestCase):
         providers.
         :return: the number of the tests
         """
-        run_count = sum([len(e) for e in self.test_results.values()])
-        return run_count if run_count else len(self.tests)
+        return len(self.test_results) if self.test_results else len(self.tests)
 
     def sort_test_by_priority(self):
         self.tests = sorted(self.tests, key=lambda t: t.priority)
+
+    def tests_by_status(self, status: str) -> List[Test]:
+        return [test for test in self.test_results if test.status == status]

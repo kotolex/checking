@@ -1,4 +1,3 @@
-import time
 import traceback
 
 from .basic import Listener
@@ -15,14 +14,16 @@ class DefaultListener(Listener):
     The user can write his own listeners by the class blueprint.
     """
 
+    def __init__(self, verbose: int):
+        super().__init__(verbose)
+        self.counts = 0
+
     def on_before_suite_failed(self, test_suite):
         super().on_before_suite_failed(test_suite)
         print(f'Before suite "{test_suite.name}" failed! Process stopped!')
 
     def on_suite_starts(self, test_suite: TestSuite):
         super().on_suite_starts(test_suite)
-        self.start_time = time.time()
-        self.counts = 0
         print(f'Starting suite "{test_suite.name}"')
 
     def on_empty_suite(self, test_suite: TestSuite):
@@ -41,7 +42,7 @@ class DefaultListener(Listener):
             print()
         print()
         print("=" * 30)
-        elapsed = time.time() - self.start_time
+        elapsed = test_suite.suite_duration()
         success_count = len(test_suite.success())
         f_count = len(test_suite.failed())
         b_count = len(test_suite.broken())
