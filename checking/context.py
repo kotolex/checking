@@ -1,9 +1,12 @@
-from typing import Any, Type
+import builtins
+from io import StringIO
 from inspect import ismodule
 from contextlib import contextmanager
+from typing import Any, Type, Union, List, Tuple, Set
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
+from .classes.mocking.doubles import Spy
 
 
 @contextmanager
@@ -26,6 +29,43 @@ def mock_builtins(function_name: str, func):
     finally:
         if temp_:
             setattr(b, function_name, temp_)
+
+
+@contextmanager
+def mock_readfile(values_to_read: Union[str, List, Tuple, Set], new_line: str = '\n', raises: Exception = None):
+    """
+    Context manager for mocking open text file. Use it instead of mock_builtins('open', func)
+    :param values_to_read: string, or list/set/tuple of strings
+    :param new_line: how to determine new line, '\n' by default
+    :param raises: if need to raise exception on open file. If not None - other options will be ignored
+    :return: list of calls, where we can get args and kwargs of open function call
+    :raises: ValueError if values_to_read not str or list with something except str
+    """
+    # If we raise on open, then no need to check arguments
+    if raises is None:
+        if type(values_to_read) not in (str, list, tuple, set):
+            raise ValueError('Parameter values_to_read must be str or (list, tuple, set) of str!')
+        if type(values_to_read) is not str:
+            is_all_strings = all((type(x) is str for x in values_to_read))
+            if not is_all_strings:
+                raise ValueError('Container values_to_read can contains only strings!')
+    value = values_to_read
+    if type(values_to_read) is not str and raises is None:
+        value = f'{new_line}'.join(values_to_read)
+    temp_ = None
+    try:
+        spy = Spy()
+        spy.raises(raises)
+        if raises:
+            spy.returns(spy)
+        else:
+            spy.returns(StringIO(initial_value=value, newline=new_line))
+        temp_ = builtins.open
+        builtins.open = spy
+        yield spy.chain
+    finally:
+        if temp_:
+            builtins.open = temp_
 
 
 @contextmanager
