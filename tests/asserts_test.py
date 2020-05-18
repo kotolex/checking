@@ -1,6 +1,7 @@
 from unittest import main, TestCase
 
 from checking.asserts import *
+from checking.context import *
 from checking.exceptions import TestBrokenException, ExceptionWrapper
 
 

@@ -16,6 +16,7 @@ class Spy(Observer):
         super().__init__()
         self.chain: List[Call] = []
         self._returns = None
+        self._raises = None
         if obj is not None:
             for name in dir(obj):
                 if callable(getattr(obj, name)):
@@ -31,6 +32,8 @@ class Spy(Observer):
         self.chain.append(_call)
 
     def __call__(self, *args, **kwargs):
+        if self._raises is not None:
+            raise self._raises
         self.chain.append(Call('', *args, **kwargs))
         return self._returns
 
@@ -68,6 +71,14 @@ class Spy(Observer):
         :return: None
         """
         self._returns = result
+
+    def raises(self, exception_object: Exception):
+        """
+        Raise an exception if object will be called itself (not its methods!)
+        :param exception_object: exception object to raise
+        :return: None
+        """
+        self._raises = exception_object
 
     def was_function_called(self, name: str) -> bool:
         """

@@ -9,6 +9,7 @@ from checking.annotations import *
 from tests.fixture_behaviour_test import clear
 from checking.asserts import *
 from checking.helpers.others import short
+from checking.context import *
 
 
 def _fn(it):

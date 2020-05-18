@@ -159,6 +159,14 @@ class SpyTest(TestCase):
         s.iter.returns(iter('test'))
         self.assertEqual('test', ''.join(iter(s)))
 
+    def test_spy_raises(self):
+        s = Spy()
+        s.raises(ValueError("Text"))
+        with self.assertRaises(ValueError) as e:
+            s()
+
+        self.assertEqual(str(e.exception), 'Text')
+
 
 if __name__ == '__main__':
     main()

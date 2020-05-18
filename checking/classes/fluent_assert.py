@@ -1,4 +1,4 @@
-from typing import Iterable, Sized, Sequence
+from typing import Iterable, Sized, Type
 
 from checking.asserts import *
 from checking.helpers.others import short
@@ -185,11 +185,11 @@ class FluentAssert:
             contains(element, self.__actual)
         return self
 
-    def is_in(self, container:Any):
+    def is_in(self, container: Any):
         contains(self.__actual, container)
         return self
 
-    def is_not_in(self, container:Any):
+    def is_not_in(self, container: Any):
         not_contains(self.__actual, container)
         return self
 
