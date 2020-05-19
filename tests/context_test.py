@@ -29,6 +29,20 @@ def read():
     return temp
 
 
+def read_bytes():
+    f = open('wrong_path.by', 'rb')
+    temp = f.read(1)
+    f.close()
+    return temp
+
+
+def read_lines_bytes():
+    f = open('wrong_path.by', 'rb')
+    temp = f.readline(3)
+    f.close()
+    return temp
+
+
 class ContextTest(TestCase):
 
     def test_no_raises_on_wrong_param_but_raises_arg(self):
@@ -82,6 +96,26 @@ class ContextTest(TestCase):
             read_lines()
         self.assertEqual('wrong_path.txt', calls[0].args[0])
         self.assertEqual('utf-8', calls[0].kwargs['encoding'])
+
+    def test_work_read_bytes(self):
+        with mock_readfile(b'123\n456'):
+            answer = read_bytes()
+        self.assertEqual(b'1', answer)
+
+    def test_work_for_list_of_bytes(self):
+        with mock_readfile([b'123', b'456']):
+            answer = read_lines_bytes()
+        self.assertEqual(b'123', answer)
+
+    def test_raises_when_mixed_str_and_bytes(self):
+        with self.assertRaises(ValueError):
+            with mock_readfile([b'123', '456']):
+                read_lines_bytes()
+
+    def test_raises_when_wrong_container(self):
+        with self.assertRaises(ValueError):
+            with mock_readfile({b'123', '456'}):
+                pass
 
 
 if __name__ == '__main__':
