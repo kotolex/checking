@@ -19,6 +19,9 @@ def mock_builtins(function_name: str, func):
     :param func: is the replacement function, which will be called instead of the original
     :return:
     """
+    if function_name == 'open':
+        print(f'WARNING! For using mock with open function, please use mock_open. '
+              f'Read the documentation at https://bitbucket.org/kotolex/atest/src')
     import builtins as b
     if not hasattr(b, function_name):
         raise TestBrokenException(f'No build-in function "{function_name}"!')

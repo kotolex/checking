@@ -19,6 +19,8 @@ class Spy(Observer):
         self._raises = None
         if obj is not None:
             for name in dir(obj):
+                if name == '__dict__':
+                    continue
                 if callable(getattr(obj, name)):
                     if name != '__class__':
                         setattr(self, name, AttributeWrapper(name, self))
@@ -131,6 +133,8 @@ class Double(Spy):
             for name in dir(obj):
                 attr = getattr(obj, name)
                 if callable(attr):
+                    if name == '__dict__':
+                        continue
                     if name != '__class__':
                         wrapper = AttributeWrapper(name, self)
                         wrapper.use_function(attr)

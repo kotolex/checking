@@ -1,3 +1,4 @@
+from io import StringIO
 from unittest import TestCase, main
 
 from checking.classes.mocking import Spy, Double, Call
@@ -166,6 +167,11 @@ class SpyTest(TestCase):
             s()
 
         self.assertEqual(str(e.exception), 'Text')
+
+    def test_spy_on_stringio(self):
+        spy = Spy(StringIO('1'))
+        spy.write.returns(10)
+        self.assertEqual(10, spy.write())
 
 
 if __name__ == '__main__':
