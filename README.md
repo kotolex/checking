@@ -428,7 +428,30 @@ def mock_requests_get():
 
 ```
 
-**3. Spy object**
+**3. Mock read/write to file**
+
+If you need to mock open function, push data to read from file and gets back with write to file, you can use
+mock_open context-manager
+
+```
+#!python
+def my_open():
+    # We read from one file, uppercase results and write to another file
+    with open('my_file.txt', encoding='utf-8') as f, open('another.txt', 'wt') as f2:
+        f2.write(f.readline().upper())
+
+
+@test
+def mock_open_both():
+    # Here we specify what we must "read from file" ('test') and where we want to ger all writes(result)
+    with mock_open(on_read_text='test') as result:
+        my_open()
+    equals(['TEST'], result) # checks we get test uppercased
+
+```
+
+
+**4. Spy object**
 
 Spy is the object which has all attributes of original, but spy not performed any action, 
 all methods return None (if not specified what to return). Therefore, spy log all actions and arguments.

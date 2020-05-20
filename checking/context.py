@@ -7,6 +7,7 @@ from typing import Any, Type, Union, List, Tuple, Set
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
 from .classes.mocking.doubles import Spy
+from .classes.mocking.write_wrapper import WriteWrapper
 
 
 @contextmanager
@@ -32,43 +33,38 @@ def mock_builtins(function_name: str, func):
 
 
 @contextmanager
-def mock_readfile(values_to_read: Union[str, bytes, List, Tuple], new_line: str = '\n', raises: Exception = None):
+def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'', new_line: str = '\n', raises: Exception = None):
     """
-    Context manager for mocking open text file. Use it instead of mock_builtins('open', func)
-    :param values_to_read: string/bytes or list/tuple of strings/bytes (but not both)
+    Context manager for mocking open text ot byte file. Use it instead of mock_builtins('open', func)
+    :param on_read_text: string to get when open text file in read mode
+    :param on_read_bytes: bytes to get when open bytes file in read mode
     :param new_line: how to determine new line, '\n' by default, will be ignored for bytes
     :param raises: if need to raise exception on open file. If not None - other options will be ignored
-    :return: list of calls, where we can get args and kwargs of open function call
-    :raises: ValueError if values_to_read not str/bytes or list with something except str/bytes
+    :return: list with values, which be pushed into it by write on open file
+    :raises: ValueError if on_read_* not str or bytes
     """
-    is_bytes: bool = type(values_to_read) is bytes
+    container = []
+
+    def fake_open(*args, **kwargs):
+        if raises:
+            raise raises
+        if (len(args) > 1 and 'w' in args[1]) or (kwargs.get("mode") and 'w' in kwargs.get("mode")):
+            return WriteWrapper(container)
+        if (len(args) > 1 and 'b' in args[1]) or (kwargs.get("mode") and 'b' in kwargs.get("mode")):
+            return BytesIO(on_read_bytes)
+        return StringIO(on_read_text, new_line)
+
     # If we raise on open, then no need to check arguments
     if raises is None:
-        if type(values_to_read) not in (str, bytes, list, tuple):
-            raise ValueError('Parameter values_to_read must be str/bytes or (list, tuple) of str or bytes!')
-        if type(values_to_read) not in (str, bytes):
-            is_all_strings = all((type(x) is str for x in values_to_read))
-            is_all_bytes = all((type(x) is bytes for x in values_to_read))
-            is_bytes = is_all_bytes
-            if not is_all_strings and not is_all_bytes:
-                raise ValueError('Container values_to_read can contains only str OR only bytes!')
-    value = values_to_read
-    if type(values_to_read) not in (str, bytes) and raises is None:
-        if is_bytes:
-            value = b''.join(values_to_read)
-        else:
-            value = f'{new_line}'.join(values_to_read)
+        if type(on_read_text) is not str:
+            raise ValueError("Parameter on_read_text must be str!")
+        if type(on_read_bytes) is not bytes:
+            raise ValueError('Parameter on_read_bytes must be bytes')
     temp_ = None
     try:
-        spy = Spy()
-        spy.raises(raises)
-        if raises:
-            spy.returns(spy)
-        else:
-            spy.returns(StringIO(value, newline=new_line) if not is_bytes else BytesIO(value))
         temp_ = builtins.open
-        builtins.open = spy
-        yield spy.chain
+        builtins.open = fake_open
+        yield container
     finally:
         if temp_:
             builtins.open = temp_
