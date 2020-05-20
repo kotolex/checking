@@ -144,3 +144,12 @@ class TestSuite:
     @classmethod
     def suite_duration(cls) -> float:
         return cls.timer.duration
+
+    @classmethod
+    def info(cls) -> Dict:
+        """
+        Statistics of whole test-suite
+        :return: dict of main parameters
+        """
+        return {'name': cls.name, 'groups': tuple(cls.groups.keys()), 'providers': tuple(cls.providers.keys()),
+                'tests_count': cls.tests_count(), 'duration': cls.suite_duration()}

@@ -114,3 +114,12 @@ class Test(TestCase):
 
     def duration(self) -> float:
         return self.timer.duration
+
+    def info(self) -> dict:
+        """
+        Statistics of the test
+        :return: dict of main parameters
+        """
+        return {'group': self.group_name, 'name': self.name, 'description': self.description, 'priority': self.priority,
+                'argument': self.argument, 'timeout': self.timeout, 'retries': self.retries, 'status': self.status,
+                'reason': self.reason, 'duration': self.duration()}
