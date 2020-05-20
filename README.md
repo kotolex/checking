@@ -541,6 +541,8 @@ If specified, **-d** and **-f** options will be ignored!
 
 **-f name**    filters test name, only test whose name contains filter will be executed
 
+**-r**    runs all tests in random order (priority will be ignored)
+
 
 ### Options File Parameters ###
 
@@ -561,14 +563,15 @@ In current working folder a file will appear with content like:
 "modules": [], 
 "threads": 1, 
 "dry_run": false, 
-"filter_by_name": ""}
+"filter_by_name": "",
+"random_order": false}
 ```
 Changing this parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.
 Some rules for parameters:
 
 1) All types must be as in example, so you cant put string to "verbose" it must be int, etc.
 
-2) if groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests will executed
+2) If groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests will executed
 
 3) Listener must be specified with module, like "listener": "my_module.MyListener". It is not necessary
 to specify whole path, just module name and class name. If not specified, default listener will be used. You can use

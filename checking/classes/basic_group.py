@@ -1,3 +1,4 @@
+from random import shuffle
 from typing import List, Callable
 
 from .basic_test import Test
@@ -82,6 +83,13 @@ class TestGroup(TestCase):
 
     def sort_test_by_priority(self):
         self.tests = sorted(self.tests, key=lambda t: t.priority)
+
+    def shuffle_tests(self):
+        """
+        Change test order randomly, ignoring priority
+        :return: None
+        """
+        shuffle(self.tests)
 
     def tests_by_status(self, status: str) -> List[Test]:
         return [test for test in self.test_results if test.status == status]

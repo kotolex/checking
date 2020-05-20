@@ -398,6 +398,24 @@ class TestClasses(TC):
         self.assertEqual(-1, timer.end_time)
         self.assertEqual(-1, timer.duration)
 
+    def test_group_shuffle(self):
+        group = TestGroup('name')
+        t1 = Test('one', print)
+        t2 = Test('two', print)
+        t3 = Test('three', print)
+        t4 = Test('four', print)
+        t5 = Test('five', print)
+        t6 = Test('six', print)
+        group.add_test(t1)
+        group.add_test(t2)
+        group.add_test(t3)
+        group.add_test(t4)
+        group.add_test(t5)
+        group.add_test(t6)
+        self.assertEqual([t1, t2, t3, t4, t5, t6], group.tests)
+        group.shuffle_tests()
+        self.assertNotEqual([t1, t2, t3, t4, t5, t6], group.tests)
+
 
 if __name__ == '__main__':
     main()

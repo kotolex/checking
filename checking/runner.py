@@ -19,7 +19,7 @@ common_parameters: Dict[str, Any] = {}
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
           threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None,
-          **kwargs):
+          random_order: bool = False, **kwargs):
     """
     The main function of tests start
 
@@ -62,7 +62,7 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
         _dry_run(test_suite)
     # Check if all used provider names are found
     _check_data_providers(test_suite)
-    _run(test_suite, threads)
+    _run(test_suite, threads, random_order)
 
 
 def _dry_run(test_suite):
@@ -83,7 +83,12 @@ def _dry_run(test_suite):
             test.test = _fake
 
 
-def _run(test_suite: TestSuite, threads: int = 1):
+def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False):
+    for group in test_suite.groups.values():
+        if random_order:
+            group.shuffle_tests()
+        else:
+            group.sort_test_by_priority()
     # Create a pool of threads to run tests, by default 1 thread execution
     pool = ThreadPoolExecutor(max_workers=threads)
     test_suite.start_suite()
@@ -183,7 +188,6 @@ def _run_all_tests_in_group(group: TestGroup):
     :return: None
     """
     is_one_of_before_test_failed = False
-    group.sort_test_by_priority()
     for test in group.tests:
         if test.provider:
             _run_test_with_provider(test)

@@ -34,7 +34,8 @@ def check_parameters(parameters: Dict):
     :return: None
     :raises ValueError if the parameters are invalid
     """
-    schema = {bool: ['dry_run'], str: ['suite_name', 'listener', 'filter_by_name'], int: ['threads', 'verbose'],
+    schema = {bool: ['dry_run', 'random_order'], str: ['suite_name', 'listener', 'filter_by_name'],
+              int: ['threads', 'verbose'],
               list: ['modules', 'groups'], dict: ['params']}
     for key, value in schema.items():
         for element in value:
@@ -56,7 +57,7 @@ def check_parameters(parameters: Dict):
 
 def _get_default_params():
     parameters = {'suite_name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '',
-                  'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': ''}
+                  'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': '', 'random_order': False}
     return parameters
 
 
@@ -189,6 +190,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-f', '--filter_test', help="Filter tests by name, only tests, whose names"
                                                     " contain this value will run!")
     parser.add_argument('-a', '--arg', help="Any argument for your test-suite")
+    parser.add_argument('-r', '--random', help="Runs tests inside group in random order", action='store_const',
+                        const=True)
     parser.add_argument('-d', '--dry_run', help="Dry-run for test-suite(run without actual functions executed)!",
                         action='store_const', const=True)
     parser.add_argument('-g', '--generate_options',
@@ -197,7 +200,7 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str):
+def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, random_order: bool):
     # if options file exists get all from there
     if is_file_exists(file_name_):
         print(f"{file_name_} found! Work with it...")
@@ -210,7 +213,8 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str):
         if file_name_ == 'options.json':
             print(f"No options found! Starts to look for tests in all sub-folders")
             _walk_throw_and_import()
-            start(verbose=3, threads=1, params=p_, dry_run=dry_run_, filter_by_name=filter_by_name_)
+            start(verbose=3, threads=1, params=p_, dry_run=dry_run_, filter_by_name=filter_by_name_,
+                  random_order=random_order)
         # if options file was specified and not exists, than stop
         else:
             raise ValueError(f"{file_name_} not found! Stopped")
@@ -224,8 +228,9 @@ def run():
         file_name = _get_file_name(args.options_file)
         params = _get_arg_dict(args.arg)
         dry_run = args.dry_run if args.dry_run else False
+        random_order = args.random if args.random else False
         filter_by_name = args.filter_test if args.filter_test else ''
-        _main_run(file_name, params, dry_run, filter_by_name)
+        _main_run(file_name, params, dry_run, filter_by_name, random_order)
 
 
 if __name__ == '__main__':

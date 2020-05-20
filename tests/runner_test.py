@@ -224,6 +224,24 @@ class RunnerTest(TestCase):
         self.assertFalse(any([suite.before, suite.after,
                               suite.get_or_create("group").before, suite.get_or_create("group").after]))
 
+    def test_run_all_test_in_group_random(self):
+        clear()
+        test_case = Test('one', inc)
+        test_case2 = Test('two', inc)
+        test_case3 = Test('three', inc)
+        test_case4 = Test('four', inc)
+        test_case5 = Test('five', inc)
+        group = TestGroup('group')
+        group.add_test(test_case)
+        group.add_test(test_case2)
+        group.add_test(test_case3)
+        group.add_test(test_case4)
+        group.add_test(test_case5)
+        TestSuite.get_instance().groups['group']=group
+        r._run(TestSuite.get_instance(), 1, random_order=True)
+        runned  = [test.name for test in group.test_results]
+        self.assertNotEqual(['one', 'two', 'three', 'four', 'five'], runned)
+
 
 if __name__ == '__main__':
     main()
