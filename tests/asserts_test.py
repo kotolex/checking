@@ -74,12 +74,12 @@ class AssertsTest(TestCase):
     def test_equals_failed(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2)
-        self.assertEqual('Objects are not equal!\nExpected:"1" <int>\nActual:  "2" <int>!', e.exception.args[0])
+        self.assertEqual('Objects are not equal!\nExpected:"1" <int>\nActual  :"2" <int>!', e.exception.args[0])
 
     def test_equals_failed_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2, 'message')
-        self.assertEqual('message\nObjects are not equal!\nExpected:"1" <int>\nActual:  "2" <int>!', e.exception.args[0])
+        self.assertEqual('message\nObjects are not equal!\nExpected:"1" <int>\nActual  :"2" <int>!', e.exception.args[0])
 
     def test_is_none_ok(self):
         is_none(None)
