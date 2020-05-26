@@ -246,6 +246,16 @@ class BehaviourTest(TestCase):
         self.assertEqual(0, len(TestSuite.get_instance().ignored()))
         self.assertEqual(0, TestSuite.get_instance().tests_count())
 
+    def test_provider_get_none(self):
+        clear()
+        CONTAINER([1, None], name='three')
+        test(data_provider="three")(_fn)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(1, len(TestSuite.get_instance().success()))
+        self.assertEqual(1, len(TestSuite.get_instance().failed()))
+        self.assertEqual(2, TestSuite.get_instance().tests_count())
+
 
 if __name__ == '__main__':
     main()

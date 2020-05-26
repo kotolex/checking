@@ -58,7 +58,7 @@ class Test(TestCase):
             if not self.only_if():
                 raise TestIgnoredException()
         self.timer.start()
-        if self.argument is not None:
+        if self.provider is not None:
             self.test(self.argument)
         else:
             self.test()

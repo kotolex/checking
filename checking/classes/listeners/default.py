@@ -55,11 +55,11 @@ class DefaultListener(Listener):
             if f_count:
                 print(f'\nFailed tests are:')
                 for failed_test in test_suite.failed():
-                    print(' ' * 4, failed_test)
+                    print(' ' * 4, failed_test, Listener._get_test_arg_short_without_new_line(failed_test))
             if b_count:
                 print(f'\nBroken tests are:')
                 for broken_test in test_suite.broken():
-                    print(' ' * 4, broken_test)
+                    print(' ' * 4, broken_test, Listener._get_test_arg_short_without_new_line(broken_test))
             if i_count:
                 print(f'\nIgnored tests are:')
                 for ignored_test in test_suite.ignored():

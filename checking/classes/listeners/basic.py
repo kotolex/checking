@@ -126,7 +126,7 @@ class Listener:
 
     @staticmethod
     def _get_test_arg_short_without_new_line(test: Test):
-        if test.argument:
+        if test.provider:
             short_ = short(test.argument).replace('\n', '')
             return f'[{short_}]'
         return ''
