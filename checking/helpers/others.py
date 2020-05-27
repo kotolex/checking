@@ -41,3 +41,12 @@ def str_date_time():
     :return: str like 2020-02-22_12_58_58
     """
     return datetime.strftime(datetime.now(), '%Y-%m-%d_%H-%M-%S')
+
+
+def fake(*args):
+    """
+    Stub function that does nothing
+    :param args: ignored params
+    :return: None
+    """
+    pass

@@ -1,7 +1,7 @@
 from io import StringIO
 from unittest import TestCase, main
 
-from checking.classes.mocking import Spy, Double, Call
+from checking.classes.mocking import Spy, Double, Call, Stub, AttributeWrapper
 
 
 class SpyTest(TestCase):
@@ -172,6 +172,36 @@ class SpyTest(TestCase):
         spy = Spy(StringIO('1'))
         spy.write.returns(10)
         self.assertEqual(10, spy.write())
+
+    def test_stub_create(self):
+        stub = Stub()
+        self.assertEqual('Stub object {}', str(stub))
+
+    def test_stub_create_with_attr(self):
+        stub = Stub(test='text')
+        self.assertEqual('text', stub.test)
+        self.assertEqual('Stub object {\'test\': \'text\'}', str(stub))
+
+    def test_stub_create_with_two_attrs(self):
+        stub = Stub(test='text', length=2)
+        self.assertEqual('text', stub.test)
+        self.assertEqual(2, stub.length)
+        self.assertEqual('Stub object {\'test\': \'text\', \'length\': 2}', str(stub))
+
+    def test_stub_has_wrapper_attr(self):
+        stub = Stub()
+        self.assertEqual(AttributeWrapper, type(stub.wrong))
+
+    def test_stub_returns_smth(self):
+        stub = Stub()
+        stub.function.returns(0)
+        self.assertEqual(0, stub.function())
+
+    def test_stub_with_func_str(self):
+        stub = Stub()
+        stub.function.returns(0)
+        self.assertTrue("Stub object {'function':" in str(stub))
+        self.assertTrue("AttributeWrapper object" in str(stub))
 
 
 if __name__ == '__main__':

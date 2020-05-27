@@ -1,6 +1,7 @@
 from typing import Callable, Any, Dict, List
 from concurrent.futures import ThreadPoolExecutor
 
+from .helpers.others import fake
 from .classes.basic_test import Test
 from .classes.basic_case import TestCase
 from .classes.basic_suite import TestSuite
@@ -80,7 +81,7 @@ def _dry_run(test_suite):
         for test in group.tests:
             test.before = []
             test.after = []
-            test.test = _fake
+            test.test = fake
 
 
 def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False):
@@ -319,6 +320,3 @@ def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
         is_failed = True
     return is_failed
 
-
-def _fake(*args):
-    pass

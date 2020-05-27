@@ -361,7 +361,7 @@ def another_func():
 
 ```
 
-## Mock, Double and Spy
+## Mock, Double, Stub and Spy
 
 For testing purposes you sometimes need to fake some behaviour or to isolate your application from any other classes/libraries etc.
 
@@ -417,13 +417,10 @@ from some_module_to_test import func_with_get_inside
 
 @test
 def mock_requests_get():
-    # Lets create fake object
-    class Fake:
-        def __init__(self):
-            self.text = 'test'
-    
-    with mock(requests, 'get', lambda x:Fake()): # Mock real requests with fake object
-        equals('test', func_with_get_inside('https://yandex.ru')) # Now no real requests be performed!
+    stub = Stub(text='test') # create simple stub, with attribute text equals to 'test'
+
+    with mock(requests, 'get', lambda x: stub):  # Mock real requests with stub object
+        equals('test', func_with_get_inside('https://yandex.ru'))  # Now no real requests be performed!
 
 
 ```
@@ -443,7 +440,7 @@ def my_open():
 
 @test
 def mock_open_both():
-    # Here we specify what we must "read from file" ('test') and where we want to ger all writes(result)
+    # Here we specify what we must "read from file" ('test') and where we want to get all writes(result)
     with mock_open(on_read_text='test') as result:
         my_open()
     equals(['TEST'], result) # checks we get test uppercased
@@ -505,7 +502,7 @@ def check_spy():
 
 ```
 
-**3. Double object**
+**5. Double object**
 
 Double object is like the Spy, but it saves original object behaviour, so its methods returns 
 real object methods results if not specified otherwise.
@@ -520,6 +517,40 @@ def check_double():
     equals(100, len(spy))  # Len now returns 100
 
 ```
+
+**6. Stub object**
+
+Stub object is just a helper for testing, its purpose not to check or assert something, but to give data
+and perform some simple action, when application under test need it. Unlike spy or double, Stub 
+is not remember calls, it just a simple replacement for some object with minimum or no logic inside.
+
+Lets say we have a function which gets some object, take its attribute, calculates something and 
+return result. We wish to isolate our testing from real objects, just test important behaviour, besides 
+this data-object can be hard to create or complicated.
+```
+#!python
+from checking import *
+
+# Our function to test, it get some object and use it attribute and method, but we just 
+# need to test how it works!
+def function(some_object)->int:
+    initial_value = some_object.value
+    result = 2 + some_object.complicate_function()*initial_value  # Some calculation we need to test
+    return result
+
+
+@test
+def check_with_stub():
+    stub = Stub(value=2) # Creates stub with attribute value=2
+    stub.complicate_function.returns(2) # Says, when complicate_function will be called returns 2
+    equals(6, function(stub))  # Asserts 6 == 2+(2*2)
+
+```
+Pay attention - when you look for some attribute in stub - it always has it! But it will be a wrapper to use with 
+expression like `stub.any_attribute.returns('test')`. 
+
+So, if you need to have some attribute (not method) on stub, you just use `stub.attr=10`, but for methods just use expression above.
+
 
 ### Command Line Options ###
 
@@ -571,7 +602,7 @@ Some rules for parameters:
 
 1) All types must be as in example, so you cant put string to "verbose" it must be int, etc.
 
-2) If groups not empty ("groups":["api"]) than only group with that name will run. If no such group found, no tests will executed
+2) If groups not empty ("groups":["api"]) then only group with that name will run. If no such group found, no tests will executed
 
 3) Listener must be specified with module, like "listener": "my_module.MyListener". It is not necessary
 to specify whole path, just module name and class name. If not specified, default listener will be used. You can use

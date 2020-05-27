@@ -7,6 +7,7 @@ from checking.classes.basic_group import TestGroup
 from checking.classes.basic_suite import TestSuite
 from checking.classes.listeners.basic import Listener
 from checking.exceptions import UnknownProviderName, TestIgnoredException
+from checking.helpers.others import fake
 
 from tests.fixture_behaviour_test import clear
 
@@ -49,7 +50,7 @@ class RunnerTest(TestCase):
     r._listener = TestListener()
 
     def test_run_fixture_true(self):
-        result = r._run_fixture(r._fake, 'test', 'test')
+        result = r._run_fixture(fake, 'test', 'test')
         self.assertFalse(result)
 
     def test_run_fixture_false(self):
@@ -106,13 +107,13 @@ class RunnerTest(TestCase):
 
     def test_run_before_for_test_be_false(self):
         test_case = Test('test', inc)
-        test_case.add_before(r._fake)
+        test_case.add_before(fake)
         r._run_before(test_case)
         self.assertFalse(test_case.is_before_failed)
 
     def test_run_before_for_group_be_false(self):
         test_case = TestGroup('test')
-        test_case.add_before(r._fake)
+        test_case.add_before(fake)
         r._run_before(test_case)
         self.assertFalse(test_case.is_before_failed)
 

@@ -10,7 +10,7 @@ from .exceptions import *
 from .classes.basic_test import Test
 from .classes.data_file import DataFile
 from .classes.basic_suite import TestSuite
-from .helpers.others import is_file_exists
+from .helpers.others import is_file_exists, fake
 
 
 def test(*args, enabled: bool = True, name: str = None, description: str = None, data_provider: str = None,
@@ -40,10 +40,10 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     Due to a possible memory leak, it should be used only when there is a special need.
     :param only_if: accepts a function that will be called before the test starts and the test will only be launched if
     it returns True. Should be taken to filter tests, for instance in relation to the operating system used.
-    :return: _fake
+    :return: fake
     """
     if not enabled:
-        return _fake
+        return fake
 
     def real_decorator(func: Callable[[], None]):
         if not data_provider:
@@ -74,7 +74,7 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
             if data_provider:
                 test_object.provider = data_provider
             TestSuite.get_instance().get_or_create(group).add_test(test_object)
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
@@ -92,12 +92,12 @@ def data(*args, enabled: bool = True, name: str = None):
     its other settings are ignored
     :param name: is the name, if not specified, then takes the name of the function. By this name, tests are searched by
     the provider, therefore only unique names are allowed. Duplicate name throws DuplicateNameException
-    :return: __fake
+    :return: fake
     :raises: DuplicateNameException if provider with such name is already exists
     :raises: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
     """
     if not enabled:
-        return _fake
+        return fake
 
     def real_decorator(func: Callable[[None], Iterable]):
         __check_is_function_without_args(func, 'data')
@@ -108,7 +108,7 @@ def data(*args, enabled: bool = True, name: str = None):
         if name_ in providers:
             raise DuplicateNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
         providers[name_] = func
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
@@ -121,14 +121,14 @@ def before(*args, group_name: str = None):
     :param group_name: the name of the group before which test the function will be executed. If no group name is
     specified, a group is automatically created with the module name. A function does not have to be in the same module
     as the tests.
-    :return: __fake
+    :return: fake
     """
 
     def real_decorator(func: Callable[[], None]):
         __check_is_function_without_args(func, 'before')
         group = group_name if group_name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_before_test(func)
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
@@ -142,14 +142,14 @@ def after(*args, group_name: str = None):
     :param group_name: the name of the group after each test of which the function will be executed. If the group name
     is not specified, a group with the module name is automatically created. A function does not have to be in the same
     module as the tests.
-    :return: __fake
+    :return: fake
     """
 
     def real_decorator(func: Callable[[], None]):
         __check_is_function_without_args(func, 'after')
         group = group_name if group_name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_after_test(func)
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
@@ -162,14 +162,14 @@ def before_group(*args, name: str = None):
     all module/group tests are run.
     :param name: is the name of the module or group, before which tests the function will be executed once. If no name
     is specified, then the name of the current module where the annotation is used is taken.
-    :return: __fake
+    :return: fake
     """
 
     def real_decorator(func: Callable[[], None]):
         __check_is_function_without_args(func, 'before_module')
         group = name if name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_before(func)
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
@@ -187,7 +187,7 @@ def after_group(*args, name: str = None, always_run: bool = False):
     :param args: are parameters in which a function may come if the method is marked simply by @after_module
     :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
     will be launched anyway
-    :return: __fake
+    :return: fake
     """
 
     def real_decorator(func: Callable[[], None]):
@@ -196,7 +196,7 @@ def after_group(*args, name: str = None, always_run: bool = False):
         TestSuite.get_instance().get_or_create(group).add_after(func)
         if always_run:
             TestSuite.get_instance().get_or_create(group).always_run_after = True
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
@@ -223,7 +223,7 @@ def after_suite(*args, always_run: bool = False):
     :param args: are parameters in which a function may come if the method is marked simply @after_suite
     :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
     will be launched anyway
-    :return: __fake
+    :return: fake
     """
 
     def real_decorator(func: Callable[[], None]):
@@ -231,20 +231,11 @@ def after_suite(*args, always_run: bool = False):
         TestSuite.get_instance().add_after(func)
         if always_run:
             TestSuite.always_run_after = True
-        return _fake
+        return fake
 
     if args:
         return real_decorator(args[0])
     return real_decorator
-
-
-def _fake(*args):
-    """
-    Stub function that does nothing
-    :param args:
-    :return: None
-    """
-    pass
 
 
 def _has_yield_or_return(function: Callable) -> bool:
