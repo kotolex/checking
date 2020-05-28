@@ -81,7 +81,7 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     return real_decorator
 
 
-def data(*args, enabled: bool = True, name: str = None):
+def data(*args, enabled: bool = True, name: str = None, cached: bool = False):
     """
     The annotation that marks a data provider, that is, a function that supplies data to a test. Such a function should
     return Iterable or Sequence, otherwise will be an error. It is not possible at compile time to determine if the
@@ -92,6 +92,9 @@ def data(*args, enabled: bool = True, name: str = None):
     its other settings are ignored
     :param name: is the name, if not specified, then takes the name of the function. By this name, tests are searched by
     the provider, therefore only unique names are allowed. Duplicate name throws DuplicateNameException
+    :param cached: flag to save all provider data in memory and use it on second use. Can be useful only when provider
+    used more than once in test-suite and you do not want to get data again from some source like filesystem or db.
+    WARNING! Cache use memory, so it can take a lot of it for big data volumes.
     :return: fake
     :raises: DuplicateNameException if provider with such name is already exists
     :raises: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
@@ -108,6 +111,9 @@ def data(*args, enabled: bool = True, name: str = None):
         if name_ in providers:
             raise DuplicateNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
         providers[name_] = func
+        nonlocal cached
+        if cached:
+            TestSuite.get_instance().cached.append(name_)
         return fake
 
     if args:
@@ -286,12 +292,14 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
                                        f"has more than 1 argument!")
 
 
-def DATA_FILE(file_path: str, provider_name: str = None, encoding: str = 'UTF-8', map_function: Callable = None):
+def DATA_FILE(file_path: str, provider_name: str = None, cached: bool = False, encoding: str = 'UTF-8',
+              map_function: Callable = None):
     """
     Function to use text file as data provider for test. Reads file lazily, do not get it to memory.
     The function name explicitly stays uppercase for user to pay attention to it.
     User must call it at the global module namespace, but not at fixtures or in tests!
     :param provider_name: name of the data-provider for use it in test, if not specified the file_path be used as name
+    :param cached: flag to cache values for using it more than once
     :param file_path: file name or path-to-file with name, it can be full or relative path, but it must be "visible"
     (accessible from module, where it is declared)
     :param encoding: encoding of the text file (default UTF-8)
@@ -313,7 +321,7 @@ def DATA_FILE(file_path: str, provider_name: str = None, encoding: str = 'UTF-8'
         real_path = path.join(first_path, file_path)
         if not is_file_exists(real_path):
             raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
-        data(name=provider_name)(wrapper)
+        data(name=provider_name, cached=cached)(wrapper)
     finally:
         del frame
 

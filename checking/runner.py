@@ -157,13 +157,20 @@ def _run_test_with_provider(test):
     :param test: Test
     :return: None
     """
-    generator = _provider_next(test.provider)
+    test_suite = TestSuite.get_instance()
+    provider = test.provider
+    # If provider values is in the cache - get it from there
+    generator = _provider_next(provider) if provider not in test_suite.cache else test_suite.cache[provider]
     try:
         is_any_value_provides = False
+        need_to_cache = provider in test_suite.cached and provider not in test_suite.cache
+        list_of_arguments = []
         for param in generator:
             is_any_value_provides = True
             clone = test.clone()
             clone.argument = param
+            if need_to_cache:
+                list_of_arguments.append(param)
             is_one_of_before_test_failed = _run_test_with_before_and_after(clone, False)
             if is_one_of_before_test_failed:
                 print(f'Because of "before_test" all tests for {test} with data provider '
@@ -173,6 +180,9 @@ def _run_test_with_provider(test):
         if not is_any_value_provides:
             test.stop(TestIgnoredException(f'No values at provider {test.provider}'))
             _listener.on_ignored_with_provider(test)
+        else:
+            if need_to_cache:
+                test_suite.cache[provider] = tuple(list_of_arguments)
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
             print(e)

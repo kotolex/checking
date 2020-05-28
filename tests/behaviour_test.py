@@ -256,6 +256,25 @@ class BehaviourTest(TestCase):
         self.assertEqual(1, len(TestSuite.get_instance().failed()))
         self.assertEqual(2, TestSuite.get_instance().tests_count())
 
+    def test_provider_cached(self):
+        count = 0
+
+        def ca_():
+            nonlocal count
+            count += 1
+            return [0, 1]
+
+        clear()
+        data(cached=True)(ca_)
+        test(data_provider="ca_")(_fn)
+        test(data_provider="ca_", name='teo')(_fn)
+        start(listener=Listener(0))
+        self.assertEqual(1, count)
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(4, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(4, TestSuite.get_instance().tests_count())
+
 
 if __name__ == '__main__':
     main()

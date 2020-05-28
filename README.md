@@ -242,6 +242,32 @@ def try_prov(it):
     is_true(it)
 
 ```
+If you gonna use provider more than once in your test-suite and do not want to get its data from resource of some
+kind (database, filesystem, http-request etc.), you can use parameter ``cached=True``. In that case, provider get all 
+data only once at first run and stores it in memory for all other tests to run. But make sure you not get too much 
+memory for your data and be smart whaen use it in parallel mode. DATA_FILE can use this parameter too.
+
+```#!python
+from checking import *
+
+DATA_FILE('data.csv', provider_name='csv', cached=True) # Reads file only once and stores all values
+
+
+@test(data_provider='csv') # Here comes data from file
+def check_one(it):
+    not_none(it)
+
+
+@test(data_provider='csv') # Here comes cached data, no attempts to read file again!
+def check_two(it):
+    not_none(it)
+
+
+if __name__ == '__main__':
+    start(0)
+
+```
+
 When you need to provide data from simple one-liner like string, list comprehension or generator expression,
 you don't need to write function, just use syntactic-sugar CONTAINER
 

@@ -1,4 +1,4 @@
-from typing import Dict, List, Callable, Iterable
+from typing import Dict, List, Tuple, Callable, Iterable
 
 from .timer import Timer
 from .basic_test import Test
@@ -17,6 +17,12 @@ class TestSuite:
 
     # Data providers (available to all tests in all sets)
     providers: Dict[str, Callable[[None], Iterable]] = {}
+
+    # Cache for providers, store name-tuple of values
+    cache: Dict[str, Tuple] = {}
+
+    # Container for cached providers, stores only names!
+    cached: List[str] = []
 
     # Lists of functions which execute before and after run
     before: List[Callable] = []
