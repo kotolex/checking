@@ -2,7 +2,7 @@ from checking.classes.basic_suite import TestSuite
 
 BASE = '''
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
     <title>Test Results for #suite_name</title>
@@ -29,9 +29,10 @@ def generate(file_name: str, test_suite: TestSuite):
     if test_suite.is_empty():
         html_lines.append("<div id='empty'>Suite is empty! There are no tests!</div>\n")
     else:
-        html_lines.append('<h1>Statistics:</h1>\n')
+        html_lines.append('<h2>Statistics:</h2>\n')
         for group in test_suite.groups:
-            html_lines.append(f"<h3>Group '{group}':</h3>\n<ol>\n")
+            group_time = sum(t.duration() for t in test_suite.groups.get(group).test_results)
+            html_lines.append(f"<h3>Group '{group}' (elapsed {group_time:.2} seconds):</h3>\n<ol>\n")
             for test in test_suite.groups.get(group).test_results:
                 time_ = test.duration()
                 if time_ < 0.01:
