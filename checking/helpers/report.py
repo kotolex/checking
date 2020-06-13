@@ -19,6 +19,15 @@ BASE = '''
                 }
             }
         }
+        function opclose_sibling(locator) {
+            return function () {
+                if (document.querySelector(locator).nextElementSibling.style.display === 'none') {
+                    document.querySelector(locator).nextElementSibling.style = 'display:block';
+                } else {
+                    document.querySelector(locator).nextElementSibling.style = 'display:none';
+                }
+            }
+        }
     </script>
   </head>
   <body>
@@ -53,8 +62,11 @@ def generate(file_name: str, test_suite: TestSuite):
         group_time = sum(t.duration() for t in test_suite.groups.get(group).test_results)
         results = test_suite.groups.get(group).test_results
         succ = len(test_suite.groups.get(group).tests_by_status('success'))
-        html_lines.append(f"<h3>Group '{group}' (elapsed {group_time:.2} seconds), success tests {succ}/{len(results)}"
-                          f":</h3>\n<ol>\n")
+        html_lines.append(f"<h3 id='id_g_{count}'>Group '{group}' (elapsed {group_time:.2} seconds), "
+                          f"success tests {succ}/{len(results)}:\n"
+                          f"<script>document.querySelector('#id_g_{count}')."
+                          f"addEventListener('click',opclose_sibling('#id_g_{count}'))</script>\n</h3>\n"
+                          f"<ol style='display: none;'>\n")
         for test in results:
             _add_test_info(test, html_lines, count)
             count += 1
