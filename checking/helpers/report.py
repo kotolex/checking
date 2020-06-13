@@ -2,6 +2,7 @@ from typing import List
 
 from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
+from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 
 BASE = '''
 <!DOCTYPE html>
@@ -40,11 +41,17 @@ def _create_info(html_lines: List[str], test_suite: TestSuite):
     html_lines[0] = html_lines[0].replace('#suite_name', test_suite.name)
     html_lines.append(f"<p>Total groups: {len(test_suite.groups)}</p>")
     html_lines.append(f"<p>Total tests: {test_suite.tests_count()}</p>\n<ul>")
-    html_lines.append(f"<li>success tests: {len(test_suite.success())}</li>\n"
-                      f"<li>failed tests: {len(test_suite.failed())}</li>\n"
-                      f"<li>broken tests: {len(test_suite.broken())}</li>\n"
-                      f"<li>ignored tests: {len(test_suite.ignored())}</li></ul>\n")
-    html_lines.append(f"<p>Success percent: {len(test_suite.success()) / (test_suite.tests_count() / 100):.4} %</p>\n")
+    html_lines.append(f"<li style='color:green'>success tests: {len(test_suite.success())}</li>\n"
+                      f"<li style='color:red'>failed tests: {len(test_suite.failed())}</li>\n"
+                      f"<li style='color:orange'>broken tests: {len(test_suite.broken())}</li>\n"
+                      f"<li style='color:grey'>ignored tests: {len(test_suite.ignored())}</li></ul>\n")
+    per_col = 'green'
+    percent = len(test_suite.success()) / (test_suite.tests_count() / 100)
+    if percent < 99:
+        per_col = 'orange'
+    if percent < 75:
+        per_col = 'red'
+    html_lines.append(f"<p>Success percent: <b style='color:{per_col}'>{percent:.4} %</b></p>\n")
     html_lines.append(f"<p>Total time: {test_suite.suite_duration():.2} seconds</p>\n")
 
 
@@ -93,14 +100,28 @@ def _add_test_info(test: Test, lines: List[str], count: int):
     add_ = ''
     if test.provider:
         add_ = f'[{test.argument}]'
+    traceback = ''
+    if test.reason is not None:
+        for line in get_trace_filtered_by_filename(test.reason).split('\n'):
+            traceback += f"<p>{line}</p>"
+    st_col = 'green'
+    if test.status == 'broken':
+        st_col = 'orange'
+    if test.status == 'failed':
+        st_col = 'red'
+    if test.status == 'ignored':
+        st_col = 'grey'
     lines.append(
-        f"<li id='id_{count}'>Test '{test.name}' {add_}: elapsed time {time_:.2} seconds, status <b>{test.status}</b>\n"
+        f"<li id='id_{count}'>Test '{test.name}' {add_}: elapsed time {time_:.2} seconds, "
+        f"status <b style='color:{st_col}'>{test.status}</b>\n"
         f"<div style='display: none;'>\n"
         f"<p>Description:'{test.description}'</p>"
         f"<p>Argument: {test.argument}</p>"
         f"<p>Attempt number: {test.retries}</p>"
         f"<p>Status: {test.status.upper()}</p>"
         f"<p>Duration: {time_:.3} seconds</p>"
-        f"<p>Exception: {str(test.reason).replace('<', '&lt;')}</p>"
+        f"{'-' * 30}\n"
+        f"{traceback}\n"
+        f"<p style='color:red'>Exception: {str(test.reason).replace('<', '&lt;')}</p>"
         f"</div>\n"
         f"</li>\n")
