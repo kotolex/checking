@@ -11,7 +11,7 @@ class Test(TestCase):
     """
     __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after', 'provider', 'retries', 'priority',
                  'test', 'group', 'group_name', 'argument', 'timeout', 'only_if', 'description', 'timer', 'status',
-                 'reason')
+                 'reason', 'report_params')
 
     def __init__(self, name: str, test: Callable):
         """
@@ -44,6 +44,8 @@ class Test(TestCase):
         self.status: str = 'created'
         # Raised exception
         self.reason: Optional[Exception] = None
+        # Parameters to attach to html report (not used anythere else)
+        self.report_params = {}
 
     def set_group(self, group):
         self.group = group
@@ -109,7 +111,8 @@ class Test(TestCase):
         """
         clone = Test(self.name, self.test)
         for attr in self.__slots__:
-            setattr(clone, attr, getattr(self, attr))
+            if attr != 'report_params':
+                setattr(clone, attr, getattr(self, attr))
         return clone
 
     def duration(self) -> float:

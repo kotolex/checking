@@ -68,6 +68,7 @@ class TestClasses(TC):
         test.group = self
         test.status = 'FAILED'
         test.reason = ValueError('1')
+        test.report_params = {1: '1'}
         new_test = test.clone()
         self.assertEqual(test.name, new_test.name)
         self.assertEqual(new_test.group, self)
@@ -84,6 +85,8 @@ class TestClasses(TC):
         self.assertEqual(test.after, new_test.after)
         self.assertEqual(test.status, new_test.status)
         self.assertEqual(test.reason, new_test.reason)
+        self.assertNotEqual(test.report_params, new_test.report_params)
+        self.assertFalse(new_test.report_params)
 
     def test_init_for_TestGroup(self):
         group = TestGroup('default')

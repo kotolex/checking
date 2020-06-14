@@ -1,9 +1,10 @@
-from typing import List
+from sys import _getframe
 from datetime import datetime
+from typing import List, Union
 
 from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
-from checking.helpers.exception_traceback import get_trace_filtered_by_filename
+from checking.helpers.exception_traceback import get_trace_filtered_by_filename as filtered
 
 BASE = '''
 <!DOCTYPE html>
@@ -36,6 +37,49 @@ BASE = '''
     <h1>Info</h1>
     <p><strong>Suite name:</strong> #suite_name</p>
 '''
+
+
+def add_text(name: str, value: str):
+    """
+    Add some text to test in report
+    :param name: name of the parameter
+    :param value: value of the parameter
+    :return: None
+    """
+    _add_to_test(name, value)
+
+
+def add_img(name: str, bytes_: bytes):
+    """
+    Add some picture(screenshot) to test in report
+    :param name: name of parameter
+    :param bytes_: bytes of picture (will be saved as png)
+    :return: None
+    """
+    _add_to_test(name, bytes_)
+
+
+def _add_to_test(name: str, value: Union[bytes, str]):
+    """
+    Looks for 5 frames deep in call stack to find current test and put data there
+    :param name: name of parameter to add
+    :param value: value of str or bytes
+    :return: None
+    """
+    try:
+        for _ in range(5):
+            frame = _getframe(_)
+            current_test = frame.f_locals.get('self')
+            if current_test:
+                if type(value) is bytes:
+                    current_test.report_params[value] = str(name)
+                else:
+                    current_test.report_params[str(name)] = str(value)
+                break
+    except ValueError:
+        pass  # ignored, just deletes frame
+    finally:
+        del frame
 
 
 def generate(file_name: str, test_suite: TestSuite):
@@ -125,16 +169,9 @@ def _add_test_info(test: Test, lines: List[str], count: int):
     :param count: id for html tag
     :return: None
     """
-    time_ = test.duration()
-    if time_ < 0.01:
-        time_ = 0.0
-    add_ = ''
-    if test.provider:
-        add_ = f'[{test.argument}]'
-    traceback = ''
-    if test.reason is not None:
-        for line in get_trace_filtered_by_filename(test.reason).split('\n'):
-            traceback += f"<p>{line}</p>"
+    time_ = 0.0 if test.duration() < 0.01 else test.duration()
+    add_ = f'[{test.argument}]' if test.provider else ''
+    traceback = '' if test.reason is None else ''.join([f"<p>{_}</p>" for _ in filtered(test.reason).split('\n')])
     st_col = 'green'
     if test.status == 'broken':
         st_col = 'orange'
@@ -142,6 +179,7 @@ def _add_test_info(test: Test, lines: List[str], count: int):
         st_col = 'red'
     if test.status == 'ignored':
         st_col = 'grey'
+    rep_params = _get_rep_params(test, count)
     lines.append(
         f"<li id='id_{count}'>Test '{test.name}' {add_}: elapsed time {time_:.2} seconds, "
         f"status <b style='color:{st_col}'>{test.status}</b>\n"
@@ -154,4 +192,21 @@ def _add_test_info(test: Test, lines: List[str], count: int):
         f"{'-' * 30}\n"
         f"{traceback}\n"
         f"<p style='color:red'><strong>Exception:</strong> {str(test.reason).replace('<', '&lt;')}</p>"
+        f"{'-' * 30}\n"
+        f"{rep_params}"
         f"</div>\n</li>\n")
+
+
+def _get_rep_params(test, count):
+    rep_params = ''
+    if not test.report_params:
+        return ''
+    for key, value in test.report_params.items():
+        if type(key) is str:
+            rep_params += f"<p>Report parameter <strong>'{key}'</strong>: {value}</p>\n"
+        else:
+            with open(f'test_id_count_{count}.png', 'wb') as f:
+                f.write(key)
+            rep_params += f"<p>Report parameter <strong>'{value}'</strong>:</p>\n<img src='test_id_count_{count}.png'" \
+                          f" alt='{value}'>"
+    return rep_params
