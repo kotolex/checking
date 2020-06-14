@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
@@ -33,26 +34,28 @@ BASE = '''
   </head>
   <body>
     <h1>Info</h1>
-    <p>Suite name: #suite_name</p>
+    <p><strong>Suite name:</strong> #suite_name</p>
 '''
 
 
-def _create_info(html_lines: List[str], test_suite: TestSuite):
-    html_lines[0] = html_lines[0].replace('#suite_name', test_suite.name)
-    html_lines.append(f"<p>Total groups: {len(test_suite.groups)}</p>")
-    html_lines.append(f"<p>Total tests: {test_suite.tests_count()}</p>\n<ul>")
-    html_lines.append(f"<li style='color:green'>success tests: {len(test_suite.success())}</li>\n"
-                      f"<li style='color:red'>failed tests: {len(test_suite.failed())}</li>\n"
-                      f"<li style='color:orange'>broken tests: {len(test_suite.broken())}</li>\n"
-                      f"<li style='color:grey'>ignored tests: {len(test_suite.ignored())}</li></ul>\n")
+def _create_info(html_lines: List[str], suite: TestSuite):
+    html_lines[0] = html_lines[0].replace('#suite_name', suite.name)
+    html_lines.append(f"<p><strong>Total groups:</strong> {len(suite.groups)}</p>")
+    html_lines.append(f"<p><strong>Total tests:</strong> {suite.tests_count()}</p>\n<ul>")
+    html_lines.append(f"<li style='color:green'>success tests: {len(suite.success())}</li>\n"
+                      f"<li style='color:red'>failed tests: {len(suite.failed())}</li>\n"
+                      f"<li style='color:orange'>broken tests: {len(suite.broken())}</li>\n"
+                      f"<li style='color:grey'>ignored tests: {len(suite.ignored())}</li></ul>\n")
     per_col = 'green'
-    percent = len(test_suite.success()) / (test_suite.tests_count() / 100)
+    percent = len(suite.success()) / (suite.tests_count() / 100)
     if percent < 99:
         per_col = 'orange'
     if percent < 75:
         per_col = 'red'
-    html_lines.append(f"<p>Success percent: <b style='color:{per_col}'>{percent:.4} %</b></p>\n")
-    html_lines.append(f"<p>Total time: {test_suite.suite_duration():.2} seconds</p>\n")
+    start = datetime.fromtimestamp(suite.timer.start_time).strftime('%Y-%m-%d %H:%M:%S')
+    end = datetime.fromtimestamp(suite.timer.end_time).strftime('%Y-%m-%d %H:%M:%S')
+    html_lines.append(f"<p><strong>Success percent:</strong> <b style='color:{per_col}'>{percent:.4} %</b></p>\n")
+    html_lines.append(f"<p><strong>Total time:</strong> {suite.suite_duration():.2} seconds ({start} - {end})</p>\n")
 
 
 def generate(file_name: str, test_suite: TestSuite):
