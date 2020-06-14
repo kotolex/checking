@@ -38,7 +38,24 @@ BASE = '''
 '''
 
 
+def generate(file_name: str, test_suite: TestSuite):
+    """
+    The only public method to generate html report with all test results
+    :param file_name: name for report
+    :param test_suite: suite to save results to report
+    :return: None
+    """
+    html = _generate_html(test_suite)
+    _write_file(file_name, html)
+
+
 def _create_info(html_lines: List[str], suite: TestSuite):
+    """
+    Genegates Info section (header) of the report. Changes in-place list argument!
+    :param html_lines: list of stings of the html report
+    :param suite: suite to get results from
+    :return: None
+    """
     html_lines[0] = html_lines[0].replace('#suite_name', suite.name)
     html_lines.append(f"<p><strong>Total groups:</strong> {len(suite.groups)}</p>")
     html_lines.append(f"<p><strong>Total tests:</strong> {suite.tests_count()}</p>\n<ul>")
@@ -47,7 +64,7 @@ def _create_info(html_lines: List[str], suite: TestSuite):
                       f"<li style='color:orange'>broken tests: {len(suite.broken())}</li>\n"
                       f"<li style='color:grey'>ignored tests: {len(suite.ignored())}</li></ul>\n")
     per_col = 'green'
-    percent = len(suite.success()) / (suite.tests_count() / 100)
+    percent = len(suite.success()) / (suite.tests_count() / 100) if suite.tests_count() else 0.0
     if percent < 99:
         per_col = 'orange'
     if percent < 75:
@@ -58,18 +75,22 @@ def _create_info(html_lines: List[str], suite: TestSuite):
     html_lines.append(f"<p><strong>Total time:</strong> {suite.suite_duration():.2} seconds ({start} - {end})</p>\n")
 
 
-def generate(file_name: str, test_suite: TestSuite):
+def _generate_html(test_suite: TestSuite) -> List[str]:
+    """
+    Generates html in list of strings
+    :param test_suite: suite to get all results from
+    :return: list of strings (html code)
+    """
     html_lines = [BASE, ]
     _create_info(html_lines, test_suite)
     if test_suite.is_empty():
         html_lines.append("<div id='empty'>Suite is empty! There are no tests!</div>\n")
         html_lines.append('</body>\n</html>')
-        _write_file(file_name, html_lines)
-        return
+        return html_lines
     count = 1
     html_lines.append('<h2>Statistics:</h2>\n')
     for group in test_suite.groups:
-        group_time = sum(t.duration() for t in test_suite.groups.get(group).test_results)
+        group_time = float(sum(t.duration() for t in test_suite.groups.get(group).test_results))
         results = test_suite.groups.get(group).test_results
         succ = len(test_suite.groups.get(group).tests_by_status('success'))
         html_lines.append(f"<h3 id='id_g_{count}'>Group '{group}' (elapsed {group_time:.2} seconds), "
@@ -83,7 +104,7 @@ def generate(file_name: str, test_suite: TestSuite):
         html_lines.append('</ol>\n')
     _add_all_listeners(html_lines, count)
     html_lines.append('</body>\n</html>')
-    _write_file(file_name, html_lines)
+    return html_lines
 
 
 def _write_file(file_name: str, lines: list):
@@ -97,6 +118,13 @@ def _add_all_listeners(lines: List[str], count: int):
 
 
 def _add_test_info(test: Test, lines: List[str], count: int):
+    """
+    Add info about specific test
+    :param test: test to ger info from
+    :param lines: list of strings og html file
+    :param count: id for html tag
+    :return: None
+    """
     time_ = test.duration()
     if time_ < 0.01:
         time_ = 0.0
@@ -125,6 +153,5 @@ def _add_test_info(test: Test, lines: List[str], count: int):
         f"<p>Duration: {time_:.3} seconds</p>"
         f"{'-' * 30}\n"
         f"{traceback}\n"
-        f"<p style='color:red'>Exception: {str(test.reason).replace('<', '&lt;')}</p>"
-        f"</div>\n"
-        f"</li>\n")
+        f"<p style='color:red'><strong>Exception:</strong> {str(test.reason).replace('<', '&lt;')}</p>"
+        f"</div>\n</li>\n")
