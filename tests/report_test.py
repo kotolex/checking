@@ -1,6 +1,8 @@
 from unittest import main, TestCase
 
 import checking.helpers.report as rep
+from checking.annotations import test
+from checking.helpers.report import add_text, add_img
 from checking.classes.basic_suite import TestSuite
 from checking.classes.basic_test import Test
 from tests.fixture_behaviour_test import clear
@@ -59,6 +61,42 @@ class TestReport(TestCase):
         self.assertTrue('Statistics' in result)
         self.assertTrue("Group 'one'" in result)
         self.assertTrue("test" in result)
+
+    def test_add_text(self):
+        def _():
+            add_text("A", "B")
+
+        clear()
+        test(_)
+        t = list(TestSuite.get_instance().groups.values())[0].tests[0]
+        t.run()
+        self.assertEqual({'A': 'B'}, t.report_params)
+
+    def test_add_img(self):
+        def _():
+            add_img("A", b"B")
+
+        clear()
+        test(_)
+        t = list(TestSuite.get_instance().groups.values())[0].tests[0]
+        t.run()
+        self.assertEqual({b'B': 'A'}, t.report_params)
+
+    def test_non_empty_suite_with_text(self):
+        clear()
+        t = TestSuite.get_instance()
+        test = Test('test', print)
+        test.status = 'success'
+        test.report_params['A']='B'
+        t.start_suite()
+        t.get_or_create("one").test_results.append(test)
+        t.get_or_create("one").tests.append(test)
+        t.name = "Test"
+        t.stop_suite()
+        lines = rep._generate_html(t)
+        result = ''.join(lines)
+        self.assertTrue("test" in result)
+        self.assertTrue("Report parameter <b>'A'</b>: B" in result)
 
 
 if __name__ == '__main__':
