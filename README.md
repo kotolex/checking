@@ -16,6 +16,7 @@ Key Features:
  * flexible configuration of both tests and their groups, the ability to group tests and run only selected groups
  * the ability to use both the built-in results processing tool and write your own one
  * the ability to group, stop test by timeout, parallel launch, mocking without installing extra plugins
+ * the ability to generate html-report after suite
 
 
 ### Installation ###
@@ -245,9 +246,10 @@ def try_prov(it):
 If you gonna use provider more than once in your test-suite and do not want to get its data from resource of some
 kind (database, filesystem, http-request etc.), you can use parameter ``cached=True``. In that case, provider get all 
 data only once at first run and stores it in memory for all other tests to run. But make sure you not get too much 
-memory for your data and be smart whaen use it in parallel mode. DATA_FILE can use this parameter too.
+memory for your data and be smart when use it in parallel mode. DATA_FILE can use this parameter too.
 
-```#!python
+```
+#!python
 from checking import *
 
 DATA_FILE('data.csv', provider_name='csv', cached=True) # Reads file only once and stores all values
