@@ -40,6 +40,7 @@ BASE = '''<!DOCTYPE html>
 <h1>Info</h1>
 <p><b>Suite name:</b> #suite_name</p>
 '''
+# Name for folder with results
 FOLDER = 'test_results'
 
 
@@ -86,16 +87,12 @@ def _add_to_test(name: str, value: Union[bytes, str]):
         del frame
 
 
-def generate(test_suite: TestSuite, folder_name: str = 'test_results'):
+def generate(test_suite: TestSuite):
     """
     The only public method to generate html report with all test results
-    :param folder_name: name for folder with results
     :param test_suite: suite to save results to report
     :return: None
     """
-    global FOLDER
-    if folder_name != FOLDER:
-        FOLDER = folder_name
     if not is_file_exists(FOLDER):
         mkdir(FOLDER)
     html = _generate_html(test_suite)

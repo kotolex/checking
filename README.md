@@ -600,6 +600,8 @@ If specified, **-d** and **-f** options will be ignored!
 
 **-r**    runs all tests in random order (priority will be ignored)
 
+**-R**    generate html-report with results of the tests
+
 
 ### Options File Parameters ###
 
@@ -621,7 +623,9 @@ In current working folder a file will appear with content like:
 "threads": 1, 
 "dry_run": false, 
 "filter_by_name": "",
-"random_order": false}
+"random_order": false,
+"generate_report": false
+}
 ```
 Changing this parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.
 Some rules for parameters:

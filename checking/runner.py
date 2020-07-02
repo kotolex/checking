@@ -6,6 +6,7 @@ from .classes.basic_test import Test
 from .classes.basic_case import TestCase
 from .classes.basic_suite import TestSuite
 from .classes.basic_group import TestGroup
+from checking.helpers.report import generate
 from .classes.listeners.basic import Listener
 from .classes.exc_thread import run_with_timeout
 from .classes.listeners.default import DefaultListener
@@ -20,7 +21,7 @@ common_parameters: Dict[str, Any] = {}
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
           threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None,
-          random_order: bool = False, **kwargs):
+          random_order: bool = False, generate_report: bool = False, **kwargs):
     """
     The main function of tests start
 
@@ -39,6 +40,8 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     :param dry_run: if True runs test-suite with fake function except of real tests and fixtures, can be useful to
     find out order, number of tests, params of provider etc.
     :param filter_by_name if specified - runs only tests with name containing this parameter
+    :param random_order if specified - runs tests inside each group in random order
+    :param generate_report if specified - creates html report with the results in test folder
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
@@ -63,7 +66,7 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
         _dry_run(test_suite)
     # Check if all used provider names are found
     _check_data_providers(test_suite)
-    _run(test_suite, threads, random_order)
+    _run(test_suite, threads, random_order, generate_report)
 
 
 def _dry_run(test_suite):
@@ -84,7 +87,7 @@ def _dry_run(test_suite):
             test.test = fake
 
 
-def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False):
+def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False, generate_report: bool = False):
     for group in test_suite.groups.values():
         if random_order:
             group.shuffle_tests()
@@ -109,6 +112,8 @@ def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False):
     finally:
         test_suite.stop_suite()
         _listener.on_suite_ends(test_suite)
+        if generate_report:
+            generate(test_suite)
 
 
 def _run_group_before_and_after_at_separate_thread(group: TestGroup):
@@ -329,4 +334,3 @@ def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
         _listener.on_fixture_failed(group_name, fixture_type, error)
         is_failed = True
     return is_failed
-

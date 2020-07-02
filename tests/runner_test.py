@@ -238,9 +238,9 @@ class RunnerTest(TestCase):
         group.add_test(test_case3)
         group.add_test(test_case4)
         group.add_test(test_case5)
-        TestSuite.get_instance().groups['group']=group
+        TestSuite.get_instance().groups['group'] = group
         r._run(TestSuite.get_instance(), 1, random_order=True)
-        runned  = [test.name for test in group.test_results]
+        runned = [test.name for test in group.test_results]
         self.assertNotEqual(['one', 'two', 'three', 'four', 'five'], runned)
 
 
