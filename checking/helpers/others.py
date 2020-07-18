@@ -50,3 +50,24 @@ def fake(*args):
     :return: None
     """
     pass
+
+
+def format_seconds(seconds: float) -> str:
+    """
+    Creates string representation of seconds count, which format it to hours and/or minutes if possible
+    :param seconds: amount of seconds
+    :return: str
+    """
+    if not seconds // 60:
+        return f'{seconds:.2f} seconds'
+    hours = ''
+    if seconds // 3600:
+        hours = f'{int(seconds // 3600)} hour(s) '
+        seconds = seconds - ((seconds // 3600) * 3600)
+    minutes = int(seconds // 60)
+    seconds = seconds - minutes * 60
+    return f'{hours}{minutes} minute(s) and {seconds:.2f} seconds'
+
+
+if __name__ == '__main__':
+    print(format_seconds(4135))

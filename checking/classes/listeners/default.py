@@ -4,6 +4,7 @@ from .basic import Listener
 from ..basic_test import Test
 from ..basic_suite import TestSuite
 from checking.helpers.others import short
+from checking.helpers.others import format_seconds
 from checking.helpers.others import print_splitter_line
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 
@@ -42,7 +43,7 @@ class DefaultListener(Listener):
             print()
         print()
         print("=" * 30)
-        elapsed = test_suite.suite_duration()
+        elapsed = format_seconds(test_suite.suite_duration())
         success_count = len(test_suite.success())
         f_count = len(test_suite.failed())
         b_count = len(test_suite.broken())
@@ -50,7 +51,7 @@ class DefaultListener(Listener):
         all_count = f_count + b_count + i_count + success_count
         print(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
               f'{b_count}, ignored tests: {i_count}')
-        print(f'Time elapsed: {elapsed:.2f} seconds.')
+        print(f'Time elapsed: {elapsed}.')
         if self.verbose == 3:
             if f_count:
                 print(f'\nFailed tests are:')

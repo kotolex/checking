@@ -8,7 +8,7 @@ from checking.classes.soft_assert import SoftAssert
 from checking.annotations import *
 from tests.fixture_behaviour_test import clear
 from checking.asserts import *
-from checking.helpers.others import short
+from checking.helpers.others import short, format_seconds
 from checking.context import *
 
 
@@ -274,6 +274,27 @@ class BehaviourTest(TestCase):
         self.assertEqual(4, len(TestSuite.get_instance().success()))
         self.assertEqual(0, len(TestSuite.get_instance().failed()))
         self.assertEqual(4, TestSuite.get_instance().tests_count())
+
+    def test_format_seconds_with_hour(self):
+        self.assertEqual(format_seconds(4135), "1 hour(s) 8 minute(s) and 55.00 seconds")
+
+    def test_format_seconds_with_hours(self):
+        self.assertEqual(format_seconds(14135), "3 hour(s) 55 minute(s) and 35.00 seconds")
+
+    def test_format_seconds_with_zero(self):
+        self.assertEqual(format_seconds(0), "0.00 seconds")
+
+    def test_format_seconds_with_part_of_second(self):
+        self.assertEqual(format_seconds(0.23), "0.23 seconds")
+
+    def test_format_seconds_with_long_part_of_second(self):
+        self.assertEqual(format_seconds(0.23456789), "0.23 seconds")
+
+    def test_format_seconds_with_minute(self):
+        self.assertEqual(format_seconds(60), "1 minute(s) and 0.00 seconds")
+
+    def test_format_seconds_with_minute_and_second(self):
+        self.assertEqual(format_seconds(61), "1 minute(s) and 1.00 seconds")
 
 
 if __name__ == '__main__':

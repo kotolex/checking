@@ -4,7 +4,7 @@ from threading import currentThread
 from .basic import Listener
 from ..basic_test import Test
 from ..basic_suite import TestSuite
-from checking.helpers.others import short, str_date_time
+from checking.helpers.others import short, format_seconds, str_date_time
 
 
 class DefaultFileListener(Listener):
@@ -41,7 +41,7 @@ class DefaultFileListener(Listener):
 
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)
-        elapsed = test_suite.suite_duration()
+        elapsed = format_seconds(test_suite.suite_duration())
         success_count = len(test_suite.success())
         f_count = len(test_suite.failed())
         b_count = len(test_suite.broken())
@@ -51,7 +51,7 @@ class DefaultFileListener(Listener):
         logger.info(f'Test-suite "{test_suite.name}" finished!')
         logger.info(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
                     f'{b_count}, ignored tests: {i_count}')
-        logger.info(f'Time elapsed: {elapsed:.2f} seconds.')
+        logger.info(f'Time elapsed: {elapsed}.')
 
     def on_test_starts(self, test: Test):
         super().on_test_starts(test)
