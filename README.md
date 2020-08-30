@@ -60,11 +60,11 @@ def checks_basic_asserts():
     is_true('1', 'Error message') # checks, if value is True
     is_false([], 'Error message') # checks, if value is False
     equals(1, 1, 'Error message') # checks, if two objects are equal (==)
-    not_equals(1, 2, 'Error message') # checks, if two objects are equal (!=)
+    not_equals(1, 2, 'Error message') # checks, if two objects are NOT equal (!=)
     is_none(None, 'Error message') # checks, if object is None
     not_none('1', 'Error message') # checks, if object is not None
     contains(1, [1, 2, 3], 'Error message') # checks, if the second argument contains the first arg
-    not_contains(4, [1, 2, 3], 'Error message') # checks, if the second argument does not contains the first arg
+    not_contains(4, [1, 2, 3], 'Error message') # checks, if the second argument does not contain the first arg
     is_zero(0, 'Error message') # checks, if argument is equal to 0 (it can be int or float)
     is_positive(1, 'Error message') # checks, if argument is bigger than 0 (for int or float), or len of argument is positive(for Sequence)
     is_negative(-1, 'Error message') # checks, if argument is smaller then 0 (it can be int or float)
@@ -579,6 +579,177 @@ expression like `stub.any_attribute.returns('test')`.
 
 So, if you need to have some attribute (not method) on stub, you just use `stub.attr=10`, but for methods just use expression above.
 
+### Function start() to runs test at module ###
+
+You can execute all test at current module using function start(). For example:
+```
+#!python
+from checking import *
+
+@test
+def some_check():
+    equals(4, 2+2)
+
+
+if __name__ == '__main__':
+    start(3) # Here we run our test function some_check
+
+```
+There are parameters to run your tests in different ways:
+
+**suite_name**  - name of the test-suite, to use in reports or in logs
+
+**listener** - object of Listener class, test listener, is the way to work with test results and execution
+DefaultListener is used by default. If set, then the verbose parameter is ignored (the one in the listener is used).
+
+**verbose** is the report detail, 0 - briefly (only dots and 1 letter), 1 - detail, indicating only failed
+tests, 2 - detail, indicating successful and fallen tests, 3 - detail and at the end, a list of fallen and broken ones
+If verbose is not between 0 and 3, then 0 is accepted
+
+Example (name and verbose)
+```#!python
+from checking import *
+
+
+@test
+def some_check():
+    equals(4, 2 + 2)
+
+
+@test
+def some_check_two():
+    equals(2, 1 + 1)
+
+
+@test
+def failed():
+    equals(5, 2 + 2)  # Will fail
+
+
+@test
+def broken():
+    int('a')  # Will be broken
+
+
+if __name__ == '__main__':
+    start(suite_name='My Suite', verbose=0)
+
+```
+This code will gave output (mention dots and chars!):
+```text
+Starting suite "My Suite"
+..FB
+
+==============================
+Total tests: 4, success tests: 2, failed tests: 1, broken tests: 1, ignored tests: 0
+Time elapsed: 0.00 seconds.
+==============================
+```
+If you will use parameter verbose=3 in example above, result will be:
+
+```text
+Starting suite "My Suite"
+----------
+Test "__main__.some_check"  SUCCESS!
+----------
+Test "__main__.some_check_two"  SUCCESS!
+----------
+Test "__main__.failed"  FAILED!
+File "\checking\runner.py", line 265, in _run_test
+-->    test.run()
+File "your_module_with_test_path", line 16, in failed
+-->    equals(5, 2 + 2)  # Will fail
+Objects are not equal!
+Expected:"5" <int>
+Actual  :"4" <int>!
+----------
+Test "__main__.broken"  BROKEN!
+File "\checking\runner.py", line 265, in _run_test
+-->    test.run()
+File "your_module_with_test_path", line 21, in broken
+-->    int('a')  # Will be broken
+invalid literal for int() with base 10: 'a'
+
+==============================
+Total tests: 4, success tests: 2, failed tests: 1, broken tests: 1, ignored tests: 0
+Time elapsed: 0.00 seconds.
+
+Failed tests are:
+     __main__.failed 
+
+Broken tests are:
+     __main__.broken 
+==============================
+```
+**groups** is the list of test-group names to run. Only tests with that group will be run.
+
+```#!python
+from checking import *
+
+
+@test(groups=('api',))
+def api_check():
+    equals(4, 2 + 2)
+
+
+@test(groups=('ui',))
+def ui_check():
+    equals(2, 1 + 1)
+
+
+if __name__ == '__main__':
+    start(verbose=3, groups=['api'])
+```
+When you runs this example, only function api_check will be executed, because we specify groups to run.
+
+
+**params**  is the dictionary of parameters available in all tests (general run parameters)
+
+```#!python
+from checking import *
+
+
+@test
+def api_check():
+    equals(4, 2 + common_parameters['value']) # Here we use common_parameters - dictionary available from all tests
+
+
+if __name__ == '__main__':
+    start(verbose=3, params={'value': 2}) # Here we adds a parameter to common_parameters
+```
+
+**threads** is the number of threads to run tests, by default is 1. Each group can run in a separate thread if 
+necessary. This is an experimental feature and it can be useful only for tests NOT performing any complex calculations (CPU bound).
+It is best to use this parameter (more than 1) for tests related to the use of I / O  operations - disk work, network requests. Obey the GIL!
+
+**dry_run** if True runs test-suite with fake function except of real tests and fixtures, can be useful to find out order, 
+number of tests, params of provider etc. No real tests or fixtures will be executed!
+
+**filter_by_name** if specified - runs only tests with name **containing** this parameter
+
+```#!python
+from checking import *
+
+
+@test
+def api_check():
+    equals(4, 2 + 2)
+
+
+@test
+def ui_check():
+    equals(2, 1 + 1)
+
+
+if __name__ == '__main__':
+    start(verbose=3, filter_by_name='ui')
+
+```
+In example above only function ui_name will be runs, because name of the function (ui_check) contains 'ui'.
+
+**random_order** if True - runs tests inside each group in random order. Can be useful to make sure your tests really independent as they should be.
+
+**generate_report** if True - creates html report with the results in test folder. Experimental!
 
 ### Command Line Options ###
 
