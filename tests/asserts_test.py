@@ -292,6 +292,17 @@ class AssertsTest(TestCase):
         with self.assertRaises(TestBrokenException):
             is_empty(1)
 
+    def test_is_not_empty(self):
+        is_not_empty([1, ])
+
+    def test_is_not_empty_fail(self):
+        with self.assertRaises(AssertionError):
+            is_not_empty([])
+
+    def test_is_not_empty_broken(self):
+        with self.assertRaises(TestBrokenException):
+            is_not_empty(1)
+
 
 if __name__ == '__main__':
     main()

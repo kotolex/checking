@@ -179,13 +179,20 @@ def is_empty(container: Sized, message: str = None):
     :return: None
     """
     _message = _mess(message)
-    try:
-        length = len(container)
-        if length > 0:
-            raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is not empty!')
-    except TypeError:
-        raise TestBrokenException(f'"{short(container)}"<{type(container).__name__}> '
-                                  f'has no len and cant be checked for emptiness!')
+    if _get_length_if_sized(container):
+        raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is not empty!')
+
+
+def is_not_empty(container: Sized, message: str = None):
+    """
+    Function checks the container is NOT empty (len>0)
+    :param message: optional message
+    :param container: any object which has size
+    :return: None
+    """
+    _message = _mess(message)
+    if not _get_length_if_sized(container):
+        raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is empty!')
 
 
 def __contains_or_not(part, whole, is_contains: bool = True, message: str = None):
@@ -209,6 +216,20 @@ def __contains_or_not(part, whole, is_contains: bool = True, message: str = None
 
 def _mess(message: str) -> str:
     return f'{message}\n' if message else ''
+
+
+def _get_length_if_sized(container: Sized) -> int:
+    """
+    Returns length of container or raise Exception
+    :param container: Sized object
+    :return: length of object
+    :raises: TestBrokenException if object has ho length
+    """
+    try:
+        return len(container)
+    except TypeError:
+        raise TestBrokenException(f'"{short(container)}"<{type(container).__name__}> '
+                                  f'has no len and cant be checked for emptiness!')
 
 
 def _check_argument_is_number(actual, name: str):
