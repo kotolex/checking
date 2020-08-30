@@ -68,6 +68,7 @@ def checks_basic_asserts():
     is_zero(0, 'Error message') # checks, if argument is equal to 0 (it can be int or float)
     is_positive(1, 'Error message') # checks, if argument is bigger than 0 (for int or float), or len of argument is positive(for Sequence)
     is_negative(-1, 'Error message') # checks, if argument is smaller then 0 (it can be int or float)
+    is_empty([], 'Error message') # checks, if object(Sized type) length =0, so collection is empty
 
 ```
 Messages in all asserts are optional, but it strongly recommended to use them!

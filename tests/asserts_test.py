@@ -36,7 +36,7 @@ class AssertsTest(TestCase):
         is_positive('1')
 
     def test_is_positive_list(self):
-        is_positive([1,2])
+        is_positive([1, 2])
 
     def test_is_positive_fail(self):
         with self.assertRaises(AssertionError):
@@ -79,7 +79,8 @@ class AssertsTest(TestCase):
     def test_equals_failed_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2, 'message')
-        self.assertEqual('message\nObjects are not equal!\nExpected:"1" <int>\nActual  :"2" <int>!', e.exception.args[0])
+        self.assertEqual('message\nObjects are not equal!\nExpected:"1" <int>\nActual  :"2" <int>!',
+                         e.exception.args[0])
 
     def test_is_none_ok(self):
         is_none(None)
@@ -216,19 +217,80 @@ class AssertsTest(TestCase):
         is_true(True)
         is_true(1 == 1)
         is_true([1, 2])
+        is_true(1)
+        is_true(-1)
+        is_true({'a': 1})
+        is_true({1, })
+        is_true(' ')
 
-    def test_is_true_failed(self):
+    def test_is_true_failed_false(self):
         with self.assertRaises(AssertionError):
             is_true(False)
+
+    def test_is_true_failed_None(self):
+        with self.assertRaises(AssertionError):
+            is_true(None)
+
+    def test_is_true_failed_empty_str(self):
+        with self.assertRaises(AssertionError):
+            is_true('')
+
+    def test_is_true_failed_empty_list(self):
+        with self.assertRaises(AssertionError):
+            is_true([])
+
+    def test_is_true_failed_zero(self):
+        with self.assertRaises(AssertionError):
+            is_true(0)
 
     def test_is_false(self):
         is_false(False)
         is_false(1 == 2)
         is_false([])
+        is_false('')
+        is_false(0)
+        is_false(0.0)
+        is_false({})
+        is_false(set())
+        is_false(None)
 
-    def test_is_false_failed(self):
+    def test_is_false_failed_true(self):
         with self.assertRaises(AssertionError):
             is_false(True)
+
+    def test_is_false_failed_positive(self):
+        with self.assertRaises(AssertionError):
+            is_false(1)
+
+    def test_is_false_failed_negative(self):
+        with self.assertRaises(AssertionError):
+            is_false(-1)
+
+    def test_is_false_failed_non_empty_str(self):
+        with self.assertRaises(AssertionError):
+            is_false(' ')
+
+    def test_is_false_failed_non_empty_list(self):
+        with self.assertRaises(AssertionError):
+            is_false([1, ])
+
+    def test_is_false_failed_some_class(self):
+        class NonNone:
+            pass
+
+        with self.assertRaises(AssertionError):
+            is_false(NonNone())
+
+    def test_is_empty(self):
+        is_empty([])
+
+    def test_is_empty_fail(self):
+        with self.assertRaises(AssertionError):
+            is_empty([1, ])
+
+    def test_is_empty_broken(self):
+        with self.assertRaises(TestBrokenException):
+            is_empty(1)
 
 
 if __name__ == '__main__':

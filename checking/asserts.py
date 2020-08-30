@@ -1,4 +1,4 @@
-from typing import Any, Union, Sequence
+from typing import Any, Union, Sequence, Sized
 
 from .helpers.others import short
 from .exceptions import TestBrokenException
@@ -169,6 +169,23 @@ def is_negative(actual: Union[int, float]):
     _check_argument_is_number(actual, 'is_negative')
     if actual >= 0:
         raise AssertionError(f'"{short(actual)}"<{type(actual).__name__}> is not negative!')
+
+
+def is_empty(container: Sized, message: str = None):
+    """
+    Function checks the container is empty (len==0)
+    :param message: optional message
+    :param container: any object which has size
+    :return: None
+    """
+    _message = _mess(message)
+    try:
+        length = len(container)
+        if length > 0:
+            raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is not empty!')
+    except TypeError:
+        raise TestBrokenException(f'"{short(container)}"<{type(container).__name__}> '
+                                  f'has no len and cant be checked for emptiness!')
 
 
 def __contains_or_not(part, whole, is_contains: bool = True, message: str = None):
