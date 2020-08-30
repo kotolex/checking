@@ -152,12 +152,8 @@ def is_positive(actual: Union[int, float, Sequence]):
         if actual <= 0:
             raise AssertionError(f'{actual} is not positive!')
     else:
-        try:
-            len_ = len(actual)
-            if len_ <= 0:
-                raise AssertionError(f'Length of "{short(actual)}"<{type(actual).__name__}> is not positive!')
-        except TypeError:
-            raise TestBrokenException(f'Object "{short(actual)}"<{type(actual).__name__}> has no len!')
+        if _get_length_if_sized(actual) <= 0:
+            raise AssertionError(f'Length of "{short(actual)}"<{type(actual).__name__}> is not positive!')
 
 
 def is_negative(actual: Union[int, float]):

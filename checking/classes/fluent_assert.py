@@ -26,7 +26,38 @@ class FluentAssert:
         # Ссылка на самого себя для читаемой последовательности проверок
         self.AND = self
 
-    def is_a(self, obj: Any):
+    @property
+    def size(self):
+        """
+        Switch all following checks to the length of actual object
+        :return: FluentAssert
+        :raises: TestBrokenException if object has no length
+        """
+        self._check_has_len(self.__actual)
+        return FluentAssert(len(self.__actual))
+
+    def has_attribute(self, name: str):
+        """
+        Check, if actual object has attribute with given name
+        :param name: string name of the attribute
+        :return: FluentAssert
+        """
+        if not hasattr(self.__actual, name):
+            raise AssertionError(f'"{self.str}"{self._t} has no attribute "{short(name)}"')
+        return self
+
+    def attribute(self, name: str):
+        """
+        Switch all following checks to attribute of the object or raise exception, if object has no attribute with
+        given name
+        :param name: name of the attribute
+        :return: FluentAssert
+        :raises: AssertionError if object has no attribute
+        """
+        self.has_attribute(name)
+        return FluentAssert(getattr(self.__actual, name))
+
+    def same_as(self, obj: Any):
         """
         Check, if the instance and the current one are the same. Similarly of checking a is b.
         :param obj: is the instance for checking
@@ -36,7 +67,7 @@ class FluentAssert:
             raise AssertionError(f'"{self.str}"{self._t} is not "{short(obj)}"{type(obj)}')
         return self
 
-    def is_not(self, obj: Any):
+    def not_same_as(self, obj: Any):
         """
         Check, if the instance and the current one are not the same. Similarly of checking a is not b.
         :param obj: is the instance for checking
@@ -56,6 +87,18 @@ class FluentAssert:
         if issubclass(type(self.__actual), type_):
             return self
         raise AssertionError(f'"{self.str}"{self._t} is not sub-class of {type_}')
+
+    def type_is(self, type_: Type):
+        """
+        Check, if the  actual object is instance of given class.
+        :param type_: class to check
+        :return: FluentAssert
+        :raises: AssertionError if object is not instanse of given type
+        """
+        self._check_is_type(type_)
+        if isinstance(self.__actual, type_):
+            return self
+        raise AssertionError(f'"{self.str}"{self._t} is not of type {type_}')
 
     def is_none(self):
         is_none(self.__actual)
@@ -81,9 +124,29 @@ class FluentAssert:
         not_equals(self.__actual, obj)
         return self
 
+    def is_empty(self):
+        is_empty(self.__actual)
+        return self
+
+    def is_not_empty(self):
+        is_not_empty(self.__actual)
+        return self
+
+    def is_positive(self):
+        is_positive(self.__actual)
+        return self
+
+    def is_negative(self):
+        is_negative(self.__actual)
+        return self
+
+    def is_zero(self):
+        is_zero(self.__actual)
+        return self
+
     def less_than(self, obj: Any):
         """
-        Checking that the checking object is less then current.
+        Checking that the checking object is less than current.
         :param obj: is the object for comparing
         :return:
         """
@@ -98,58 +161,19 @@ class FluentAssert:
             raise AssertionError(f'"{self.str}" is not greater than "{short(obj)}"!')
         return self
 
-    def length_equal_to_length_of(self, obj: Sized):
-        self._check_has_len(self.__actual)
+    def equal_to_length_of(self, obj: Sized):
         self._check_has_len(obj)
-        len_ = len(self.__actual)
-        len_obj = len(obj)
-        if len_ != len_obj:
-            raise AssertionError(f'Length of object is {len_}, it is not equal to {len_obj}')
+        self.equal(len(obj))
         return self
 
-    def length_equal_to(self, obj: int):
-        self._check_has_len(self.__actual)
-        len_ = len(self.__actual)
-        if type(obj) is not int:
-            raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
-        if len_ != obj:
-            raise AssertionError(f'Length of object is {len_}, it is not equal to {obj}')
-        return self
-
-    def length_less_than_length_of(self, obj: Sized):
-        self._check_has_len(self.__actual)
+    def less_than_length_of(self, obj: Sized):
         self._check_has_len(obj)
-        len_ = len(self.__actual)
-        len_obj = len(obj)
-        if len_ >= len_obj:
-            raise AssertionError(f'Length of "{self.str}" is {len_}, it is not less of "{obj}"({len_obj})')
+        self.less_than(len(obj))
         return self
 
-    def length_less_than(self, obj: int):
-        self._check_has_len(self.__actual)
-        len_ = len(self.__actual)
-        if type(obj) is not int:
-            raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
-        if len_ >= obj:
-            raise AssertionError(f'Length of object is {len_}, it is not less than {obj}')
-        return self
-
-    def length_greater_than_length_of(self, obj: Sized):
-        self._check_has_len(self.__actual)
+    def greater_than_length_of(self, obj: Sized):
         self._check_has_len(obj)
-        len_ = len(self.__actual)
-        len_obj = len(obj)
-        if len_ <= len_obj:
-            raise AssertionError(f'Length of "{self.str}" is {len_}, it is not greater of "{short(obj)}"({len_obj})')
-        return self
-
-    def length_greater_than(self, obj: int):
-        self._check_has_len(self.__actual)
-        len_ = len(self.__actual)
-        if type(obj) is not int:
-            raise TestBrokenException(f'Length can be only int type, not {type(obj)}')
-        if len_ <= obj:
-            raise AssertionError(f'Length of object is {len_}, it is not greater than {obj}')
+        self.greater_than(len(obj))
         return self
 
     def is_sorted(self, reverse_order: bool = False):

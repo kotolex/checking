@@ -160,19 +160,53 @@ will be raise.
 
 Fluent assert is just a sugar to make chains of checks for the object; they are simple, readable, but it is NOT a soft asserts!
 If one of the checks will fail - test stops!
-Fluent asserts have analogues of the basic asserts, but also have their own types; you can find
-them all in checking/classes/fluent_asserts.py
+Fluent asserts have analogues of the basic asserts, but also have their own types:
 
 ```
 #!python
 
 @test
-def check_list_valid():
+def check_fluents():
     my_list = get_my_list_somethere()
 
-    verify(my_list).is_not_none().AND.is_a(list).AND.contains(2).AND.is_sorted()
+    verify(my_list).is_not_none().AND.type_is(list).AND.contains(2).AND.is_sorted()
+    # check our object is not None, is instance of list, contains 2 and sorted
+    
+    some_object = SomeClass()
+    same_object = some_object
+    other_object = SomeClass()
+    verify(some_object).same_as(same_object).not_same_as(other_object)
+    # check objects are the same, and not same with other object
+
+    verify(1).is_in([1,2]).is_not_in({3,4,5}).greater_than(0)
+    # check 1 is in list [1,2], not in set{3,4,5} and greater than 0
 
 ```
+
+There are special "switches" to check size (length) of the object, or one of its attribute. But be careful: 
+after switching to it, you can not returns to original object, checks starts from.
+
+```#!python
+@test
+def switch_to_length():
+    verify([1,2]).size.is_positive().AND.equal(2).AND.greater_than_length_of([1]) 
+    # check length of list is positive and equals 2 and greater than length of [1]
+    # when you use "size" - all following checks work with int (length of object), NOT with list [1,2]
+ 
+
+@test
+def switch_to_attribute():
+    class Example:
+        pass
+    ex = Example()
+    ex.x = 100
+    verify(ex).has_attribute('x').AND.attribute('x').equal(100)
+    # check object has attribute 'x' and it equal to 100
+    # when you use "attribute" - all following checks work with int (x attribute of ex), NOT with ex itself
+    
+
+```
+
 
 
 ## Data Providers

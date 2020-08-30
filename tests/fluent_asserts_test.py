@@ -7,23 +7,23 @@ from checking.exceptions import TestBrokenException
 class FluentAssertTest(TestCase):
 
     def test_is_a_ok(self):
-        verify(1).is_a(1)
-        verify('a').is_a('a')
+        verify(1).same_as(1)
+        verify('a').same_as('a')
         a_l = []
-        verify(a_l).is_a(a_l)
+        verify(a_l).same_as(a_l)
 
     def test_is_a_fail(self):
         with self.assertRaises(AssertionError):
-            verify(1).is_a(2)
+            verify(1).same_as(2)
 
     def test_is_not_ok(self):
-        verify(1).is_not(2)
-        verify(True).is_not(False)
+        verify(1).not_same_as(2)
+        verify(True).not_same_as(False)
 
     def test_is_not_failed(self):
         with self.assertRaises(AssertionError):
             a_l = []
-            verify(a_l).is_not(a_l)
+            verify(a_l).not_same_as(a_l)
 
     def test_is_none(self):
         verify(None).is_none()
@@ -84,30 +84,30 @@ class FluentAssertTest(TestCase):
             verify(2).greater_than('1')
 
     def test_length_equal(self):
-        verify([]).length_equal_to(0)
+        verify([]).size.equal(0)
 
     def test_length_equal_failed(self):
         with self.assertRaises(AssertionError):
-            verify([]).length_equal_to(1)
+            verify([]).size.equal(1)
 
     def test_length_equal_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify(2).length_equal_to(2)
+            verify(2).size.equal(2)
 
     def test_length_equal_broken_not_int(self):
         with self.assertRaises(TestBrokenException):
-            verify([1]).length_equal_to('s')
+            verify([1]).size.equal_to_length_of(2)
 
     def test_length_equal_to_length_of(self):
-        verify([1]).length_equal_to_length_of([2])
+        verify([1]).size.equal_to_length_of([2])
 
     def test_length_equal_to_length_of_failed(self):
         with self.assertRaises(AssertionError):
-            verify([1]).length_equal_to_length_of([2, 3])
+            verify([1]).size.equal_to_length_of([2, 3])
 
     def test_length_equal_to_length_of_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify([1]).length_equal_to_length_of(2)
+            verify([1]).size.equal_to_length_of(2)
 
     def test_is_sorted(self):
         verify([1, 2, 3]).is_sorted()
@@ -168,72 +168,72 @@ class FluentAssertTest(TestCase):
             verify('12').not_contains(2)
 
     def test_length_less_than_length_of(self):
-        verify([1]).length_less_than_length_of([1, 2])
+        verify([1]).size.less_than_length_of([1, 2])
 
     def test_length_less_than_length_of_failed(self):
         with self.assertRaises(AssertionError):
-            verify([1, 2, 3]).length_less_than_length_of([1, 2])
+            verify([1, 2, 3]).size.less_than_length_of([1, 2])
 
     def test_length_less_than_length_of_failed_if_equal(self):
         with self.assertRaises(AssertionError):
-            verify([1, 2]).length_less_than_length_of([1, 2])
+            verify([1, 2]).size.less_than_length_of([1, 2])
 
     def test_length_less_than_length_of_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify([1, 2]).length_less_than_length_of(1)
+            verify([1, 2]).size.less_than_length_of(1)
 
     def test_length_less_than(self):
-        verify([1]).length_less_than(2)
+        verify([1]).size.less_than(2)
 
     def test_length_less_than_failed_if_equal(self):
         with self.assertRaises(AssertionError):
-            verify([1]).length_less_than(1)
+            verify([1]).size.less_than(1)
 
     def test_length_less_than_failed(self):
         with self.assertRaises(AssertionError):
-            verify([1]).length_less_than(0)
+            verify([1]).size.less_than(0)
 
     def test_length_less_than_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify([1]).length_less_than('test')
+            verify([1]).size.less_than('test')
 
     def test_length_less_than_broken_if_no_len(self):
         with self.assertRaises(TestBrokenException):
-            verify(1).length_less_than(2)
+            verify(1).size.less_than(2)
 
     def test_length_greater_than_length_of(self):
-        verify([1]).length_greater_than_length_of([])
+        verify([1]).size.greater_than_length_of([])
 
     def test_length_greater_than_length_of_failed(self):
         with self.assertRaises(AssertionError):
-            verify([1, 2, 3]).length_greater_than_length_of([1, 2, 3])
+            verify([1, 2, 3]).size.greater_than_length_of([1, 2, 3])
 
     def test_length_greater_than_length_of_failed_if_equal(self):
         with self.assertRaises(AssertionError):
-            verify([1, 2]).length_greater_than_length_of([1, 2])
+            verify([1, 2]).size.greater_than_length_of([1, 2])
 
     def test_length_greater_than_length_of_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify([1, 2]).length_greater_than_length_of(1)
+            verify([1, 2]).size.greater_than_length_of(1)
 
     def test_length_greater_than(self):
-        verify([1]).length_greater_than(0)
+        verify([1]).size.greater_than(0)
 
     def test_length_greater_than_failed_if_equal(self):
         with self.assertRaises(AssertionError):
-            verify([1]).length_greater_than(1)
+            verify([1]).size.greater_than(1)
 
     def test_length_greater_than_failed(self):
         with self.assertRaises(AssertionError):
-            verify([1]).length_greater_than(10)
+            verify([1]).size.greater_than(10)
 
     def test_length_greater_than_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify([1]).length_greater_than('test')
+            verify([1]).size.greater_than('test')
 
     def test_length_greater_than_broken_if_no_len(self):
         with self.assertRaises(TestBrokenException):
-            verify(1).length_greater_than(2)
+            verify(1).size.greater_than(2)
 
     def test_is_in_ok(self):
         verify(1).is_in([1, 2])
@@ -262,6 +262,58 @@ class FluentAssertTest(TestCase):
     def test_is_false_failed(self):
         with self.assertRaises(AssertionError):
             verify(1 == 1).is_false()
+
+    def test_size_works(self):
+        verify([1, 2]).size.equal(2)
+
+    def test_size_failed(self):
+        with self.assertRaises(TestBrokenException):
+            verify(1).size
+
+    def test_has_attribute(self):
+        verify('text').has_attribute('upper')
+
+    def test_has_attribute_failed(self):
+        with self.assertRaises(AssertionError):
+            verify('text').has_attribute('x')
+
+    def test_is_empty(self):
+        verify([]).is_empty()
+
+    def test_is_not_empty(self):
+        verify([1, 2]).is_not_empty()
+
+    def test_is_zero(self):
+        verify(0).is_zero()
+
+    def test_is_positive(self):
+        verify(1).is_positive()
+
+    def test_is_positive_list(self):
+        verify([1, 2]).is_positive()
+
+    def test_is_negative(self):
+        verify(-1).is_negative()
+
+    def test_attribute(self):
+        class TestClass:
+            pass
+
+        test_obj = TestClass()
+        test_obj.att = 10
+        verify(test_obj).attribute('att').equal(10)
+
+    def test_attribute_failed(self):
+        with self.assertRaises(AssertionError):
+            verify('text').attribute('x').equal(10)
+
+    def test_type_is(self):
+        verify([1, 2]).type_is(list)
+        verify('text').type_is(str)
+
+    def test_type_is_failed(self):
+        with self.assertRaises(AssertionError):
+            verify('text').type_is(list)
 
 
 if __name__ == '__main__':
