@@ -315,6 +315,26 @@ class FluentAssertTest(TestCase):
         with self.assertRaises(AssertionError):
             verify('text').type_is(list)
 
+    def test_length_less_or_equal_less(self):
+        verify(1).less_or_equal_to(2)
+
+    def test_length_less_or_equal_eq(self):
+        verify(1).less_or_equal_to(1)
+
+    def test_length_less_or_equal_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(1).less_or_equal_to(0)
+
+    def test_length_greater_or_equal_greater(self):
+        verify(1).greater_or_equal_to(0)
+
+    def test_length_greater_or_equal_eq(self):
+        verify(1).greater_or_equal_to(1)
+
+    def test_length_greater_or_equal_failed(self):
+        with self.assertRaises(AssertionError):
+            verify(1).greater_or_equal_to(2)
+
 
 if __name__ == '__main__':
     main()

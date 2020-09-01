@@ -155,10 +155,22 @@ class FluentAssert:
             raise AssertionError(f'"{self.str}" is not less than "{short(obj)}"!')
         return self
 
+    def less_or_equal_to(self, obj: Any):
+        self._check_same_type(obj)
+        if self.__actual > obj:
+            raise AssertionError(f'"{self.str}" is not less and not equal to "{short(obj)}"!')
+        return self
+
     def greater_than(self, obj: Any):
         self._check_same_type(obj)
         if self.__actual <= obj:
             raise AssertionError(f'"{self.str}" is not greater than "{short(obj)}"!')
+        return self
+
+    def greater_or_equal_to(self, obj: Any):
+        self._check_same_type(obj)
+        if self.__actual < obj:
+            raise AssertionError(f'"{self.str}" is not equal and not greater than "{short(obj)}"!')
         return self
 
     def equal_to_length_of(self, obj: Sized):
