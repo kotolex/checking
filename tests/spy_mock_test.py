@@ -1,7 +1,7 @@
 from io import StringIO
 from unittest import TestCase, main
 
-from checking.classes.mocking import Spy, Double, Call, Stub, AttributeWrapper
+from checking.classes.mocking import Spy, TestDouble, Call, Stub, AttributeWrapper
 
 
 class SpyTest(TestCase):
@@ -92,21 +92,21 @@ class SpyTest(TestCase):
         self.assertEqual(22, spy.upper())
 
     def test_double_str(self):
-        d = Double('str')
+        d = TestDouble('str')
         self.assertEqual('Test Double of the "str" <class \'str\'>', str(d))
 
     def test_double_has_same_behaviour(self):
-        d = Double('str')
+        d = TestDouble('str')
         self.assertEqual('STR', d.upper())
 
     def test_double_record_calls(self):
-        d = Double('str')
+        d = TestDouble('str')
         d.upper()
         self.assertTrue(len(d.all_calls()) == 1)
         self.assertEqual(d.all_calls(), [Call('upper')])
 
     def test_double_replace_returns(self):
-        d = Double('str')
+        d = TestDouble('str')
         d.upper.returns('UPS')
         self.assertEqual('UPS', d.upper())
 
@@ -134,29 +134,29 @@ class SpyTest(TestCase):
         self.assertEqual(2, s.upper.call_count())
 
     def test_len_for_str(self):
-        s = Double('str')
+        s = TestDouble('str')
         self.assertEqual(3, len(s))
 
     def test_len_for_str_with_mock(self):
-        s = Double('str')
+        s = TestDouble('str')
         s.len.returns(120)
         self.assertEqual(120, len(s))
 
     def test_bool_for_str(self):
-        s = Double('str')
+        s = TestDouble('str')
         self.assertEqual(True, bool(s))
 
     def test_bool_for_str_with_mock(self):
-        s = Double('str')
+        s = TestDouble('str')
         s.bool.returns(False)
         self.assertEqual(False, bool(s))
 
     def test_iter_for_str(self):
-        s = Double('str')
+        s = TestDouble('str')
         self.assertEqual('str', ''.join(iter(s)))
 
     def test_iter_for_str_with_mock(self):
-        s = Double('str')
+        s = TestDouble('str')
         s.iter.returns(iter('test'))
         self.assertEqual('test', ''.join(iter(s)))
 

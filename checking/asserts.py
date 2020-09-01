@@ -72,7 +72,7 @@ def is_none(obj: Any, message: str = None):
         raise AssertionError(f'{_message}Object {short(obj)}<{type(obj).__name__}> is not None!')
 
 
-def not_none(obj: Any, message: str = None):
+def is_not_none(obj: Any, message: str = None):
     """
     It checks that the object is not None, the inverse function for is_none.
     :param obj: is the checked object

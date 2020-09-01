@@ -28,7 +28,7 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     :param suite_name: name of the test-suite
     :param listener: is test listener, DefaultListener is used by default. If set, then the verbose parameter is ignored
     (the one in the listener is used).
-    :param verbose: is the report detail, 0 - briefly (only dots and 1 letter), 1 - detail, indicating only dropped
+    :param verbose: is the report detail, 0 - briefly (only dots and 1 letter), 1 - detail, indicating only failed
     tests, 2 - detail, indicating successful and fallen, 3 - detail and at the end, a list of fallen and broken ones
     If not between 0 and 3, then 0 is accepted
     :param groups: is the list of group names to run, to run only the tests you need

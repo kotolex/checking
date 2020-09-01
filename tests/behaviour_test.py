@@ -67,7 +67,7 @@ class BehaviourTest(TestCase):
             return [0, 1, 2]
 
         clear()
-        data(name='three')(_)
+        provider(name='three')(_)
         test(data_provider='three')(_fn)
         start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
@@ -80,7 +80,7 @@ class BehaviourTest(TestCase):
             return [0, 1, 2, 3]
 
         clear()
-        data(name='four')(_)
+        provider(name='four')(_)
         test(data_provider='four')(_fn)
         start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
@@ -117,7 +117,7 @@ class BehaviourTest(TestCase):
 
     def test_timeout_ok_with_data(self):
         clear()
-        data(name='three')(return2)
+        provider(name='three')(return2)
         test(timeout=1, data_provider="three")(data_time)
         start(listener=Listener(0))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
@@ -127,7 +127,7 @@ class BehaviourTest(TestCase):
 
     def test_timeout_failed_with_data(self):
         clear()
-        data(name='three')(return2)
+        provider(name='three')(return2)
         test(timeout=1, data_provider="three")(long_data)
         start(listener=Listener(0))
         self.assertEqual(3, len(TestSuite.get_instance().broken()))
@@ -265,7 +265,7 @@ class BehaviourTest(TestCase):
             return [0, 1]
 
         clear()
-        data(cached=True)(ca_)
+        provider(cached=True)(ca_)
         test(data_provider="ca_")(_fn)
         test(data_provider="ca_", name='teo')(_fn)
         start(listener=Listener(0))

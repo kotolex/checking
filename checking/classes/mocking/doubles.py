@@ -120,7 +120,7 @@ class Spy(Observer):
         return [arg for call in self.chain for arg in call.args]
 
 
-class Double(Spy):
+class TestDouble(Spy):
     """
     The full test-double (twin of the object), the main difference with Spy is behaviour. Behaviour stays the same
     as original object has, but all calls fixed and you can change return result of the methods.

@@ -2,7 +2,7 @@ from unittest import TestCase, main
 from checking.classes.listeners.basic import Listener
 from checking.classes.basic_test import Test
 from checking import runner as r_
-from checking.annotations import test, data, before, before_suite
+from checking.annotations import test, provider, before, before_suite
 from tests.fixture_behaviour_test import clear
 
 COUNT = 0
@@ -97,7 +97,7 @@ class ListenerTest(TestCase):
         listener_ = Listener(0)
         listener_.on_ignored_with_provider = inc
         count = COUNT
-        data(name='prov')(wrong)
+        provider(name='prov')(wrong)
         test(data_provider='prov')(lambda x: x)
         r_.start(listener=listener_)
         self.assertEqual(count + 1, COUNT)

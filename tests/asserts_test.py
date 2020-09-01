@@ -96,16 +96,16 @@ class AssertsTest(TestCase):
         self.assertEqual('message\nObject 1<int> is not None!', e.exception.args[0])
 
     def test_not_none_ok(self):
-        not_none(1)
+        is_not_none(1)
 
     def test_not_none_failed(self):
         with self.assertRaises(AssertionError) as e:
-            not_none(None)
+            is_not_none(None)
         self.assertEqual('Unexpected None!', e.exception.args[0])
 
     def test_not_none_failed_with_message(self):
         with self.assertRaises(AssertionError) as e:
-            not_none(None, 'message')
+            is_not_none(None, 'message')
         self.assertEqual('message\nUnexpected None!', e.exception.args[0])
 
     def test_waiting_exception_with_BaseException_failed(self):

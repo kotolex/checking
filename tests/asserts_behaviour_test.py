@@ -102,13 +102,13 @@ class TestAssertsBehaviour(TestCase):
         self.assertEqual(1, len(TestSuite.get_instance().failed()))
 
     def test_not_none_positive(self):
-        _run(lambda: not_none(1))
+        _run(lambda: is_not_none(1))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
         self.assertEqual(1, len(TestSuite.get_instance().success()))
         self.assertEqual(0, len(TestSuite.get_instance().failed()))
 
     def test_not_none_negative(self):
-        _run(lambda: not_none(None))
+        _run(lambda: is_not_none(None))
         self.assertEqual(0, len(TestSuite.get_instance().broken()))
         self.assertEqual(0, len(TestSuite.get_instance().success()))
         self.assertEqual(1, len(TestSuite.get_instance().failed()))

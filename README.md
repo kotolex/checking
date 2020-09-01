@@ -32,7 +32,7 @@ Simple example:
 ```
 from checking import *
 
-def my_function_to_test(a,b)
+def my_function_to_test(a,b):
     return a + b
 
 @test
@@ -419,7 +419,7 @@ This function will not be run if there is @before_suite and it failed, except us
 def my_func():
     print('start suite!')
 
-@after_suite(always_run =True)
+@after_suite(always_run=True)
 def another_func():
     print('will be printed, even if before_suite failed!')
 
@@ -447,7 +447,7 @@ def our_weird_function_with_input_inside():
 
 @test
 def mock_builtins_input():
-    with mock_builtins('input', lambda : 'test'): # Now input() just returns 'test', it is not to wait for user input
+    with mock_builtins('input', lambda : 'test'): # Now input() just returns 'test', it does not wait for user input.
         result_text = our_weird_function_with_input_inside()
         equals('TEST', result_text)
     

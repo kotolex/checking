@@ -81,7 +81,7 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     return real_decorator
 
 
-def data(*args, enabled: bool = True, name: str = None, cached: bool = False):
+def provider(*args, enabled: bool = True, name: str = None, cached: bool = False):
     """
     The annotation that marks a data provider, that is, a function that supplies data to a test. Such a function should
     return Iterable or Sequence, otherwise will be an error. It is not possible at compile time to determine if the
@@ -321,7 +321,7 @@ def DATA_FILE(file_path: str, provider_name: str = None, cached: bool = False, e
         real_path = path.join(first_path, file_path)
         if not is_file_exists(real_path):
             raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
-        data(name=provider_name, cached=cached)(wrapper)
+        provider(name=provider_name, cached=cached)(wrapper)
     finally:
         del frame
 
@@ -341,4 +341,4 @@ def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
         return value
 
     name = name if name is not None else 'container'
-    data(name=name)(_)
+    provider(name=name)(_)

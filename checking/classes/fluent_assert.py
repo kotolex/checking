@@ -105,7 +105,7 @@ class FluentAssert:
         return self
 
     def is_not_none(self):
-        not_none(self.__actual)
+        is_not_none(self.__actual)
         return self
 
     def is_true(self):

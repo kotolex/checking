@@ -74,7 +74,7 @@ class SoftAssert:
         self.check(lambda: is_none(obj, message))
 
     def not_none(self, obj: Any, message: str = None):
-        self.check(lambda: not_none(obj, message))
+        self.check(lambda: is_not_none(obj, message))
 
     def contains(self, part: Any, whole: Any, message: str = None):
         self.check(lambda: contains(part, whole, message))

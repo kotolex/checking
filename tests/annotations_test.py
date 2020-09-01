@@ -98,13 +98,13 @@ class TestAnnotations(TestCase):
 
     def test_data_works(self):
         clear()
-        data(name="any_name")(valid_for_data)
+        provider(name="any_name")(valid_for_data)
         self.assertTrue('any_name' in TestSuite.get_instance().providers)
 
     def test_data_raises_when_duplicate_name(self):
         with self.assertRaises(DuplicateNameException) as e:
-            data(valid_for_data)
-            data(valid_for_data)
+            provider(valid_for_data)
+            provider(valid_for_data)
         self.assertEqual('Provider with name "valid_for_data" already exists! Only unique names allowed!',
                          e.exception.args[0])
 
@@ -113,19 +113,19 @@ class TestAnnotations(TestCase):
             return [1, 2]
 
         with self.assertRaises(WrongAnnotationPlacement) as e:
-            data(name='another2')(_)
+            provider(name='another2')(_)
             test(data_provider='another2')(non_valid_for_provider)
         self.assertEqual("Function 'non_valid_for_provider' marked with data_provider has more than 1 argument!",
                          e.exception.args[0])
 
     def test_data_name_works(self):
         clear()
-        data(name="another")(valid_for_data)
+        provider(name="another")(valid_for_data)
         self.assertTrue('another' in TestSuite.get_instance().providers)
 
     def test_data_ignore_if_disabled(self):
         clear()
-        data(enabled=False, name="no")(valid)
+        provider(enabled=False, name="no")(valid)
         self.assertFalse('no' in TestSuite.get_instance().providers)
 
     def test_before_all_when_before_first(self):
@@ -251,7 +251,7 @@ class TestAnnotations(TestCase):
 
         clear()
         with self.assertRaises(WrongAnnotationPlacement):
-            data(name='text')(fail)
+            provider(name='text')(fail)
 
 
 if __name__ == '__main__':
