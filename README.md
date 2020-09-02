@@ -1,33 +1,29 @@
 # README #
 
-A simple library for testing your own python code.
+A simple testing library for your python code.
 
-Key Features:
+Key features:
 
-
-
- * no third-party dependencies, only standard library is used
+ * no third-party dependencies
  * no need to inherit from any classes
- * no need to name your files and/or tests with a prefix or a postfix called 'test'
- * it is possible to interract with native python assert as well as library asserts
- * simple and clear work with tests, data providers, checks, etc.
- * ability to run based on a file with settings or passing arguments on command line
- * automatic search for all tests within a current folder and subfolders
- * flexible configuration of both tests and their groups, the ability to group tests and run only selected groups
- * the ability to use both the built-in results processing tool and write your own one
- * the ability to group, stop test by timeout, parallel launch, mocking without installing extra plugins
- * the ability to generate html-report after suite
-
+ * no need to name your files and/or tests with a "test" prefix/postfix
+ * interaction with native python asserts as well as library-provided asserts
+ * simple and clean workflow with test cases, data providers, asserts, etc.
+ * run mode configuration via a config file or command line parameters
+ * automatic recursive test discovery for the current directory tree
+ * test groups, group-vise test execution, flexible configuration for both tests and test groups 
+ * result processing middleware, both built-in and user-defined
+ * flexible test execution mode configuration: timeouts, parallel execution, etc.
+ * mocks with no third-party dependencies or extra plug-ins
+ * configurable HTML report generator
 
 ### Installation ###
 
-Just use your pip
+Via pip:
 
 ``pip install checking``
 
-
 ### First test ###
-Simple example:
 
 ```
 from checking import *
@@ -37,45 +33,49 @@ def my_function_to_test(a,b):
 
 @test
 def any_name_you_like():
-    # Check  1+1=2
+    # assert 1+1=2
     equals(2, my_function_to_test(1,1))
 
 if __name__ == '__main__':
-    # Runs all tests in current module
+    # runs all tests in current module
     start()
 ```
-Only functions marked with @test annotation can be considered as a test and will be ran, you can name your tests whatever you feel like do,
-the main point is to put @test annotation
 
-## Basic Asserts
+Only functions marked with @test decorator will be marked as tests to execute. 
+You can name your tests however you like, just put that @test decorator.
 
-You can manipulate with simple Python assert if you want, but it is recommended to use simple and readable library asserts.
+### Basic Asserts ###
 
-###### Standard checks:
+You can use standard Python asserts if you want, 
+but it is recommended to use simple and readable asserts this library provides.
+
+###### Standard checks
 
 ```
 #!python
 @test
 def checks_basic_asserts():
-    is_true('1', 'Error message') # checks, if value is True
-    is_false([], 'Error message') # checks, if value is False
-    equals(1, 1, 'Error message') # checks, if two objects are equal (==)
-    not_equals(1, 2, 'Error message') # checks, if two objects are NOT equal (!=)
-    is_none(None, 'Error message') # checks, if object is None
-    not_none('1', 'Error message') # checks, if object is not None
-    contains(1, [1, 2, 3], 'Error message') # checks, if the second argument contains the first arg
-    not_contains(4, [1, 2, 3], 'Error message') # checks, if the second argument does not contain the first arg
-    is_zero(0, 'Error message') # checks, if argument is equal to 0 (it can be int or float)
-    is_positive(1, 'Error message') # checks, if argument is bigger than 0 (for int or float), or len of argument is positive(for Sequence)
-    is_negative(-1, 'Error message') # checks, if argument is smaller then 0 (it can be int or float)
-    is_empty([], 'Error message') # checks, if object(Sized type) length =0, so collection is empty
-    is_not_empty([1,2], 'Error message') # checks, if object(Sized type) length >0, so collection is NOT empty
-
+    is_true('1', 'Error message')   # checks, if the first arg equals to True
+    is_false([], 'Error message')   # checks, if the first arg equals to False
+    equals(1, 1, 'Error message')   # checks, if two args are equal (==)
+    not_equals(1, 2, 'Error message')   # checks, if two args are NOT equal (!=)
+    is_none(None, 'Error message')   # checks, if the first arg is None
+    not_none('1', 'Error message')   # checks, if the first arg is not None
+    contains(1, [1, 2, 3], 'Error message')   # checks, if the second arg contains the first arg
+    not_contains(4, [1, 2, 3], 'Error message')   # checks, if the second arg does not contain the first arg
+    is_zero(0, 'Error message')   # checks, if the first arg is equal to 0 (assumed to be int or float)
+    is_positive(1, 'Error message')   # checks, if the first arg is greater than 0 (for int or float), or len of the arg is non-zero (for Sequence)
+    is_negative(-1, 'Error message')   # checks, if the first arg is less than 0 (assumed to be int or float)
+    is_empty([], 'Error message')   # checks, if the length of the first arg (Sized type) equals 0, e.g. a collection is empty
+    is_not_empty([1,2], 'Error message')   # checks, if the length of first arg (Sized type) is greater than 0, e.g. a collection is NOT empty
 ```
-Messages in all asserts are optional, but it strongly recommended to use them!
 
-###### Work with or without exceptions
-If you need to check the exception raises and its message you can write test like:
+Messages in all asserts are optional, but it is strongly recommended to use them.
+
+###### Working with exceptions
+
+If you need to check if the exception is raised or the message it contains, 
+you can use the provided context manager:
 
 ```
 #!python
@@ -86,81 +86,84 @@ def check_with_exception():
     assert e.message == 'division by zero' # Check message (using python assert)
 
 ```
-If no exception will be raised or it will be exception of another type then test will fail.
-Pay attention that you should check message (if you need) after exiting context manager, but not inside its scope!
 
-You cannot use BaseException here and it strongly recommended not to use Exception as parent of all exceptions!
+The test will fail if no exception is raised or the exception is of another type. 
+Note that you have to check the exception message _after_ exiting the context manager, not within it's scope.
 
-In some cases you have just need to run some code and make sure no exception raised. There is a special way for that:
+The library forbids the usage of the BaseException type here and it is strongly recommended not to use the Exception type as well. 
+Use concrete exception types. 
+
+In some cases you only need to run the code and make sure no exception is raised. 
+There is a special way to do that:
 
 ```
 #!python
 @test
 def no_exceptions_bad():
-    do_something() # Bad way! No asserts here, is that a test???
+    do_something()   # Wrong: no asserts here, this is not a proper test.
 
 @test
 def check_no_exception_raises():
-    with no_exception_expected(): # Explicitly say that we are not waiting exceptions
-        do_something() # Good way!
+    with no_exception_expected():   # Correct: explicitly state that we do not expect any exceptions
+        do_something()
 
 
 ```
-If any exception will be raised then test will fail
 
-###### Managing test during execution
+The test fails if any exception is raised.
 
-Sometimes, you need to fail or brake test in execution time on some reason (wrong OS, parameters, etc.)
+###### Managing test execution
+
+Sometimes, you need to fail or break a test during runtime due to some reason (wrong OS, wrong parameters, etc.)
 
 ```
 #!python
 @test
 def must_fail_on_condition():
     if some_condition():
-        test_fail('Expected fail!')
+        test_fail('Expected to fail.')
 
 
 @test
 def must_be_broken():
     if some_condition():
-        test_brake('Expected brake!')
-
+        test_break('Expected to break.')
 ```
 
-
-### Soft and Fluent Asserts
+### Soft and Fluent Asserts ###
 
 ###### Soft Assert
 
-Soft Assert is a convenient way to check a few conditions before a failure. Standard test is preferably fail fast, 
-and if some checks fail then the test stops. But sometimes you need to check a list of conditions, and check them to fail only at the end of the test, 
-with all information what checks were failed.
-For instance, you have a json object and want to checks all its fields, but also do not want to stop test at first failed check 
-because you want to know the state of all other fields!
+Standard testing procedure implies the "fail fast" workflow: the whole test should halt if a single check fails. 
+But sometimes you need to check a bunch of conditions and only fail if needed at the end of the test, 
+collecting all of the information on the executed checks. 
+Soft Assert is a simple and convenient tool to do that.
+
+For example, you need to check all of the fields in a JSON object, 
+collecting the info on which fields were correct and which were not: 
 
 ```
 #!python
 
 @test
 def check_all_json_fields():
-    my_json = get_my_json_somethere()
+    my_json = fetch_json()
 
-    soft_assert = SoftAssert() # Creates an object of soft assert
-    soft_assert.check(lambda : equals(1, my_json['field1'], 'message')) # Check field, test will not fail here!
+    soft_assert = SoftAssert()
+    soft_assert.check(lambda : equals(1, my_json['field1'], 'message'))   # Check a field, the test will not stop executing on failure
     soft_assert.check(lambda : equals('text', my_json['field2'], 'message'))
-    soft_assert.contains(1,my_json['list'])
-    soft_assert.assert_all() # If something wrong, test will fail here!
-
+    soft_assert.contains(1, my_json['list'])
+    soft_assert.assert_all()   # The test will fail here if some of the checks failed earlier
 ```
-**Attention!** You always should use assert_all() at the end of the test, only at the moment all exception (if something went wrong) 
-will be raise.
 
+**Attention!** 
+You must use assert_all() at the end of the test to actually raise an assertion exception if something went wrong. 
 
 ###### Fluent Assert
 
-Fluent assert is just a sugar to make chains of checks for the object; they are simple, readable, but it is NOT a soft asserts!
-If one of the checks will fail - test stops!
-Fluent asserts have analogues of the basic asserts, but also have their own types:
+Fluent assert is just syntactic sugar to make a series of checks for an object more simple and readable.
+Fluent assert is **not** a soft assert, if one of the checks fails -- the whole chain halts.
+Fluent assert interface has methods analogous to the basic asserts as well as exclusive ones:
 
 ```
 #!python
@@ -169,30 +172,30 @@ Fluent asserts have analogues of the basic asserts, but also have their own type
 def check_fluents():
     my_list = get_my_list_somethere()
 
+    # check if our object is not None, is instance of list, contains 2 and is sorted
     verify(my_list).is_not_none().AND.type_is(list).AND.contains(2).AND.is_sorted()
-    # check our object is not None, is instance of list, contains 2 and sorted
-    
+
     some_object = SomeClass()
     same_object = some_object
-    other_object = SomeClass()
+    other_object = SomeClass()    
+    # check if objects are the same, and are not same with another object
     verify(some_object).same_as(same_object).not_same_as(other_object)
-    # check objects are the same, and not same with other object
 
-    verify(1).is_in([1,2]).is_not_in({3,4,5}).greater_than(0)
-    # check 1 is in list [1,2], not in set{3,4,5} and greater than 0
-
+    # check if 1 is in list [1, 2], not is in set{3, 4, 5} and is greater than 0
+    verify(1).is_in([1, 2]).is_not_in({3, 4, 5}).greater_than(0)
 ```
 
-There are special "switches" to check size (length) of the object, or one of its attribute. But be careful: 
-after switching to it, you can not returns to original object, checks starts from.
+There are special "switches" to check the size (length) of an object, or one of its attribute. 
+Please note, that after after using a switch, you cannot return to the original object you started with.
 
-```#!python
+```
+#!python
 @test
 def switch_to_length():
+    # check if the length of a list is positive and equals to 2 and is greater than length of [1]
+    # the "size" is a switch -- all of the following checks will be executed against 
+    # the int object (length of the starting object), NOT against the [1, 2] list
     verify([1,2]).size.is_positive().AND.equal(2).AND.greater_than_length_of([1]) 
-    # check length of list is positive and equals 2 and greater than length of [1]
-    # when you use "size" - all following checks work with int (length of object), NOT with list [1,2]
- 
 
 @test
 def switch_to_attribute():
@@ -200,14 +203,12 @@ def switch_to_attribute():
         pass
     ex = Example()
     ex.x = 100
+
+    # check if the object has attribute 'x' and whether it is equal to 100
+    # the "attribute" method is a switch -- all of the following checks will be executed against 
+    # the int object ('x' attribute of 'ex'), and NOT against 'ex' object itself
     verify(ex).has_attribute('x').AND.attribute('x').equal(100)
-    # check object has attribute 'x' and it equal to 100
-    # when you use "attribute" - all following checks work with int (x attribute of ex), NOT with ex itself
-    
-
 ```
-
-
 
 ## Data Providers
 
