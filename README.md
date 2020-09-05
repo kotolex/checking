@@ -21,7 +21,7 @@ Key features:
 
 Via pip:
 
-``pip install checking``
+`pip install checking`
 
 ### First test ###
 
@@ -33,11 +33,11 @@ def my_function_to_test(a,b):
 
 @test
 def any_name_you_like():
-    # assert 1+1=2
+    # Assert 1+1=2
     equals(2, my_function_to_test(1,1))
 
 if __name__ == '__main__':
-    # runs all tests in current module
+    # Run all tests in current module
     start()
 ```
 
@@ -79,11 +79,11 @@ def checks_basic_asserts():
     is_not_empty([1,2], 'Error message')   # checks, if the length of first arg (Sized type) is greater than 0, e.g. a collection is NOT empty
 ```
 
-Messages in all asserts are optional, but it is strongly recommended to use them.
+Messages in all asserts are optional, but it's strongly recommended to use them.
 
 ###### Working with exceptions
 
-If you need to check if the exception is raised or the message it contains, 
+If you need to check if an exception is raised or the message it contains, 
 you can use the provided context manager:
 
 ```
@@ -91,16 +91,15 @@ you can use the provided context manager:
 @test
 def check_with_exception():
     with waiting_exception(ZeroDivisionError) as e:
-        x = 1 / 0 # Here exception will be raised!
-    assert e.message == 'division by zero' # Check message (using python assert)
-
+        x = 1 / 0   # Force ZeroDivisionError
+    assert e.message == 'division by zero'   # Note, that the exception is wrapped into a library provided convenience classn 
 ```
 
 The test will fail if no exception is raised or the exception is of another type. 
-Note that you have to check the exception message _after_ exiting the context manager, not within it's scope.
+Please note, that you have to check the exception message _after_ the context manager exits, not within it's scope.
 
 The library forbids the usage of the BaseException type here and it is strongly recommended not to use the Exception type as well. 
-Use concrete exception types. 
+Use concrete exception types.
 
 In some cases you only need to run the code and make sure no exception is raised. 
 There is a special way to do that:
@@ -109,14 +108,12 @@ There is a special way to do that:
 #!python
 @test
 def no_exceptions_bad():
-    do_something()   # Wrong: no asserts here, this is not a proper test.
+    do_something()   # Wrong: no asserts here, this is not a proper test
 
 @test
 def check_no_exception_raises():
     with no_exception_expected():   # Correct: explicitly state that we do not expect any exceptions
         do_something()
-
-
 ```
 
 The test fails if any exception is raised.
@@ -131,7 +128,6 @@ Sometimes, you need to fail, skip or break a test during runtime due to some rea
 def must_fail_on_condition():
     if some_condition():
         test_fail('Expected to fail.')
-
 
 @test
 def must_be_broken():
@@ -148,13 +144,13 @@ def must_be_ignored():
 
 ###### Soft Assert
 
-Standard testing procedure implies the "fail fast" workflow: the whole test should halt if a single check fails. 
-But sometimes you need to check a bunch of conditions and only fail if needed at the end of the test, 
+The standard testing procedure compels the "fail fast" workflow: the whole test should halt if a single check fails. 
+But sometimes you need to check a bunch of conditions and only fail at the end of the test if needed, 
 collecting all of the information on the executed checks. 
-Soft Assert is a simple and convenient tool to do that.
+Soft Assert is a simple and convenient tool designed for this purpose.
 
 For example, you need to check all of the fields in a JSON object, 
-collecting the info on which fields were correct and which were not: 
+collecting the info on which fields are correct and which are not: 
 
 ```
 #!python
@@ -171,11 +167,11 @@ def check_all_json_fields():
 ```
 
 **Attention!** 
-You must use assert_all() at the end of the test to actually raise an assertion exception if something went wrong. 
+You _must_ use assert_all() at the end of the test to actually raise an assertion exception if something went wrong. 
 
 ###### Fluent Assert
 
-Fluent assert is just syntactic sugar to make a series of checks for an object more simple and readable.
+Fluent assert is just syntactic sugar to make a series of checks for an object simpler and more readable.
 Fluent assert is **not** a soft assert, if one of the checks fails -- the whole chain halts.
 Fluent assert interface has methods analogous to the basic asserts as well as exclusive ones:
 
@@ -184,30 +180,30 @@ Fluent assert interface has methods analogous to the basic asserts as well as ex
 
 @test
 def check_fluents():
-    my_list = get_my_list_somethere()
+    my_list = fetch_list()
 
-    # check if our object is not None, is instance of list, contains 2 and is sorted
+    # Check if 'my_list' is not None, is instance of 'list', contains 2 and is sorted
     verify(my_list).is_not_none().AND.type_is(list).AND.contains(2).AND.is_sorted()
 
     some_object = SomeClass()
     same_object = some_object
     other_object = SomeClass()    
-    # check if objects are the same, and are not same with another object
+    # Check if objects are the same, and are not same with another object
     verify(some_object).same_as(same_object).not_same_as(other_object)
 
-    # check if 1 is in list [1, 2], not is in set{3, 4, 5} and is greater than 0
+    # Check if 1 is in list [1, 2], not is in set {3, 4, 5} and is greater than 0
     verify(1).is_in([1, 2]).is_not_in({3, 4, 5}).greater_than(0)
 ```
 
-There are special "switches" to check the size (length) of an object, or one of its attribute. 
-Please note, that after after using a switch, you cannot return to the original object you started with.
+There are special "switches" to check some property of an object. 
+Please note, that after invoking a switch, you cannot return to the original object you started with.
 
 ```
 #!python
 @test
 def switch_to_length():
-    # check if the length of a list is positive and equals to 2 and is greater than length of [1]
-    # the "size" is a switch -- all of the following checks will be executed against 
+    # Check if the length of the given list is positive, equals to 2 and is greater than the length of [1]
+    # the 'size' method is a switch -- all of the following checks will be executed against 
     # the int object (length of the starting object), NOT against the [1, 2] list
     verify([1,2]).size.is_positive().AND.equal(2).AND.greater_than_length_of([1]) 
 
@@ -218,13 +214,13 @@ def switch_to_attribute():
     ex = Example()
     ex.x = 100
 
-    # check if the object has attribute 'x' and whether it is equal to 100
-    # the "attribute" method is a switch -- all of the following checks will be executed against 
+    # Check if the object has attribute 'x' and whether it is equal to 100
+    # the 'attribute' method is a switch -- all of the following checks will be executed against 
     # the int object ('x' attribute of 'ex'), and NOT against 'ex' object itself
     verify(ex).has_attribute('x').AND.attribute('x').equal(100)
 ```
 
-## Data Providers
+### Data Providers ###
 
 Often you need to run the same test with different data, there is @provider annotation for that target. Mark function you want with @provider annotation and
 you can use it in your tests. The function for data-provider should not have arguments and it has to return iterable, sequence or generator.
@@ -236,18 +232,21 @@ you can use it in your tests. The function for data-provider should not have arg
 or it takes the function name by default.
 It it not necessary to have data-provider with the test (in the same module)
 
-Data-provider takes values one by one and pushes it to your test.
+The data provider takes sets of values from the iterable one by one and pushes them onto your test.
+
 ```
 #!python
 # Create data-provider
 @provider
 def pairs():
-    return [(1, 1, 2), (2, 2, 4)]  # Returns list of tuples
+    return [(1, 1, 2), (2, 2, 4)]   # Each tuple in a list is a unit set of data a test will be run against
 
+@test(data_provider='pairs')   # Specify which provider to use
+def check_sum(it):   # The test function must take one argument, the data provider will supply the test data via this argument 
+    equals(it[0] + it[1], it[2])   # Run an assert on the data unit
+```
 
-@test(data_provider='pairs')  # Specify what provider to use
-def check_sum(it):  # Here we must have 1 argument for values of data-provider
-    equals(it[0] + it[1], it[2])  # Checks sum of first and second elements of tuple equal to third element
+If you want to use a text file as a data source, you can use `DATA_FILE` helper function to skip the file handling boilerplate code:
 
 ```
 You can specify mapping function to map values from the provider to some format, 
@@ -293,136 +292,130 @@ If you need to use text file as a provider and get data line by line, you can us
 #!python
 from checking import *
 
-# Create data-provider
-DATA_FILE('files/data.txt', provider_name='provider') # file at <module folder>/files/data.txt
-
+DATA_FILE('files/data.txt', provider_name='provider')   # Use the file located at <module folder>/files/data.txt
 
 @test(data_provider='provider')
 def try_prov(it):
     print(it)
     is_true(it)
 ```
-In that case file will be read line by line lazily, if no file found - exception will be raised!
 
-If you need all lines be transform in some way, you can use mapping function for that. For example deleting trailing \n
-at line end:
+The helper lazy-loads specified data file line by line. 
+Raises ValueError if the file is not found.
+Also, you can transform all of the lines before feeding them into the test, 
+for example delete trailing newlines at the end of each line:
+
 ```
 #!python
 from checking import *
 
-# Create data-provider
-DATA_FILE('files/data.txt', provider_name='provider', map_function=str.rstrip) # use rstrip() of str to transform
-
+DATA_FILE('files/data.txt', provider_name='provider', map_function=str.rstrip)   # Feed each line through str.rstrip()
 
 @test(data_provider='provider')
 def try_prov(it):
     is_true(it)
-
 ```
 
-If you not specify name for data_file, then file_path will be used for it. For example, it is valid use:
+If you don't specify provider_name for the DATA_FILE helper, file_path will be used:
 
 ```
 #!python
 from checking import *
 
-# Create data-provider
-DATA_FILE('data.txt') # file at module folder, no name for it
+DATA_FILE('data.txt')   # Use text file located at the module folder. Note, that no provider_name is specified.
 
-
-@test(data_provider='data.txt') # use file name to find provider
+@test(data_provider='data.txt')   # Use the specified file_name parameter for provider lookup
 def try_prov(it):
     is_true(it)
-
 ```
-If you gonna use provider more than once in your test-suite and do not want to get its data from resource of some
-kind (database, filesystem, http-request etc.), you can use parameter ``cached=True``. In that case, provider get all 
-data only once at first run and stores it in memory for all other tests to run. But make sure you not get too much 
-memory for your data and be smart when use it in parallel mode. DATA_FILE can use this parameter too.
+
+If your test suite uses a data provider more than once, you might want to avoid the IO overhead,
+if this provider fetches the data from some external source (database, file system, http request etc.). 
+You can use the `cached` parameter to force the provider to fetch the data only once and store it into memory.
+Please, be vary of the memory consumption, because the cache persists until the whole suite is done running. 
+Also, be careful when using the cache when running tests in parallel.
+ 
+DATA_FILE helper can use this parameter too.
 
 ```
 #!python
 from checking import *
 
-DATA_FILE('data.csv', provider_name='csv', cached=True) # Reads file only once and stores all values
+DATA_FILE('data.csv', provider_name='csv', cached=True)   # Enable caching 
 
-
-@test(data_provider='csv') # Here comes data from file
+@test(data_provider='csv')   # First provider use -- data is fetched from the file and stored into memory
 def check_one(it):
     not_none(it)
 
-
-@test(data_provider='csv') # Here comes cached data, no attempts to read file again!
+@test(data_provider='csv')   # Second use -- no file reads, cached data is used
 def check_two(it):
     not_none(it)
 
-
 if __name__ == '__main__':
     start(0)
-
 ```
 
-When you need to provide data from simple one-liner like string, list comprehension or generator expression,
-you don't need to write function, just use syntactic-sugar CONTAINER
+If your provider is a simple one-liner (string, list comprehension, generator expression, etc.), 
+you can use the CONTAINER helper function to avoid full function definition boilerplate:  
 
 ```
 #!python
 from checking import *
 
-CONTAINER([e for e in range(10)], name='range') # Provide data from list, name is 'range'
-
+CONTAINER([e for e in range(10)], name='range')   # Provide data from a listcomp, set provider name to 'range'
 
 @test(data_provider='range')
 def try_container(it):
     is_true(it in range(10))
-
 ```
 
-If no name specified, the 'container' name will be used. But it is strongly recommended to use unique name here!
+'name' parameter is optional, 'container' is used by default,
+but it's strongly recommended to use a unique name:
 
 ```
 #!python
 from checking import *
 
-CONTAINER((e for e in range(10))) # Provide data from generator
-
+CONTAINER((e for e in range(10)))   # Provide data from a genexp
 
 @test(data_provider='container')
 def try_container(it):
     is_true(it in range(10))
-
 ```
 
-**Important!** You can use DATA_FILE or CONTAINER only at the module global scope, but not at fixtures or tests!
+**Important!** You must define DATA_FILE or CONTAINER providers at the module scope, not in the fixtures and tests.
 
-## Test Parameters
+### Test Parameters ###
 
-Test is a function that marked with @test annotation, you can manage them with bunch of parameters:
+You can manage the test execution mode by passing a number of parameters to the @test decorator:
+  
+**enabled** (bool) - if set to False, the test will be skipped, all other parameters are ignored. By default set to True.
 
-**enabled** (bool) - if it is False then test will not be run, and all other parameters ignored. By default enabled = True
+**name** (str) - the name of the test. Is bound to the the decorated function name if not specified.
 
-**name** (str) - name of the test, if not specify the function name will be used
+**description** (str) - test description. If absent, the test function docstring is used. 
+If both description and docstring are present, description takes precedence.
 
-**description** (str) - test description. If absent, will be taken from function docs. If both description and function
-    doc exists, description wins.
+**data_provider** (str) - the name of the data provider to use with the test. 
+If specified, the test function must take one argument to be fed with the data from the provider. 
+Raises UnknownProviderName if no providers with the specified name found.
 
-**data_provider** (str) - name of the provider to use with test. If specified, test should have one argument, 
-to get values from provider. If no providers found with that name then exception will raise!
+**retries** (int) - the number of times to run the failing test. If test does not fail, no more runs attempted. By default set to 1.
 
-**retries** (int) - how many times to run the test if it is failed. If test does not fail, no more runs attempted. By defaut it is 1
+**groups** (Tuple[str]) - a tuple of strings, representing the test group names a test is a part of.
+All tests belong to some test group, the default group holds all tests from the current module and is named after the module.
+Use this parameter to manage test execution groups.
 
-**groups** (Tuple[str]) - tuple of group names test belongs to, each test is a part of a some group, by default group is the module name, where test places
-It is the way to manage and collect tests to any groups.
+**priority** (int) - test priority. The higher the value the later the test will be executed.
+Use this parameter to fine tune test run order. By default set to 0.
 
-**priority** (int) - priority of the test, by default it is 0. The higher value means that test will execute later.
-Priority is a way to run tests in some order.
+**timeout** (int) - amount of time to wait for the test to end. 
+If the time runs out, the thread running the test is terminated and the test is marked as "broken".
+Use sparingly due to potential memory leaks.
 
-**timeout** (int) - amount of time to wait test ends. If time is over, thread of the test will be interrupted and test will be mark as broken.
-Should be used carefully because of potential memory leaks!
-
-**only_if** (Callable[None, bool]) - function which will be run before the test, and should return bool. Test will be execute only then if function returns 'True'!
-It is a way to make condition for some test, for instance, run only if the OS is Linux.
-
+**only_if** (Callable[None, bool]) - boolean predicate, which is evaluated before the test execution.
+The test will be executed only if the predicate evaluates to True.
+Use this parameter for conditional test execution e.g. run only if the OS is Linux, etc.
 
 ## Fixtures
 
