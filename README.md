@@ -60,7 +60,7 @@ def checks_basic_asserts():
     equals(1, 1, 'Error message')   # checks, if two args are equal (==)
     not_equals(1, 2, 'Error message')   # checks, if two args are NOT equal (!=)
     is_none(None, 'Error message')   # checks, if the first arg is None
-    not_none('1', 'Error message')   # checks, if the first arg is not None
+    is_not_none('1', 'Error message')   # checks, if the first arg is not None
     contains(1, [1, 2, 3], 'Error message')   # checks, if the second arg contains the first arg
     not_contains(4, [1, 2, 3], 'Error message')   # checks, if the second arg does not contain the first arg
     is_zero(0, 'Error message')   # checks, if the first arg is equal to 0 (assumed to be int or float)
@@ -222,7 +222,7 @@ Data-provider takes values one by one and pushes it to your test.
 ```
 #!python
 # Create data-provider
-@data
+@provider
 def pairs():
     return [(1, 1, 2), (2, 2, 4)]  # Returns list of tuples
 
@@ -567,16 +567,16 @@ def check_spy():
 
 ```
 
-**5. Double object**
+**5. TestDouble object**
 
-Double object is like the Spy, but it saves original object behaviour, so its methods returns 
+Test-Double object is like the Spy, but it saves original object behaviour, so its methods returns 
 real object methods results if not specified otherwise.
 
 ```
 #!python
 @test
 def check_double():
-    spy = Double("string")  # Create str double-object
+    spy = TestDouble("string")  # Create str double-object
     equals(6, len(spy))  # Len returns 6 - the real length of original object ("string")
     spy.len.returns(100)  # Fake len result
     equals(100, len(spy))  # Len now returns 100

@@ -43,7 +43,8 @@ class Listener:
         :param test_suite: is TestSuite
         :return: None
         """
-        pass
+        test_suite.start_suite()
+        test_suite.stop_suite()
 
     def on_dry_run(self, test_suite: TestSuite):
         """

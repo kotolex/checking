@@ -57,6 +57,9 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     # If there are no tests, then stop
     if test_suite.is_empty():
         _listener.on_empty_suite(test_suite)
+        _listener.on_suite_ends(test_suite)
+        if generate_report:
+            generate(test_suite)
         return
     if params:
         common_parameters.update(params)
