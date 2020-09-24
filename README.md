@@ -786,6 +786,10 @@ In example above only function ui_name will be runs, because name of the functio
 
 **random_order** if True - runs tests inside each group in random order. Can be useful to make sure your tests really independent as they should be.
 
+**max_fail** if greater than 0, then suite will stops, when failed tests count reach that number. For example, if you specify max_fail=1,
+then suite will stop after first failure. Pay attention that real failed test count can be bigger than max_fail if you use parallel execution, 
+so parallel test will not interrupted until ends, even if count is reached.
+
 **generate_report** if True - creates html report with the results in test folder. Experimental!
 
 ### Command Line Options ###
@@ -810,6 +814,8 @@ If specified, **-d** and **-f** options will be ignored!
 
 **-r**    runs all tests in random order (priority will be ignored)
 
+**-m int_argument**    runs all tests till not reach specified number of failed tests
+
 **-R**    generate html-report with results of the tests
 
 
@@ -824,17 +830,19 @@ python -m checking -g
 ```
 In current working folder a file will appear with content like:
 ```json
-{"suite_name": "Default Test Suite", 
-"verbose": 0, 
-"groups": [], 
-"params": {}, 
-"listener": "", 
-"modules": [], 
-"threads": 1, 
-"dry_run": false, 
-"filter_by_name": "",
-"random_order": false,
-"generate_report": false
+{
+  "suite_name": "Default Test Suite",
+  "verbose": 0,
+  "groups": [],
+  "params": {},
+  "listener": "",
+  "modules": [],
+  "threads": 1,
+  "dry_run": false,
+  "filter_by_name": "",
+  "random_order": false,
+  "max_fail": 0,
+  "generate_report": false
 }
 ```
 Changing this parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.

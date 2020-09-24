@@ -35,7 +35,7 @@ def check_parameters(parameters: Dict):
     :raises ValueError if the parameters are invalid
     """
     schema = {bool: ['dry_run', 'random_order', 'generate_report'], str: ['suite_name', 'listener', 'filter_by_name'],
-              int: ['threads', 'verbose'],
+              int: ['threads', 'verbose', 'max_fail'],
               list: ['modules', 'groups'], dict: ['params']}
     for key, value in schema.items():
         for element in value:
@@ -58,7 +58,7 @@ def check_parameters(parameters: Dict):
 def _get_default_params():
     parameters = {'suite_name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '',
                   'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': '', 'random_order': False,
-                  'generate_report': False}
+                  'max_fail': 0, 'generate_report': False}
     return parameters
 
 
@@ -198,13 +198,14 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('-g', '--generate_options',
                         help="Not doing any work, just generates options.json in current folder!", action='store_const',
                         const=True)
+    parser.add_argument('-m', '--max_fail', help="Maximum count of failed test, if reached then suite will stops")
     parser.add_argument('-R', '--generate_report',
                         help="Creates folder with html report in current folder!", action='store_const',
                         const=True)
     return parser.parse_args()
 
 
-def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, random_order: bool,
+def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, random_order: bool, max_fail: int,
               generate_report: bool):
     # if options file exists get all from there
     if is_file_exists(file_name_):
@@ -219,7 +220,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, r
             print(f"No options found! Starts to look for tests in all sub-folders")
             _walk_throw_and_import()
             start(verbose=3, threads=1, params=p_, dry_run=dry_run_, filter_by_name=filter_by_name_,
-                  random_order=random_order, generate_report=generate_report)
+                  random_order=random_order, max_fail=max_fail, generate_report=generate_report)
         # if options file was specified and not exists, than stop
         else:
             raise ValueError(f"{file_name_} not found! Stopped")
@@ -235,8 +236,9 @@ def run():
         dry_run = args.dry_run if args.dry_run else False
         random_order = args.random if args.random else False
         filter_by_name = args.filter_test if args.filter_test else ''
+        max_fail = int(args.max_fail) if args.max_fail else 0
         generate_report = args.generate_report if args.generate_report else False
-        _main_run(file_name, params, dry_run, filter_by_name, random_order, generate_report)
+        _main_run(file_name, params, dry_run, filter_by_name, random_order, max_fail, generate_report)
 
 
 if __name__ == '__main__':

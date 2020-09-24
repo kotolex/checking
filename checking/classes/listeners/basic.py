@@ -21,6 +21,14 @@ class Listener:
         """
         pass
 
+    def on_suite_stop_with_max_fail(self, max_fail: int):
+        """
+        It calls when max_fail parameter was specified and reached, so suite stops
+        :param max_fail: count of failed test
+        :return:
+        """
+        pass
+
     def on_suite_ends(self, test_suite: TestSuite):
         """
         It calls at the end of the run, when all tests finished and fixtures.

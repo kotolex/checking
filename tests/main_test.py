@@ -6,7 +6,7 @@ from checking import __main__ as m
 from checking.classes.listeners.default import DefaultListener
 
 PARAMETERS = {'suite_name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '',
-              'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': '', 'random_order': False,
+              'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': '', 'random_order': False, 'max_fail': 0,
               'generate_report': False}
 
 
@@ -23,7 +23,7 @@ class MainTest(TestCase):
     def test_read_parameters_from_file_full_changed_dict(self):
         expect = {'suite_name': 'Test', 'verbose': 3, 'groups': ['one'], 'params': {'1': 1}, 'listener': 'default',
                   'modules': ['test'], 'threads': 2, 'dry_run': True, 'filter_by_name': 'test', 'random_order': False,
-                  'generate_report': True}
+                  'max_fail': 0, 'generate_report': True}
         dic_ = m.read_parameters_from_file('tests/files/op3.json')
         self.assertEqual(dic_, expect)
 
@@ -252,7 +252,8 @@ class MainTest(TestCase):
 
     def test_main_run_failed_if_no_file(self):
         with self.assertRaises(ValueError):
-            m._main_run('wrong.path', {}, dry_run_=True, filter_by_name_='', random_order=False, generate_report=False)
+            m._main_run('wrong.path', {}, dry_run_=True, filter_by_name_='', random_order=False, max_fail=0,
+                        generate_report=False)
 
 
 if __name__ == '__main__':

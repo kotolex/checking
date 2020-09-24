@@ -8,6 +8,7 @@ from checking.classes.basic_suite import TestSuite
 from checking.classes.listeners.basic import Listener
 from checking.exceptions import UnknownProviderName, TestIgnoredException
 from checking.helpers.others import fake
+from checking.asserts import equals
 
 from tests.fixture_behaviour_test import clear
 
@@ -242,6 +243,38 @@ class RunnerTest(TestCase):
         r._run(TestSuite.get_instance(), 1, random_order=True)
         runned = [test.name for test in group.test_results]
         self.assertNotEqual(['one', 'two', 'three', 'four', 'five'], runned)
+
+    def test_check_max_fail(self):
+        clear()
+        suite = TestSuite.get_instance()
+        test_case = Test('some', lambda: equals(1, 2))
+        suite.get_or_create("group").add_test(test_case)
+        suite.get_or_create("group").add_test(test_case)
+        suite.get_or_create("group").add_test(test_case)
+        r.start(max_fail=1, listener=TestListener())
+        self.assertEqual(len(suite.failed()), 1)
+        self.assertEqual(suite.tests_count(), 1)
+
+    def test_check_max_fail_with_provider(self):
+        clear()
+        suite = TestSuite.get_instance()
+        test_case = Test('some', lambda z: equals(z, 3))
+        test_case.provider = 'test2'
+        suite.providers['test2'] = lambda: [1, 2, 4, 5]
+        suite.get_or_create("group").add_test(test_case)
+        r.start(max_fail=1, listener=TestListener())
+        self.assertEqual(len(suite.failed()), 1)
+        self.assertEqual(suite.tests_count(), 1)
+
+    def test_check_max_fail_not_reached(self):
+        clear()
+        suite = TestSuite.get_instance()
+        test_case = Test('some', lambda: equals(1, 2))
+        suite.get_or_create("group").add_test(test_case)
+        suite.get_or_create("group").add_test(test_case)
+        r.start(max_fail=3, listener=TestListener())
+        self.assertEqual(len(suite.failed()), 2)
+        self.assertEqual(suite.tests_count(), 2)
 
 
 if __name__ == '__main__':

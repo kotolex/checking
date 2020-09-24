@@ -14,6 +14,12 @@ from .exceptions import UnknownProviderName, TestIgnoredException
 
 # Tests listener
 _listener: Listener
+# flag for running all test, sets to False to stop suite (when failed count reached)
+_can_run = True
+# maximum of fails for test in suite, if 0 then works till the end of tests
+_max_fail = 0
+# actual failed tests count
+_actual_failed_count = 0
 
 # Common parameters for whole test-suite
 common_parameters: Dict[str, Any] = {}
@@ -21,7 +27,7 @@ common_parameters: Dict[str, Any] = {}
 
 def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
           threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None,
-          random_order: bool = False, generate_report: bool = False, **kwargs):
+          random_order: bool = False, max_fail: int = 0, generate_report: bool = False, **kwargs):
     """
     The main function of tests start
 
@@ -41,10 +47,14 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
     find out order, number of tests, params of provider etc.
     :param filter_by_name if specified - runs only tests with name containing this parameter
     :param random_order if specified - runs tests inside each group in random order
+    :param max_fail if greater than 0, than suite will stops, when reach that count of failed tests
     :param generate_report if specified - creates html report with the results in test folder
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
+    if type(max_fail) is int and max_fail > 0:
+        global _max_fail
+        _max_fail = max_fail
     # If a listener is specified, then use it, otherwise by default
     global _listener
     _listener = listener if listener else DefaultListener(verbose)
@@ -175,6 +185,8 @@ def _run_test_with_provider(test):
         list_of_arguments = []
         for param in generator:
             is_any_value_provides = True
+            if not _can_run:
+                break
             clone = test.clone()
             clone.argument = param
             if need_to_cache:
@@ -208,6 +220,8 @@ def _run_all_tests_in_group(group: TestGroup):
     """
     is_one_of_before_test_failed = False
     for test in group.tests:
+        if not _can_run:
+            break
         if test.provider:
             _run_test_with_provider(test)
         else:
@@ -272,6 +286,13 @@ def _run_test(test: Test) -> bool:
     except AssertionError as e:
         test.stop(e)
         _listener.on_failed(test, e)
+        global _actual_failed_count
+        if _max_fail and _actual_failed_count < _max_fail:
+            _actual_failed_count += 1
+        if _max_fail and _actual_failed_count >= _max_fail:
+            global _can_run
+            _can_run = False
+            _listener.on_suite_stop_with_max_fail(_max_fail)
     except (TestIgnoredException, SystemExit) as e:
         test.stop(e)
         _listener.on_ignored_by_condition(test, e)

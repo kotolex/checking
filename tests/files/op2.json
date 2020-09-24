@@ -1,2 +1,12 @@
-{"suite_name": "Default Test Suite", "verbose": 0, "groups": [], "params": {}, "listener": "", "modules": [],
-                  "threads": 1, "dry_run": false, "filter_by_name": ""}
+{
+  "suite_name": "Default Test Suite",
+  "verbose": 0,
+  "groups": [],
+  "params": {},
+  "listener": "",
+  "max_fail": 0,
+  "modules": [],
+  "threads": 1,
+  "dry_run": false,
+  "filter_by_name": ""
+}

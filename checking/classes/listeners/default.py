@@ -37,6 +37,12 @@ class DefaultListener(Listener):
         print("DRY RUN MODE! No real tests will be executed! All fixtures will be ignored!")
         print_splitter_line()
 
+    def on_suite_stop_with_max_fail(self, max_fail: int):
+        super().on_suite_stop_with_max_fail(max_fail)
+        print_splitter_line()
+        print(f"ATTENTION! Suite stops because of reaching maximum count of failed tests={max_fail}")
+        print_splitter_line()
+
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)
         if not self.verbose:

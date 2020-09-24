@@ -17,6 +17,10 @@ def fake():
     pass
 
 
+def fail():
+    assert 1 == 2
+
+
 class ListenerTest(TestCase):
 
     def test_get_test_arg_short_without_new_line_returns_none(self):
@@ -163,6 +167,27 @@ class ListenerTest(TestCase):
         test(fake)
         r_.start(listener=listener_)
         self.assertEqual(count + 1, COUNT)
+
+    def test_on_max_fail_call(self):
+        clear()
+        listener_ = Listener(0)
+        listener_.on_suite_stop_with_max_fail = inc
+        count = COUNT
+        test(fail)
+        test(fail)
+        test(fail)
+        r_.start(listener=listener_, max_fail=1)
+        self.assertEqual(count + 1, COUNT)
+
+    def test_on_max_fail_not_call(self):
+        clear()
+        listener_ = Listener(0)
+        listener_.on_suite_stop_with_max_fail = inc
+        count = COUNT
+        test(fail)
+        test(fail)
+        r_.start(listener=listener_, max_fail=3)
+        self.assertEqual(count, COUNT)
 
 
 if __name__ == '__main__':
