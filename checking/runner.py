@@ -11,6 +11,7 @@ from .classes.listeners.basic import Listener
 from .classes.exc_thread import run_with_timeout
 from .classes.listeners.default import DefaultListener
 from .exceptions import UnknownProviderName, TestIgnoredException
+from checking.helpers.exception_traceback import exception_with_assert
 
 # Tests listener
 _listener: Listener
@@ -284,6 +285,7 @@ def _run_test(test: Test) -> bool:
         _listener.on_success(test)
         return True
     except AssertionError as e:
+        e = exception_with_assert(e)
         test.stop(e)
         _listener.on_failed(test, e)
         global _actual_failed_count

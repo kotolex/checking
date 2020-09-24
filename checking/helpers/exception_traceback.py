@@ -3,6 +3,15 @@ import traceback
 from typing import List, Tuple
 
 SEPARATOR = os.path.sep
+CASES = {'==': 'Objects are not equals (#1 != #2)',
+         '!=': 'Objects are equal (#1 == #2)',
+         '>=': '#1 is less than #2',
+         '<=': '#1 is greater than #2',
+         '<': '#1 is greater or equal to #2',
+         '>': '#1 is less or equal to #2',
+         ' is not ': '#1 is #2 (points to one object)',
+         ' is ': '#1 is not #2 (points to different objects)',
+         }
 
 
 def _is_need_to_hide(name: str) -> bool:
@@ -41,3 +50,35 @@ def get_trace_filtered_by_filename(exception_: Exception) -> str:
     :return: the string, where each note is defined \n
     """
     return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception_) if not _is_need_to_hide(a)])
+
+
+def exception_with_assert(e: Exception) -> Exception:
+    """
+    Tries to handle with assert of python
+    :param e: raised exception
+    :return: argument exception if no 'assert' in line or changed exception otherwise
+    """
+    trace = get_trace(e)
+    trace_last_line: str = trace[-1][-1]
+    # if no assert in traceback then just reruns original exception
+    if 'assert ' not in trace_last_line:
+        return e
+    trace_last_line = trace_last_line.replace('-->', '').replace('assert', '').lstrip()
+    message = ''
+    # if comma in line, so message text exist, parse it
+    if ',' in trace_last_line:
+        message = trace_last_line.partition(',')[2].lstrip()
+        trace_last_line = trace_last_line.replace(message, '')
+        trace_last_line = trace_last_line.replace(',', '').rstrip()
+        message += '\n'
+    for key, value in CASES.items():
+        if key in trace_last_line:
+            first, second = [char.lstrip().rstrip() for char in trace_last_line.split(key)]
+            message = f"{message}{value.replace('#1', first).replace('#2', second)}"
+            break
+    else:
+        message = f'{message}"{trace_last_line}" returns False but True was expected'
+    error = AssertionError(message)
+    error.__traceback__ = e.__traceback__
+    del e
+    return error

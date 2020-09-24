@@ -49,6 +49,15 @@ You can name your tests however you like, just put that @test decorator.
 You can use standard Python asserts if you want, 
 but it is recommended to use simple and readable asserts this library provides.
 
+By default, even if you will use simple python assert like 
+
+`assert 1==2` 
+
+**checking** will give you a readable message, for example 
+
+`Objects are not equals (1 != 2)`
+
+
 ###### Standard checks
 
 ```
