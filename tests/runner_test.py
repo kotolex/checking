@@ -182,7 +182,7 @@ class RunnerTest(TestCase):
 
     def test_provider_next_iter(self):
         clear()
-        TestSuite.get_instance().providers['test2'] = lambda: [1, 2, 3]
+        TestSuite.get_instance().providers['test2'] = lambda: [1, 2, 3], str
         cycle = r._provider_next('test2')
         self.assertEqual('123', ''.join([str(_) for _ in cycle]))
 
@@ -200,7 +200,7 @@ class RunnerTest(TestCase):
 
         clear()
         count = COUNT
-        TestSuite.get_instance().providers['test2'] = Fake
+        TestSuite.get_instance().providers['test2'] = Fake, str
         cycle = r._provider_next('test2')
         self.assertEqual('1', ''.join([str(_) for _ in cycle]))
         self.assertEqual(count + 6, COUNT)
@@ -260,7 +260,7 @@ class RunnerTest(TestCase):
         suite = TestSuite.get_instance()
         test_case = Test('some', lambda z: equals(z, 3))
         test_case.provider = 'test2'
-        suite.providers['test2'] = lambda: [1, 2, 4, 5]
+        suite.providers['test2'] = lambda: [1, 2, 4, 5], str
         suite.get_or_create("group").add_test(test_case)
         r.start(max_fail=1, listener=TestListener())
         self.assertEqual(len(suite.failed()), 1)

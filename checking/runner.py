@@ -256,7 +256,7 @@ def _provider_next(provider_name: str) -> Any:
     :param provider_name: name of the provider
     :return: generator
     """
-    iter_ = TestSuite.get_instance().providers[provider_name]()
+    iter_ = TestSuite.get_instance().providers[provider_name][0]()
     for param in iter_:
         yield param
     # If it were file at provider - try to close it

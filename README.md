@@ -221,10 +221,14 @@ def switch_to_attribute():
 
 ## Data Providers
 
-Often you need to run the same test with different data, there is @data annotation for that target. Mark function you want with @data annotation and
+Often you need to run the same test with different data, there is @provider annotation for that target. Mark function you want with @provider annotation and
 you can use it in your tests. The function for data-provider should not have arguments and it has to return iterable, sequence or generator.
 
-**Important!** Name of the provider has to be unique, you can specify it in parameter @data(name='provider') or it takes the function name by default
+**Important!** Name of the provider has to be unique, you can specify it in parameter 
+
+`@provider(name='provider')` 
+
+or it takes the function name by default.
 It it not necessary to have data-provider with the test (in the same module)
 
 Data-provider takes values one by one and pushes it to your test.
@@ -241,6 +245,43 @@ def check_sum(it):  # Here we must have 1 argument for values of data-provider
     equals(it[0] + it[1], it[2])  # Checks sum of first and second elements of tuple equal to third element
 
 ```
+You can specify mapping function to map values from the provider to some format, 
+this string representation will be shown in test parameter, by default it use str(value) result.
+Pay attention - mapping function just change parameter representation in logs, console or report, but not the values itself!
+
+
+```
+#!python
+from checking import *
+
+
+class Cat:
+    def show(self):
+        return f'Cat from {id(self)}'
+
+
+@provider(map_to_str=Cat.show) # uses show() of Cat to show values
+def cats():
+    return (Cat(), Cat())
+
+
+@test(data_provider='cats')
+def check_cat(it):
+    assert isinstance(it, Cat) # assert 'it' is a Cat object
+
+
+if __name__ == '__main__':
+    start(3)
+```
+
+In test logs you will see following information 
+
+```text
+Test "__main__.check_cat" [Cat from 140288585438160] SUCCESS!
+----------
+Test "__main__.check_cat" [Cat from 140288585437776] SUCCESS!
+```
+
 If you need to use text file as a provider and get data line by line, you can use DATA_FILE function:
 
 ```

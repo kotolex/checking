@@ -136,6 +136,10 @@ class Listener:
     @staticmethod
     def _get_test_arg_short_without_new_line(test: Test):
         if test.provider:
-            short_ = short(test.argument).replace('\n', '')
+            suite = TestSuite.get_instance()
+            mapping_function = str
+            if len(suite.providers[test.provider]) == 2:
+                mapping_function = suite.providers[test.provider][1]
+            short_ = short(mapping_function(test.argument)).replace('\n', '')
             return f'[{short_}]'
         return ''

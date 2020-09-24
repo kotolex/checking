@@ -44,7 +44,7 @@ class Test(TestCase):
         self.status: str = 'created'
         # Raised exception
         self.reason: Optional[Exception] = None
-        # Parameters to attach to html report (not used anythere else)
+        # Parameters to attach to html report (not used anywhere else)
         self.report_params = {}
 
     def set_group(self, group):

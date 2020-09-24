@@ -81,7 +81,8 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     return real_decorator
 
 
-def provider(*args, enabled: bool = True, name: str = None, cached: bool = False):
+def provider(*args, enabled: bool = True, name: str = None, cached: bool = False,
+             map_to_str: Callable[[Any], str] = str):
     """
     The annotation that marks a data provider, that is, a function that supplies data to a test. Such a function should
     return Iterable or Sequence, otherwise will be an error. It is not possible at compile time to determine if the
@@ -95,6 +96,7 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
     :param cached: flag to save all provider data in memory and use it on second use. Can be useful only when provider
     used more than once in test-suite and you do not want to get data again from some source like filesystem or db.
     WARNING! Cache use memory, so it can take a lot of it for big data volumes.
+    :param map_to_str: function-mapper to represent item of provider
     :return: fake
     :raises: DuplicateNameException if provider with such name is already exists
     :raises: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
@@ -110,7 +112,7 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
         providers = TestSuite.get_instance().providers
         if name_ in providers:
             raise DuplicateNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
-        providers[name_] = func
+        providers[name_] = (func, map_to_str)
         nonlocal cached
         if cached:
             TestSuite.get_instance().cached.append(name_)
@@ -326,7 +328,7 @@ def DATA_FILE(file_path: str, provider_name: str = None, cached: bool = False, e
         del frame
 
 
-def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
+def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None, map_to_str: Callable[[Any], str] = str):
     """
     Sugar for simplify providing data, use it when provider is simple and can be written in one-liner, like list
     comprehension or generator expression.
@@ -334,6 +336,7 @@ def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
     User must call it at the global module namespace, but not at fixtures or in tests!
     :param value: sequence/iterable or any object you can use with for
     :param name: name for the provider, if empty then 'container' will be used as name
+    :param map_to_str: function-mapper to represent item of provider
     :return: None
     """
 
@@ -341,4 +344,4 @@ def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None):
         return value
 
     name = name if name is not None else 'container'
-    provider(name=name)(_)
+    provider(name=name, map_to_str=map_to_str)(_)
