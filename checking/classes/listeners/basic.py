@@ -1,3 +1,5 @@
+from threading import Lock
+
 from ..basic_test import Test
 from ..basic_case import TestCase
 from ..basic_suite import TestSuite
@@ -143,3 +145,10 @@ class Listener:
             short_ = short(mapping_function(test.argument)).replace('\n', '')
             return f'[{short_}]'
         return ''
+
+    @staticmethod
+    def print_sync(value):
+        lock = Lock()
+        lock.acquire(blocking=True, timeout=1.0)
+        print(value)
+        lock.release()

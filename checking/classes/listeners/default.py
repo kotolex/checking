@@ -5,7 +5,6 @@ from ..basic_test import Test
 from ..basic_suite import TestSuite
 from checking.helpers.others import short
 from checking.helpers.others import format_seconds
-from checking.helpers.others import print_splitter_line
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 
 
@@ -21,27 +20,26 @@ class DefaultListener(Listener):
 
     def on_before_suite_failed(self, test_suite):
         super().on_before_suite_failed(test_suite)
-        print(f'Before suite "{test_suite.name}" failed! Process stopped!')
+        Listener.print_sync(f'Before suite "{test_suite.name}" failed! Process stopped!')
 
     def on_suite_starts(self, test_suite: TestSuite):
         super().on_suite_starts(test_suite)
-        print(f'Starting suite "{test_suite.name}"')
+        Listener.print_sync(f'Starting suite "{test_suite.name}"')
 
     def on_empty_suite(self, test_suite: TestSuite):
         super().on_empty_suite(test_suite)
-        print('No tests were found! Stopped...')
+        Listener.print_sync('No tests were found! Stopped...')
 
     def on_dry_run(self, test_suite: TestSuite):
         super().on_dry_run(test_suite)
-        print_splitter_line()
-        print("DRY RUN MODE! No real tests will be executed! All fixtures will be ignored!")
-        print_splitter_line()
+        text = f'{"-" * 10}\nDRY RUN MODE! No real tests will be executed! All fixtures will be ignored!\n{"-" * 10}'
+        Listener.print_sync(text)
 
     def on_suite_stop_with_max_fail(self, max_fail: int):
         super().on_suite_stop_with_max_fail(max_fail)
-        print_splitter_line()
-        print(f"ATTENTION! Suite stops because of reaching maximum count of failed tests={max_fail}")
-        print_splitter_line()
+        text = f'{"-" * 10}\nATTENTION! Suite stops because of reaching maximum count of failed tests={max_fail}' \
+               f'\n{"-" * 10}'
+        Listener.print_sync(text)
 
     def on_suite_ends(self, test_suite: TestSuite):
         super().on_suite_ends(test_suite)
@@ -83,9 +81,9 @@ class DefaultListener(Listener):
                 print('')
                 self.counts = 0
         elif self.verbose > 1:
-            print_splitter_line()
             add_ = Listener._get_test_arg_short_without_new_line(test)
-            print(f'Test "{test}" {add_} SUCCESS!')
+            text = f'{"-" * 10}\nTest "{test}" {add_} SUCCESS!\n'
+            Listener.print_sync(text)
 
     def on_broken(self, test: Test, exception_: Exception):
         super().on_broken(test, exception_)
@@ -98,21 +96,23 @@ class DefaultListener(Listener):
     def on_ignored(self, test: Test, fixture_type: str):
         super().on_ignored(test, fixture_type)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
-        print(f'Because of fixture "{fixture_type}" tests "{test}" {add_} was IGNORED!')
-        print_splitter_line()
+        text = f'Because of fixture "{fixture_type}" tests "{test}" {add_} was IGNORED!\n{"-" * 10}'
+        Listener.print_sync(text)
 
     def on_fixture_failed(self, group_name: str, fixture_type: str, exception_: Exception):
         super().on_fixture_failed(group_name, fixture_type, exception_)
-        print_splitter_line()
-        print(f'Fixture {fixture_type} "{group_name}" failed!')
+        text = f'{"-" * 10}\nFixture {fixture_type} "{group_name}" failed!\n'
         for tb in (e for e in traceback.extract_tb(exception_.__traceback__)):
-            print(f'File "{tb.filename}", line {tb.lineno}, in {tb.name}')
+            text = f'{text}File "{tb.filename}", line {tb.lineno}, in {tb.name}\n'
         print(exception_)
+        text = f'{text}{exception_}'
+        Listener.print_sync(text)
 
     def on_ignored_with_provider(self, test: Test):
         super().on_ignored_with_provider(test)
-        print(f'Provider "{test.provider}" for {test} not returns iterable or empty!'
-              f' All tests with provider were IGNORED!')
+        text = f'Provider "{test.provider}" for {test} not returns iterable or empty! ' \
+               f'All tests with provider were IGNORED!'
+        Listener.print_sync(text)
 
     def on_test_starts(self, test: Test):
         super().on_test_starts(test)
@@ -121,9 +121,10 @@ class DefaultListener(Listener):
         super().on_ignored_by_condition(test, exc)
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         if type(exc) is SystemExit:
-            print(f'Test "{test}" {add_} ignored because of sys.exit() call inside function!')
+            Listener.print_sync(f'Test "{test}" {add_} ignored because of sys.exit() call inside function!')
         else:
-            print(f'Test "{test}" {add_} ignored because of condition ({test.only_if.__module__}.{test.only_if})!')
+            Listener.print_sync(
+                f'Test "{test}" {add_} ignored because of condition ({test.only_if.__module__}.{test.only_if})!')
 
     def _failed_or_broken(self, test: Test, exception_: Exception, _result: str):
         _letter = f'{_result.upper()}!'
@@ -134,9 +135,9 @@ class DefaultListener(Listener):
                 print('')
                 self.counts = 0
         else:
+            text = ''
             if self.verbose > 0:
-                print_splitter_line()
+                text = f'{"-" * 10}\n'
             add_ = Listener._get_test_arg_short_without_new_line(test)
-            print(f'Test "{test}" {add_} {_letter}')
-            print(get_trace_filtered_by_filename(exception_))
-            print(exception_)
+            text = f'{text}Test "{test}" {add_} {_letter}\n{get_trace_filtered_by_filename(exception_)}\n{exception_}'
+            Listener.print_sync(text)
