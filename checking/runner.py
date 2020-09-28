@@ -76,6 +76,9 @@ def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None,
         common_parameters.update(params)
     if threads < 1:
         threads = 1
+    # if there is only one test group no need more than 1 thread!
+    if threads > 1 and len(test_suite.groups) <= 1:
+        threads = 1
     if dry_run:
         _dry_run(test_suite)
     # Check if all used provider names are found
