@@ -58,6 +58,7 @@ class DefaultListener(Listener):
         print(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
               f'{b_count}, ignored tests: {i_count}')
         print(f'Time elapsed: {elapsed}.')
+        print(f'Success percent: {success_count / (all_count):.2%}')
         if self.verbose == 3:
             if f_count:
                 print(f'\nFailed tests are:')
