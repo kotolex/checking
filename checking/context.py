@@ -1,12 +1,11 @@
 import builtins
-from io import StringIO, BytesIO
 from inspect import ismodule
+from io import StringIO, BytesIO
 from contextlib import contextmanager
-from typing import Any, Type, Union, List, Tuple, Set
+from typing import Any, Type, Iterable, List
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
-from .classes.mocking.doubles import Spy
 from .classes.mocking.write_wrapper import WriteWrapper
 
 
@@ -33,6 +32,33 @@ def mock_builtins(function_name: str, func):
     finally:
         if temp_:
             setattr(b, function_name, temp_)
+
+
+@contextmanager
+def mock_input(iterable_: Iterable):
+    """
+    Context manager for mocking standard input function. Takes iterable argument to get data from. Pay attention that
+    all values will be cast to str, like real input works (always returns str).
+    It is just sugar instead of mock_builtins('input')
+    :param iterable_: container with data to set in input
+    :return: None
+    """
+    iterator = iter(iterable_)
+    with mock_builtins('input', lambda *args: str(next(iterator))):
+        yield
+
+
+@contextmanager
+def mock_print(container: List[Any]):
+    """
+    Context manager for mocking standard print function. Takes list as argument to collect data.
+    It is just sugar instead of mock_builtins('print'). If you need some specific behaviour, like using some print
+    arguments (file, end etc.) than use mock_input('print'...
+    :param container: List of any types to save data
+    :return: None
+    """
+    with mock_builtins('print', lambda arg: container.append(arg)):
+        yield container
 
 
 @contextmanager

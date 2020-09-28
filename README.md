@@ -505,6 +505,52 @@ def mock_builtins_input():
 
 ```
 
+More convenient way is to use mock_input or mock_print for simple and most common cases.
+From code above we can test our_weird_function this way
+
+```#!python
+@test
+def check_input():
+    with mock_input(['test']): # Now input() just returns 'test', it does not wait for user input.
+        result_text = our_weird_function_with_input_inside()
+        equals('TEST', result_text)
+
+```
+
+Now let's say we have simple function with print inside and need to test it:
+```#!python
+def my_print(x):
+    print(x)
+
+@test
+def check_print():
+    with mock_print([]) as result: # now print just collects all to list result
+        my_print(1)
+        my_print('1')
+    equals([1,'1'], result) # checks all args are in result list
+
+```
+
+and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
+
+```#!python
+def use_both():
+    while True:
+        word = input('text>>>')
+        if word == 'exit':
+            break
+        print(word)
+
+@test
+def check_print_and_input():
+    # you can see inputs will get 'a','b' and 'exit' to break cycle, all args will
+    # be collected to result list
+    with mock_input(['a', 'b', 'exit']), mock_print([]) as result:
+        use_both()
+    equals(['a', 'b'], result)
+
+```
+
 **2. Fake function of the 3-d party library**
 
 For working with other modules and libraries in test module, you need to import this module and to mock it function.

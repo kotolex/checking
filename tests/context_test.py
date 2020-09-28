@@ -1,6 +1,6 @@
 from unittest import main, TestCase
 
-from checking.context import mock_open
+from checking.context import mock_open, mock_print, mock_input
 
 
 def read_lines():
@@ -59,6 +59,23 @@ def write_bytes_mode_and_flush():
 def both_context():
     with open('my_file.txt', encoding='utf-8') as f, open('anoter.txt', 'wt') as f2:
         f2.write(f.read(1))
+
+
+def my_input():
+    d = input()
+    return d.upper()
+
+
+def use_both():
+    while True:
+        word = input('text>>>')
+        if word == 'exit':
+            break
+        print(word)
+
+
+def my_print(x):
+    print(x)
 
 
 class ContextTest(TestCase):
@@ -123,6 +140,22 @@ class ContextTest(TestCase):
         with mock_open() as a_list:
             write_bytes_mode_and_flush()
         self.assertEqual(b'test', a_list[0])
+
+    def test_mock_input(self):
+        with mock_input(['test']):
+            result = my_input()
+        self.assertEqual('TEST', result)
+
+    def test_mock_print(self):
+        with mock_print([]) as result:
+            my_print(1)
+            my_print('1')
+        self.assertEqual([1, '1'], result)
+
+    def test_both_input_and_print(self):
+        with mock_input(['a', 'b', 'exit']), mock_print([]) as result:
+            use_both()
+        self.assertEqual(['a', 'b'], result)
 
 
 if __name__ == '__main__':
