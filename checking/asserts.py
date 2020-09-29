@@ -1,6 +1,7 @@
 from typing import Any, Union, Sequence, Sized
 
 from .helpers.others import short
+from .exceptions import SkipTestException
 from .exceptions import TestBrokenException
 
 
@@ -87,20 +88,30 @@ def is_not_none(obj: Any, message: str = None):
 
 def test_fail(message: str = None):
     """
-    Forced failure of the test, can be used in rare conditions instead of checking obviously wrong conditions.
+    Intentionally failure of the test, can be used in rare conditions instead of checking obviously wrong conditions.
     :param message: is the optional message
     :return: None
     """
-    raise AssertionError(message if message else 'Test was forcibly failed!')
+    raise AssertionError(message if message else 'Test was intentionally failed!')
 
 
 def test_brake(message: str = None):
     """
-    Forcibly bring the test to a broken state, can be used in rare conditions instead of throwing exceptions.
+    Intentionally bring the test to a broken state, can be used in rare conditions instead of throwing exceptions.
     :param message: is the optional message
     :return: None
     """
-    raise TestBrokenException(message if message else 'Test was forcibly broken!')
+    raise TestBrokenException(message if message else 'Test was intentionally broken!')
+
+
+def test_skip(message: str = None):
+    """
+    Intentionally bring the test to a IGNORED state, can be used in rare situations, when some condition makes
+    no further test execution is possible.
+    :param message: is the optional message
+    :return: None
+    """
+    raise SkipTestException(message if message else 'Test was intentionally ignored!')
 
 
 def contains(part: Any, whole: Any, message: str = None):

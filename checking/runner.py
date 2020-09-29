@@ -10,8 +10,9 @@ from checking.helpers.report import generate
 from .classes.listeners.basic import Listener
 from .classes.exc_thread import run_with_timeout
 from .classes.listeners.default import DefaultListener
-from .exceptions import UnknownProviderName, TestIgnoredException
 from checking.helpers.exception_traceback import exception_with_assert
+from .exceptions import UnknownProviderName, TestIgnoredException, OnlyIfFailedException, SkipTestException
+
 
 # Tests listener
 _listener: Listener
@@ -298,7 +299,7 @@ def _run_test(test: Test) -> bool:
             global _can_run
             _can_run = False
             _listener.on_suite_stop_with_max_fail(_max_fail)
-    except (TestIgnoredException, SystemExit) as e:
+    except (TestIgnoredException, OnlyIfFailedException, SkipTestException, SystemExit) as e:
         test.stop(e)
         _listener.on_ignored_by_condition(test, e)
     except Exception as e:

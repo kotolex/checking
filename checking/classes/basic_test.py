@@ -2,7 +2,7 @@ from typing import Callable, Any, Optional
 
 from .timer import Timer
 from .basic_case import TestCase
-from ..exceptions import TestIgnoredException
+from ..exceptions import TestIgnoredException, OnlyIfFailedException, SkipTestException
 
 
 class Test(TestCase):
@@ -58,7 +58,7 @@ class Test(TestCase):
         """
         if self.only_if:
             if not self.only_if():
-                raise TestIgnoredException()
+                raise OnlyIfFailedException()
         self.timer.start()
         if self.provider is not None:
             self.test(self.argument)
@@ -75,11 +75,8 @@ class Test(TestCase):
         self.reason = exception_
         if not exception_:
             self.status = 'success'
-        elif type(exception_) in (TestIgnoredException, SystemExit):
+        elif type(exception_) in (TestIgnoredException,  SkipTestException, OnlyIfFailedException, SystemExit):
             self.status = 'ignored'
-            self.timer.start_time = -1
-            self.timer._end_time = -1
-            self.timer.duration = 0
         elif type(exception_) is AssertionError:
             self.status = 'failed'
         else:

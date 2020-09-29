@@ -123,7 +123,7 @@ The test fails if any exception is raised.
 
 ###### Managing test execution
 
-Sometimes, you need to fail or break a test during runtime due to some reason (wrong OS, wrong parameters, etc.)
+Sometimes, you need to fail, skip or break a test during runtime due to some reason (wrong OS, wrong parameters, etc.)
 
 ```
 #!python
@@ -137,6 +137,11 @@ def must_fail_on_condition():
 def must_be_broken():
     if some_condition():
         test_break('Expected to break.')
+
+@test
+def must_be_ignored():
+    if some_condition():
+        test_skip('Expected to be ignored.')
 ```
 
 ### Soft and Fluent Asserts ###

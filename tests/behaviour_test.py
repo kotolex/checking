@@ -296,6 +296,86 @@ class BehaviourTest(TestCase):
     def test_format_seconds_with_minute_and_second(self):
         self.assertEqual(format_seconds(61), "1 minute(s) and 1.00 seconds")
 
+    def test_provider_with_fail(self):
+        def _if2(it):
+            if it == 2:
+                test_fail()
+
+        clear()
+        CONTAINER([1, 2, 3, 4], name='three')
+        test(data_provider="three")(_if2)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(3, len(TestSuite.get_instance().success()))
+        self.assertEqual(1, len(TestSuite.get_instance().failed()))
+        self.assertEqual(4, TestSuite.get_instance().tests_count())
+
+    def test_provider_with_brake(self):
+        def _if2(it):
+            if it == 2:
+                test_brake()
+
+        clear()
+        CONTAINER([1, 2, 3, 4], name='three')
+        test(data_provider="three")(_if2)
+        start(listener=Listener(0))
+        self.assertEqual(1, len(TestSuite.get_instance().broken()))
+        self.assertEqual(3, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(4, TestSuite.get_instance().tests_count())
+
+    def test_provider_with_skip(self):
+        def _if2(it):
+            if it == 2:
+                test_skip()
+
+        clear()
+        CONTAINER([1, 2, 3, 4], name='three')
+        test(data_provider="three")(_if2)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(3, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, len(TestSuite.get_instance().ignored()))
+        self.assertEqual(4, TestSuite.get_instance().tests_count())
+
+    def test__with_brake(self):
+        def _if2():
+            test_brake()
+
+        clear()
+        test(_if2)
+        start(listener=Listener(0))
+        self.assertEqual(1, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
+    def test__with_fail(self):
+        def _if2():
+            test_fail()
+
+        clear()
+        test(_if2)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(1, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
+    def test__with_skip(self):
+        def _if2():
+            test_skip()
+
+        clear()
+        test(_if2)
+        start(listener=Listener(0))
+        self.assertEqual(0, len(TestSuite.get_instance().broken()))
+        self.assertEqual(0, len(TestSuite.get_instance().success()))
+        self.assertEqual(0, len(TestSuite.get_instance().failed()))
+        self.assertEqual(1, len(TestSuite.get_instance().ignored()))
+        self.assertEqual(1, TestSuite.get_instance().tests_count())
+
 
 if __name__ == '__main__':
     main()

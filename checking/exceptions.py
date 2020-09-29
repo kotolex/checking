@@ -31,7 +31,21 @@ class TestBrokenException(Exception):
 
 class TestIgnoredException(Exception):
     """
-    It will be thrown to notify that the test is ignored (fixtures failed or only_if).
+    It will be thrown to notify that the test is ignored because of fixtures.
+    """
+    pass
+
+
+class OnlyIfFailedException(Exception):
+    """
+    It will be thrown to notify that the test is ignored because of only_if function failed.
+    """
+    pass
+
+
+class SkipTestException(Exception):
+    """
+    It will be thrown when user use function test_skip() inside test.
     """
     pass
 

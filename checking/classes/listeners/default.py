@@ -5,6 +5,8 @@ from ..basic_test import Test
 from ..basic_suite import TestSuite
 from checking.helpers.others import short
 from checking.helpers.others import format_seconds
+from checking.exceptions import SkipTestException
+from checking.exceptions import OnlyIfFailedException
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename
 
 
@@ -122,9 +124,11 @@ class DefaultListener(Listener):
         add_ = '' if not test.argument else f'[{short(test.argument)}]'
         if type(exc) is SystemExit:
             Listener.print_sync(f'Test "{test}" {add_} ignored because of sys.exit() call inside function!')
-        else:
+        elif type(exc) is OnlyIfFailedException:
             Listener.print_sync(
                 f'Test "{test}" {add_} ignored because of condition ({test.only_if.__module__}.{test.only_if})!')
+        elif type(exc) is SkipTestException:
+            Listener.print_sync(f'{exc.args[0]}\nTest "{test}" {add_} ignored because of test_skip() call!')
 
     def _failed_or_broken(self, test: Test, exception_: Exception, _result: str):
         _letter = f'{_result.upper()}!'

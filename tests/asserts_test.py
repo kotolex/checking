@@ -148,17 +148,27 @@ class AssertsTest(TestCase):
     def test_failing_test_default(self):
         with self.assertRaises(AssertionError) as e:
             test_fail()
-        self.assertEqual("Test was forcibly failed!", e.exception.args[0])
+        self.assertEqual("Test was intentionally failed!", e.exception.args[0])
 
     def test_failing_test_with_message(self):
         with self.assertRaises(AssertionError) as e:
             test_fail('message')
         self.assertEqual("message", e.exception.args[0])
 
+    def test_skip_test_default(self):
+        with self.assertRaises(SkipTestException) as e:
+            test_skip()
+        self.assertEqual("Test was intentionally ignored!", e.exception.args[0])
+
+    def test_skip_test_with_message(self):
+        with self.assertRaises(SkipTestException) as e:
+            test_skip('message')
+        self.assertEqual("message", e.exception.args[0])
+
     def test_braking_test_default(self):
         with self.assertRaises(TestBrokenException) as e:
             test_brake()
-        self.assertEqual("Test was forcibly broken!", e.exception.args[0])
+        self.assertEqual("Test was intentionally broken!", e.exception.args[0])
 
     def test_braking_test_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
