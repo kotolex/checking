@@ -198,8 +198,7 @@ def _run_test_with_provider(test):
                 list_of_arguments.append(param)
             is_one_of_before_test_failed = _run_test_with_before_and_after(clone, False)
             if is_one_of_before_test_failed:
-                print(f'Because of "before_test" all tests for {test} with data provider '
-                      f'"{test.provider}" was IGNORED!')
+                _listener.on_before_provider_failed(test, provider)
                 break
         # If no values at provider - ignore test
         if not is_any_value_provides:
@@ -210,7 +209,7 @@ def _run_test_with_provider(test):
                 test_suite.cache[provider] = tuple(list_of_arguments)
     except TypeError as e:
         if 'is not iterable' not in e.args[0]:
-            print(e)
+            _listener.on_error_with_provider(provider, e)
             raise
         else:
             test.stop(TestIgnoredException(f'Error with provider {test.provider}'))
@@ -268,9 +267,8 @@ def _provider_next(provider_name: str) -> Any:
         try:
             iter_.close()
         except Exception as ex:
-            print(ex)
-            pass
-            # explicitly ignore
+            _listener.on_error_with_provider(provider_name, exc=ex)
+            # explicitly ignore, just notify our listener
 
 
 def _run_test(test: Test) -> bool:

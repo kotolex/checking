@@ -485,7 +485,7 @@ def another_func():
 
 For testing purposes you sometimes need to fake some behaviour or to isolate your application from any other classes/libraries etc.
 
-If you need your test to use fake object, without doing any real calls, yoy can use mocks:
+If you need your test to use fake object, without doing any real calls, you can use mocks:
 
 
 **1. Fake one of the builtin function.**
