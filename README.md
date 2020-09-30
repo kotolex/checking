@@ -735,7 +735,8 @@ tests, 2 - detail, indicating successful and fallen tests, 3 - detail and at the
 If verbose is not between 0 and 3, then 0 is accepted
 
 Example (name and verbose)
-```#!python
+```
+#!python
 from checking import *
 
 
@@ -761,9 +762,10 @@ def broken():
 
 if __name__ == '__main__':
     start(suite_name='My Suite', verbose=0)
-
 ```
+
 This code will gave output (mention dots and chars!):
+
 ```text
 Starting suite "My Suite"
 ..FB
