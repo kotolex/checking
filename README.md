@@ -811,7 +811,8 @@ Broken tests are:
 ```
 **groups** is the list of test-group names to run. Only tests with that group will be run.
 
-```#!python
+```
+#!python
 from checking import *
 
 
@@ -828,12 +829,14 @@ def ui_check():
 if __name__ == '__main__':
     start(verbose=3, groups=['api'])
 ```
+
 When you runs this example, only function api_check will be executed, because we specify groups to run.
 
 
 **params**  is the dictionary of parameters available in all tests (general run parameters)
 
-```#!python
+```
+#!python
 from checking import *
 
 
@@ -855,7 +858,8 @@ number of tests, params of provider etc. No real tests or fixtures will be execu
 
 **filter_by_name** if specified - runs only tests with name **containing** this parameter
 
-```#!python
+```
+#!python
 from checking import *
 
 
