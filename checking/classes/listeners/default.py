@@ -116,6 +116,15 @@ class DefaultListener(Listener):
                f'All tests with provider were IGNORED!'
         Listener.print_sync(text)
 
+    def on_error_with_provider(self, name: str, exc: Exception):
+        super().on_error_with_provider(name, exc)
+        Listener.print_sync(exc)
+
+    def on_before_provider_failed(self, test: Test, provider: str):
+        super().on_before_provider_failed(test, provider)
+        Listener.print_sync(f'Because of "before_test" all tests for {test} with data provider '
+                            f'"{provider}" was IGNORED!')
+
     def on_test_starts(self, test: Test):
         super().on_test_starts(test)
 

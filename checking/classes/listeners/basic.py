@@ -83,6 +83,24 @@ class Listener:
         """
         pass
 
+    def on_error_with_provider(self, name: str, exc: Exception):
+        """
+        It calls when some provider error appears, which is not expected
+        :param name: unique name of the provider
+        :param exc: raised exception
+        :return: None
+        """
+        pass
+
+    def on_before_provider_failed(self, test: Test, provider: str):
+        """
+        It calls when 'before' fixture failef for test with provider
+        :param test: TestCase
+        :param provider: unique name of the provider
+        :return: None
+        """
+        pass
+
     def on_success(self, test: Test):
         """
         It calls when the test finished successfully.
