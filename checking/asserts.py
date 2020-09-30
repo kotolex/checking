@@ -1,6 +1,6 @@
 from typing import Any, Union, Sequence, Sized
 
-from .helpers.others import short
+from .helpers.others import short, diff
 from .exceptions import SkipTestException
 from .exceptions import TestBrokenException
 
@@ -41,6 +41,9 @@ def equals(expected: Any, actual: Any, message: str = None):
     if (expected is actual) or expected == actual:
         return
     _message = _mess(message)
+    differs = diff(expected, actual)
+    if differs:
+        _message = f'{_message}{differs}\n'
     raise AssertionError(f'{_message}Objects are not equal!\n'
                          f'Expected:"{short(expected, 150)}" <{type(expected).__name__}>\n'
                          f'Actual  :"{short(actual, 150)}" <{type(actual).__name__}>!')
