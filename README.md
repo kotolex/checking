@@ -534,6 +534,7 @@ def check_print():
     equals([1,'1'], result) # checks all args are in result list
 ```
 and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
+
 ```#!python
 def use_both():
     while True:
@@ -608,7 +609,6 @@ def mock_open_both():
 
 ```
 
-
 **4. Spy object**
 
 Spy is the object which has all attributes of original, but spy not performed any action, 
@@ -627,8 +627,6 @@ def spy_for_str():
     spy = Spy('it is a string') # Spy, which is like str, but it is not str!
     function_with_str_inside(spy) # Send our spy instead a str
     is_true(spy.upper.was_called()) # Verify upper was called
-    
-
 ```
 
 You can even specify what to return when some function of the spy will be called!
@@ -648,7 +646,6 @@ def spy_with_return():
     result = function_with_str_inside(spy)
     is_true(spy.upper.was_called())
     equals('test', result) # verify our spy returns 'test'
-
 ```
 
 Spy object can be created without original inner object and can be call itself, it can be useful when you need
@@ -660,7 +657,6 @@ def check_spy():
     spy = Spy()  # Create "empty" spy
     spy()  # Call it
     is_true(spy.was_called())  # Checks spy was called
-
 ```
 
 **5. TestDouble object**
@@ -676,7 +672,6 @@ def check_double():
     equals(6, len(spy))  # Len returns 6 - the real length of original object ("string")
     spy.len.returns(100)  # Fake len result
     equals(100, len(spy))  # Len now returns 100
-
 ```
 
 **6. Stub object**
@@ -705,8 +700,8 @@ def check_with_stub():
     stub = Stub(value=2) # Creates stub with attribute value=2
     stub.complicate_function.returns(2) # Says, when complicate_function will be called returns 2
     equals(6, function(stub))  # Asserts 6 == 2+(2*2)
-
 ```
+
 Pay attention - when you look for some attribute in stub - it always has it! But it will be a wrapper to use with 
 expression like `stub.any_attribute.returns('test')`. 
 
