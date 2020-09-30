@@ -506,14 +506,11 @@ def mock_builtins_input():
     with mock_builtins('input', lambda : 'test'): # Now input() just returns 'test', it does not wait for user input.
         result_text = our_weird_function_with_input_inside()
         equals('TEST', result_text)
-    
-
 ```
-
 More convenient way is to use mock_input or mock_print for simple and most common cases.
 From code above we can test our_weird_function this way
-
-```#!python
+```
+#!python
 @test
 def check_input():
     with mock_input(['test']): # Now input() just returns 'test', it does not wait for user input.
@@ -523,7 +520,9 @@ def check_input():
 ```
 
 Now let's say we have simple function with print inside and need to test it:
-```#!python
+
+```
+#!python
 def my_print(x):
     print(x)
 
@@ -533,11 +532,8 @@ def check_print():
         my_print(1)
         my_print('1')
     equals([1,'1'], result) # checks all args are in result list
-
 ```
-
 and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
-
 ```#!python
 def use_both():
     while True:
@@ -553,7 +549,6 @@ def check_print_and_input():
     with mock_input(['a', 'b', 'exit']), mock_print([]) as result:
         use_both()
     equals(['a', 'b'], result)
-
 ```
 
 **2. Fake function of the 3-d party library**
