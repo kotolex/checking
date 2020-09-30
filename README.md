@@ -535,7 +535,8 @@ def check_print():
 ```
 and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
 
-```#!python
+```
+#!python
 def use_both():
     while True:
         word = input('text>>>')
@@ -555,7 +556,6 @@ def check_print_and_input():
 **2. Fake function of the 3-d party library**
 
 For working with other modules and libraries in test module, you need to import this module and to mock it function.
-
 For example, you need to test function, which is using requests.get inside, but you do not want to make real http
 request. Let it mock
 
