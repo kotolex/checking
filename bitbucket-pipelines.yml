@@ -12,3 +12,7 @@ pipelines:
           - pip
         script: # Modify the commands below to build your repository.
           - python -m unittest discover -s tests -p *_test.py
+          
+    - step:
+        script:
+          - git push --mirror git@github.com:kotolex/atest.git
