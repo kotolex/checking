@@ -15,4 +15,4 @@ pipelines:
           
     - step:
         script:
-          - git push --mirror git@github.com:kotolex/atest.git
+          - git push --mirror git@github.com:kotolex/checking.git
