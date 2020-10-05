@@ -129,7 +129,7 @@ def _is_import_in_file(file_name_: str) -> bool:
     with open(file_name_, encoding='utf-8') as file:
         for line in file:
             line = line.rstrip().replace('  ', ' ')
-            if any([element in line for element in LOOK_FOR]):
+            if any(element in line for element in LOOK_FOR):
                 return True
     return False
 
