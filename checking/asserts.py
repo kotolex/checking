@@ -36,7 +36,7 @@ def equals(expected: Any, actual: Any, message: str = None):
     :param actual: is the actual object
     :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError if the objects are not equal, indicating the objects and their types
+    :raise AssertionError if the objects are not equal, indicating the objects and their types
     """
     if (expected is actual) or expected == actual:
         return
@@ -56,7 +56,7 @@ def not_equals(expected: Any, actual: Any, message: str = None):
     :param actual: is the actual object
     :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError if objects are equal
+    :raise AssertionError if objects are equal
     """
     if (expected is actual) or expected == actual:
         _message = _mess(message)
@@ -69,7 +69,7 @@ def is_none(obj: Any, message: str = None):
     :param obj: is the checked object
     :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError with type of the object
+    :raise AssertionError with type of the object
     """
     _message = _mess(message)
     if obj is not None:
@@ -82,7 +82,7 @@ def is_not_none(obj: Any, message: str = None):
     :param obj: is the checked object
     :param message: is the message to be indicated when verification fails
     :return: None
-    :raises AssertionError
+    :raise AssertionError
     """
     _message = _mess(message)
     if obj is None:
@@ -124,8 +124,8 @@ def contains(part: Any, whole: Any, message: str = None):
     :param whole: is the entity that contains a part
     :param message: is the optional message
     :return: None
-    :raises AssertionError if one object is part of the second
-    :raises TestBrokenException if whole is not iterable or objects cannot be checked for content, for instance
+    :raise AssertionError if one object is part of the second
+    :raise TestBrokenException if whole is not iterable or objects cannot be checked for content, for instance
     1 in '123'
     """
     __contains_or_not(part, whole, message=message)
@@ -138,8 +138,8 @@ def not_contains(part: Any, whole: Any, message: str = None):
     :param whole: is the integer object that contains part
     :param message: is the optional message
     :return: None
-    :raises AssertionError if one object is part of the second
-    :raises TestBrokenException if whole is not iterable or objects cannot be checked for content, for instance
+    :raise AssertionError if one object is part of the second
+    :raise TestBrokenException if whole is not iterable or objects cannot be checked for content, for instance
     1 not in '123'
     """
     __contains_or_not(part, whole, is_contains=False, message=message)
@@ -233,7 +233,7 @@ def _get_length_if_sized(container: Sized) -> int:
     Returns length of container or raise Exception
     :param container: Sized object
     :return: length of object
-    :raises: TestBrokenException if object has ho length
+    :raise: TestBrokenException if object has ho length
     """
     try:
         return len(container)

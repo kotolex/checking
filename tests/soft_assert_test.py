@@ -102,12 +102,12 @@ class SoftAssertTest(TestCase):
 
     def test_not_none_ok(self):
         soft = SoftAssert()
-        soft.not_none(1)
+        soft.is_not_none(1)
         soft.assert_all()
 
     def test_not_none_failed(self):
         soft = SoftAssert()
-        soft.not_none(None)
+        soft.is_not_none(None)
         with self.assertRaises(AssertionError):
             soft.assert_all()
 

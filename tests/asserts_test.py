@@ -110,38 +110,38 @@ class AssertsTest(TestCase):
 
     def test_waiting_exception_with_BaseException_failed(self):
         with self.assertRaises(TestBrokenException) as e:
-            with waiting_exception(BaseException):
+            with should_raise(BaseException):
                 pass
         self.assertEqual('You must use concrete exception, except of BaseException!', e.exception.args[0])
 
     def test_waiting_exception_with_not_Exception_failed(self):
         with self.assertRaises(TestBrokenException) as e:
-            with waiting_exception('wrong'):
+            with should_raise('wrong'):
                 pass
         self.assertEqual('Exception or its subclasses expected, but got "wrong"<str>', e.exception.args[0])
 
     def test_waiting_exception_ok_with_Exception(self):
-        with waiting_exception(Exception) as e:
+        with should_raise(Exception) as e:
             x = 1 / 0
         self.assertEqual(e.message, 'division by zero')
         self.assertEqual(type(e.value.__class__), type(ZeroDivisionError))
 
     def test_waiting_exception_ok_with_concrete_exception(self):
-        with waiting_exception(ZeroDivisionError) as e:
+        with should_raise(ZeroDivisionError) as e:
             x = 1 / 0
         self.assertEqual(e.message, 'division by zero')
         self.assertEqual(type(e.value.__class__), type(ZeroDivisionError))
 
     def test_waiting_exception_with_wrong_Exception_failed(self):
         with self.assertRaises(AssertionError) as e:
-            with waiting_exception(ZeroDivisionError):
+            with should_raise(ZeroDivisionError):
                 int('a')
         self.assertEqual("Expect <class 'ZeroDivisionError'>, but raised ValueError"
                          " (\"invalid literal for int() with base 10: 'a'\")", e.exception.args[0])
 
     def test_waiting_exception_with_no_Exception_failed(self):
         with self.assertRaises(ExceptionWrapper) as e:
-            with waiting_exception(ZeroDivisionError):
+            with should_raise(ZeroDivisionError):
                 pass
         self.assertEqual("Expect exception, but none raised!", e.exception.args[0])
 

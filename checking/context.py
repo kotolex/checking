@@ -70,7 +70,7 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'', new_line: str 
     :param new_line: how to determine new line, '\n' by default, will be ignored for bytes
     :param raises: if need to raise exception on open file. If not None - other options will be ignored
     :return: list with values, which be pushed into it by write on open file
-    :raises: ValueError if on_read_* not str or bytes
+    :raise: ValueError if on_read_* not str or bytes
     """
     container = []
 
@@ -123,11 +123,11 @@ def mock(module_: Any, function_name: str, func: Any):
 
 
 @contextmanager
-def waiting_exception(exception: Type[Exception]):
+def should_raise(exception: Type[Exception]):
     """
     The context manager to check if an exception is thrown during certain actions. An example:
 
-    with waiting_exception(ZeroDivisionError) as exc:
+    with should_raise(ZeroDivisionError) as exc:
         some_action()
     print(exc.message) # Displays a message from the exception
 
@@ -135,9 +135,9 @@ def waiting_exception(exception: Type[Exception]):
     Exception (better use specific exception)
     :return: ExceptionWrapper context, which is initially empty, and when an exception is thrown, gets it in the value
     parameter
-    :raises TestBrokenException if BaseException is used or not inheritors of Exception
-    :raises AssertionError if the wrong exception is thrown, which was expected
-    :raises ExceptionWrapper if no exceptions are raised
+    :raise TestBrokenException if BaseException is used or not inheritors of Exception
+    :raise AssertionError if the wrong exception is thrown, which was expected
+    :raise ExceptionWrapper if no exceptions are raised
     """
     fake = ExceptionWrapper()
     try:
@@ -168,7 +168,7 @@ def no_exception_expected():
         some_action()
 
     :return: None
-    :raises AssertionError if the exception (any descendant of Exception) nevertheless falls
+    :raise AssertionError if the exception (any descendant of Exception) nevertheless falls
     """
     try:
         yield

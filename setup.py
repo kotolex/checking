@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="checking",
-    version="0.7.8",
+    version="0.7.9",
     author="Lex Draven",
     author_email="lexman2@yandex.ru",
     description="A small library for testing your code, made by tester for testers",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://bitbucket.org/kotolex/atest/",
+    url="https://github.com/kotolex/checking",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

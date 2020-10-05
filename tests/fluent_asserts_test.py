@@ -40,18 +40,18 @@ class FluentAssertTest(TestCase):
             verify(None).is_not_none()
 
     def test_equal(self):
-        verify(1).equal(1)
+        verify(1).equals(1)
 
     def test_equal_failed(self):
         with self.assertRaises(AssertionError):
-            verify(1).equal(2)
+            verify(1).equals(2)
 
     def test_not_equal(self):
-        verify(1).not_equal(2)
+        verify(1).not_equals(2)
 
     def test_not_equal_failed(self):
         with self.assertRaises(AssertionError):
-            verify(1).not_equal(1)
+            verify(1).not_equals(1)
 
     def test_less_than(self):
         verify(1).less_than(2)
@@ -84,15 +84,15 @@ class FluentAssertTest(TestCase):
             verify(2).greater_than('1')
 
     def test_length_equal(self):
-        verify([]).size.equal(0)
+        verify([]).size.equals(0)
 
     def test_length_equal_failed(self):
         with self.assertRaises(AssertionError):
-            verify([]).size.equal(1)
+            verify([]).size.equals(1)
 
     def test_length_equal_broken(self):
         with self.assertRaises(TestBrokenException):
-            verify(2).size.equal(2)
+            verify(2).size.equals(2)
 
     def test_length_equal_broken_not_int(self):
         with self.assertRaises(TestBrokenException):
@@ -264,7 +264,7 @@ class FluentAssertTest(TestCase):
             verify(1 == 1).is_false()
 
     def test_size_works(self):
-        verify([1, 2]).size.equal(2)
+        verify([1, 2]).size.equals(2)
 
     def test_size_failed(self):
         with self.assertRaises(TestBrokenException):
@@ -301,11 +301,11 @@ class FluentAssertTest(TestCase):
 
         test_obj = TestClass()
         test_obj.att = 10
-        verify(test_obj).attribute('att').equal(10)
+        verify(test_obj).attribute('att').equals(10)
 
     def test_attribute_failed(self):
         with self.assertRaises(AssertionError):
-            verify('text').attribute('x').equal(10)
+            verify('text').attribute('x').equals(10)
 
     def test_type_is(self):
         verify([1, 2]).type_is(list)

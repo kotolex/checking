@@ -1,5 +1,5 @@
-from typing import List, Callable
 from inspect import isfunction
+from typing import List, Callable
 
 from checking.asserts import *
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename
@@ -57,8 +57,8 @@ class SoftAssert:
         indicating.
         Supposed, that it is the final action in any test.
         :return: None
-        :raises AssertionError in the case of checks fall
-        :raises Exception if there were other exceptions during checks execution
+        :raise AssertionError in the case of checks fall
+        :raise Exception if there were other exceptions during checks execution
         """
         if not self.__check_immediately:
             for func in self.__funcs:
@@ -73,7 +73,7 @@ class SoftAssert:
     def is_none(self, obj: Any, message: str = None):
         self.check(lambda: is_none(obj, message))
 
-    def not_none(self, obj: Any, message: str = None):
+    def is_not_none(self, obj: Any, message: str = None):
         self.check(lambda: is_not_none(obj, message))
 
     def contains(self, part: Any, whole: Any, message: str = None):

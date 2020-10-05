@@ -311,7 +311,7 @@ def _check_data_providers(suite: TestSuite):
     Checks if any test use data-provider, this provider is in collected list
     :param suite: TestSuite
     :return: None
-    :raises UnknownProviderName if test uses name what is not in providers list
+    :raise UnknownProviderName if test uses name what is not in providers list
     """
     all_data_providers = [test.provider for group in suite.groups.values() for test in group.tests if test.provider]
     if not all_data_providers:

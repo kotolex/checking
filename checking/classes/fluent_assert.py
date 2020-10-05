@@ -17,13 +17,11 @@ class FluentAssert:
     def __init__(self, obj: Any):
         """
         During initialization receive an object, which need to check. It is not intended to be a class or type!
-        :param obj:
+        :param obj: Any object to check
         """
         self.__actual = obj
         self._t = type(self.__actual)
-        # Строковое представление объекта в сокращенном виде (не более 50 символов)
         self.str = short(self.__actual)
-        # Ссылка на самого себя для читаемой последовательности проверок
         self.AND = self
 
     @property
@@ -31,7 +29,7 @@ class FluentAssert:
         """
         Switch all following checks to the length of actual object
         :return: FluentAssert
-        :raises: TestBrokenException if object has no length
+        :raise: TestBrokenException if object has no length
         """
         self._check_has_len(self.__actual)
         return FluentAssert(len(self.__actual))
@@ -52,7 +50,7 @@ class FluentAssert:
         given name
         :param name: name of the attribute
         :return: FluentAssert
-        :raises: AssertionError if object has no attribute
+        :raise: AssertionError if object has no attribute
         """
         self.has_attribute(name)
         return FluentAssert(getattr(self.__actual, name))
@@ -93,7 +91,7 @@ class FluentAssert:
         Check, if the  actual object is instance of given class.
         :param type_: class to check
         :return: FluentAssert
-        :raises: AssertionError if object is not instanse of given type
+        :raise: AssertionError if object is not instanse of given type
         """
         self._check_is_type(type_)
         if isinstance(self.__actual, type_):
@@ -116,11 +114,11 @@ class FluentAssert:
         is_false(self.__actual)
         return self
 
-    def equal(self, obj: Any):
+    def equals(self, obj: Any):
         equals(self.__actual, obj)
         return self
 
-    def not_equal(self, obj: Any):
+    def not_equals(self, obj: Any):
         not_equals(self.__actual, obj)
         return self
 
@@ -175,7 +173,7 @@ class FluentAssert:
 
     def equal_to_length_of(self, obj: Sized):
         self._check_has_len(obj)
-        self.equal(len(obj))
+        self.equals(len(obj))
         return self
 
     def less_than_length_of(self, obj: Sized):

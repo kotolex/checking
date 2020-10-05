@@ -19,7 +19,7 @@ class TestAssertsBehaviour(TestCase):
 
     def test_wait_exception_test_broken_if_BaseException(self):
         def fn():
-            with waiting_exception(BaseException):
+            with should_raise(BaseException):
                 print()
 
         _run(fn)
@@ -27,7 +27,7 @@ class TestAssertsBehaviour(TestCase):
 
     def test_wait_success_test_if_Exception(self):
         def fn():
-            with waiting_exception(Exception):
+            with should_raise(Exception):
                 x = 1 / 0
 
         _run(fn)
@@ -36,7 +36,7 @@ class TestAssertsBehaviour(TestCase):
 
     def test_wait_success_test_if_concrete_exception(self):
         def fn():
-            with waiting_exception(ZeroDivisionError):
+            with should_raise(ZeroDivisionError):
                 x = 1 / 0
 
         _run(fn)
@@ -45,7 +45,7 @@ class TestAssertsBehaviour(TestCase):
 
     def test_wait_broken_test_if_use_non_exception_type(self):
         def fn():
-            with waiting_exception('wrong'):
+            with should_raise('wrong'):
                 x = 1 / 0
 
         _run(fn)
@@ -54,7 +54,7 @@ class TestAssertsBehaviour(TestCase):
 
     def test_wait_failed_test_if_non_raised(self):
         def fn():
-            with waiting_exception(Exception):
+            with should_raise(Exception):
                 pass
 
         _run(fn)
@@ -63,7 +63,7 @@ class TestAssertsBehaviour(TestCase):
 
     def test_wait_failed_test_if_another_raised(self):
         def fn():
-            with waiting_exception(ZeroDivisionError):
+            with should_raise(ZeroDivisionError):
                 int('a')
 
         _run(fn)

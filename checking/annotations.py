@@ -98,8 +98,8 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
     WARNING! Cache use memory, so it can take a lot of it for big data volumes.
     :param map_to_str: function-mapper to represent item of provider
     :return: fake
-    :raises: DuplicateNameException if provider with such name is already exists
-    :raises: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
+    :raise: DuplicateNameException if provider with such name is already exists
+    :raise: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
     """
     if not enabled:
         return fake
@@ -272,7 +272,7 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
     :param func: is the function to test
     :param annotation_name: is the name of annotation (for errors)
     :return: None
-    :raises: WrongAnnotationPlacement
+    :raise: WrongAnnotationPlacement
     """
     if not isfunction(func) or signature(func).parameters:
         raise WrongAnnotationPlacement(
@@ -285,7 +285,7 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
     Check that the function is suitable to accept values (use a data provider), that is, it has exactly 1 argument.
     :param func: is the function
     :return: None
-    :raises: WrongAnnotationPlacement
+    :raise: WrongAnnotationPlacement
     """
     if not isfunction(func) or not signature(func).parameters:
         raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider has no argument!")
@@ -294,27 +294,27 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
                                        f"has more than 1 argument!")
 
 
-def DATA_FILE(file_path: str, provider_name: str = None, cached: bool = False, encoding: str = 'UTF-8',
+def DATA_FILE(file_path: str, name: str = None, cached: bool = False, encoding: str = 'UTF-8',
               map_function: Callable = None):
     """
     Function to use text file as data provider for test. Reads file lazily, do not get it to memory.
     The function name explicitly stays uppercase for user to pay attention to it.
     User must call it at the global module namespace, but not at fixtures or in tests!
-    :param provider_name: name of the data-provider for use it in test, if not specified the file_path be used as name
+    :param name: name of the data-provider for use it in test, if not specified the file_path be used as name
     :param cached: flag to cache values for using it more than once
     :param file_path: file name or path-to-file with name, it can be full or relative path, but it must be "visible"
     (accessible from module, where it is declared)
     :param encoding: encoding of the text file (default UTF-8)
     :param map_function: function, which map line from text file
     :return: None
-    :raises: ValueError if file is not exists!
+    :raise: ValueError if file is not exists!
     """
 
     def wrapper():
         return DataFile(real_path, encoding=encoding, map_function=map_function)
 
-    if provider_name is None:
-        provider_name = file_path
+    if name is None:
+        name = file_path
     try:
         # Get last frame to verify file-path
         frame = _getframe(1)
@@ -323,7 +323,7 @@ def DATA_FILE(file_path: str, provider_name: str = None, cached: bool = False, e
         real_path = path.join(first_path, file_path)
         if not is_file_exists(real_path):
             raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
-        provider(name=provider_name, cached=cached)(wrapper)
+        provider(name=name, cached=cached)(wrapper)
     finally:
         del frame
 
