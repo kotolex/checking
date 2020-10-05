@@ -148,8 +148,9 @@ def _walk_through_and_import(filter_modules: List[str] = None):
         files = (file for file in files if file.endswith(".py"))
         for file in (f for f in files if _is_import_in_file(f'{root}{os.sep}{f}')):
             file_name_ = file.replace('.py', '')
-            if filter_modules and not _is_in_filter_list(filter_modules, file_name_, root):
-                continue
+            if filter_modules:
+                if not _is_in_filter_list(filter_modules, file_name_, root):
+                    continue
             try:
                 package_ = root.replace(HOME_FOLDER, '').replace(os.sep, '')
                 name = package_ + '.' + file_name_ if package_ else file_name_
