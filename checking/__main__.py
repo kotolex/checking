@@ -50,10 +50,9 @@ def check_parameters(parameters: Dict):
         if any(filter(lambda x: type(x) is not str, parameters[name])):
             raise ValueError(f'{name.capitalize()} parameter must be a list of strings (List[str])!')
     listener_ = parameters.get('listener')
-    if listener_:
-        if '.' not in listener_ and listener_ not in DEFAULT_LISTENERS:
-            raise ValueError(f'Listener parameter must contain the module and class names, e.g. "my_module.MyListener",'
-                             f' or it must point to a name of one of the default listeners!')
+    if listener_ and '.' not in listener_ and listener_ not in DEFAULT_LISTENERS:
+        raise ValueError(f'Listener parameter must contain the module and class names, e.g. "my_module.MyListener",'
+                         f' or it must point to a name of one of the default listeners!')
 
 
 def _get_default_params():
