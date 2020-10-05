@@ -76,18 +76,18 @@ def start_with_parameters(parameters: Dict):
     listener_ = params_.get('listener')
     try:
         if listener_ and modules:
-            # if used custom listener  -add it module to filter
+            # if custom listener is specified, add it's module to the filter
             if listener_ not in DEFAULT_LISTENERS:
                 modules.append('.'.join(listener_.split('.')[:-1]))
         _walk_throw_and_import(modules)
         if listener_:
-            # if listener is one of defaults - use it
+            # if listener specified is one of the defaults, use it
             if listener_ in DEFAULT_LISTENERS:
                 params_['listener'] = DEFAULT_LISTENERS[listener_](params_['verbose'])
             else:
-                # or try to import it from filtered module
+                # or try to import it from the filtered modules
                 class_ = _get_class_from_imported_modules(listener_)
-                # Instantiate listener-class object
+                # instantiate the listener object
                 params_['listener'] = class_(params_['verbose'])
     except Exception:
         print(f'Something went wrong during imports!', file=sys.stderr)
@@ -231,21 +231,21 @@ def parse_arguments() -> argparse.Namespace:
 
 def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, random_order: bool, max_fail: int,
               generate_report: bool):
-    # if options file exists get all from there
+    # read the options file if exists
     if is_file_exists(file_name_):
         print(f"{file_name_} is found! Reading...")
         params_ = read_parameters_from_file(file_name_)
         if p_:
             params_.get("params").update(p_)
         start_with_parameters(params_)
-    # or walk recursive and find all modules with tests
+    # or walk down the folder tree recursively and find all modules with tests
     else:
         if file_name_ == 'options.json':
             print(f"Options file is not found! Searching for tests in all subfolders...")
             _walk_throw_and_import()
             start(verbose=3, threads=1, params=p_, dry_run=dry_run_, filter_by_name=filter_by_name_,
-                  random_order=random_order, max_fail=max_fail, generate_report=generate_report)
-        # if options file was specified and not exists, than stop
+                  random_order=random_order, generate_report=generate_report)
+        # if options file was specified and doesn't exist, halt
         else:
             raise ValueError(f"{file_name_} not found! Stopped")
 
