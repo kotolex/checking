@@ -56,10 +56,19 @@ def check_parameters(parameters: Dict):
 
 
 def _get_default_params():
-    parameters = {'suite_name': 'Default Test Suite', 'verbose': 0, 'groups': [], 'params': {}, 'listener': '',
-                  'modules': [], 'threads': 1, 'dry_run': False, 'filter_by_name': '', 'random_order': False,
-                  'max_fail': 0, 'generate_report': False}
-    return parameters
+    return {
+        'suite_name': 'Default Test Suite',
+        'verbose': 0,
+        'groups': [],
+        'params': {},
+        'listener': '',
+        'modules': [],
+        'threads': 1,
+        'dry_run': False,
+        'filter_by_name': '',
+        'random_order': False,
+        'generate_report': False,
+    }
 
 
 def start_with_parameters(parameters: Dict):
