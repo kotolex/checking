@@ -232,7 +232,7 @@ class MainTest(TestCase):
         with self.assertRaises(ValueError) as e:
             m._get_class_from_imported_modules('wrong.DefaultListener')
 
-        self.assertEqual('Cant find listener wrong.DefaultListener', e.exception.args[0])
+        self.assertEqual("Can't find listener wrong.DefaultListener.", e.exception.args[0])
 
     def test_is_in_filter_list_ok(self):
         result = m._is_in_filter_list(['try'], 'try', '')
