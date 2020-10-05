@@ -292,7 +292,7 @@ If you need to use text file as a provider and get data line by line, you can us
 #!python
 from checking import *
 
-DATA_FILE('files/data.txt', provider_name='provider')   # Use the file located at <module folder>/files/data.txt
+DATA_FILE('files/data.txt', name='provider')   # Use the file located at <module folder>/files/data.txt
 
 @test(data_provider='provider')
 def try_prov(it):
@@ -309,7 +309,7 @@ for example delete trailing newlines at the end of each line:
 #!python
 from checking import *
 
-DATA_FILE('files/data.txt', provider_name='provider', map_function=str.rstrip)   # Feed each line through str.rstrip()
+DATA_FILE('files/data.txt', name='provider', map_function=str.rstrip)   # Feed each line through str.rstrip()
 
 @test(data_provider='provider')
 def try_prov(it):
@@ -341,7 +341,7 @@ DATA_FILE helper can use this parameter too.
 #!python
 from checking import *
 
-DATA_FILE('data.csv', provider_name='csv', cached=True)   # Enable caching 
+DATA_FILE('data.csv', name='csv', cached=True)   # Enable caching 
 
 @test(data_provider='csv')   # First provider use -- data is fetched from the file and stored into memory
 def check_one(it):
