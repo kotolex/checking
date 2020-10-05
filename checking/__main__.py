@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 import importlib
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Type
 
 from checking.runner import start
 from checking.helpers.others import str_date_time
@@ -18,7 +18,7 @@ DEFAULT_LISTENERS = {'DefaultListener': DefaultListener, 'DefaultFileListener': 
 
 def read_parameters_from_file(file_name_: str) -> Dict:
     """
-    Reads the parameters from settings file *.json, returns as a parameter dictionary.
+    Reads the parameters from a *.json settings file, returns as a parameter dictionary.
     """
     with open(file_name_, encoding='utf-8') as file:
         result = ''.join([line.rstrip() for line in file.readlines()])
@@ -29,10 +29,11 @@ def read_parameters_from_file(file_name_: str) -> Dict:
 
 def check_parameters(parameters: Dict):
     """
-    Checks the validation of start parameters.
+    Validates the starting parameters.
+
     :param parameters: the dictionary with parameters
     :return: None
-    :raises ValueError if the parameters are invalid
+    :raise ValueError: if the parameters are invalid
     """
     schema = {bool: ['dry_run', 'random_order', 'generate_report'], str: ['suite_name', 'listener', 'filter_by_name'],
               int: ['threads', 'verbose', 'max_fail'],
@@ -63,6 +64,11 @@ def _get_default_params():
 
 
 def start_with_parameters(parameters: Dict):
+    """
+    Starts the test run using the collected parameters.
+
+    :param parameters: a dict of user specified parameters.
+    """
     params_ = _get_default_params()
     params_.update(parameters)
     check_parameters(params_)
@@ -89,11 +95,12 @@ def start_with_parameters(parameters: Dict):
     start(**params_)
 
 
-def _get_class_from_imported_modules(listener_name: str):
+def _get_class_from_imported_modules(listener_name: str) -> Type:
     """
-    Get class of test-listener from imported modules in system
+    Gets the class of the specified test listener from the imported modules.
+
     :param listener_name: full name like module.Listener
-    :return: class for instantiation
+    :return: class object for instantiation
     """
     pack = listener_name.split('.')[-2]
     cl_ = listener_name.split('.')[-1]
@@ -106,9 +113,10 @@ def _get_class_from_imported_modules(listener_name: str):
 
 def _is_import_in_file(file_name_: str) -> bool:
     """
-    If there checking import within the file.
-    :param file_name_: is the name of the module
-    :return: True, if asserts imports inside the module
+    Check if there's a "checking" import in a file.
+
+    :param file_name_: the name of ф file to check for imports
+    :return: True if an import is found, False otherwise
     """
     with open(file_name_, encoding='utf-8') as file:
         for line in file:
@@ -120,8 +128,9 @@ def _is_import_in_file(file_name_: str) -> bool:
 
 def _walk_throw_and_import(filter_modules: List[str] = None):
     """
-    The functions runs throw all of the modules in current and nested folder, looks up and imports modules, where is a
-    mention checking, thereby forming the test-suite.
+    Recursively looks up and imports modules, starting with the current folder.
+    Finds "checking" imports, thus building the test suite.
+
     :return: None
     """
     for root, dirs, files in os.walk(HOME_FOLDER, topdown=True):
@@ -143,6 +152,14 @@ def _walk_throw_and_import(filter_modules: List[str] = None):
 
 
 def _is_in_filter_list(filter_modules: List[str], file_name_: str, root: str) -> bool:
+    """
+    Checks if "file_name_" is in the list of the imported modules, including nested imports.
+
+    :param filter_modules: a list of imported modules
+    :param file_name_: module name to search for
+    :param root: starting with the "root" folder
+    :return: True if module is present in the module list, False otherwise
+    """
     filtered = [mod for mod in filter_modules if mod.endswith(f'{file_name_}')]
     if not filtered:
         return False
@@ -156,7 +173,8 @@ def _is_in_filter_list(filter_modules: List[str], file_name_: str, root: str) ->
 
 def _generate_options():
     """
-    Generates default options<date+time>.json file at current folder
+    Generates the default options<date+time>.json file in the current folder.
+
     :return: None
     """
     with open(f'options_{str_date_time()}.json', 'wt') as file:
@@ -164,6 +182,12 @@ def _generate_options():
 
 
 def _get_file_name(arg: Union[str, None]) -> str:
+    """
+    Gets the option file name, validating the file extension. Returns "options.json" if no argument specified.
+
+    :param arg: optional argument string
+    :return:
+    """
     name = 'options.json'
     if arg:
         name = arg
@@ -227,6 +251,11 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, r
 
 
 def run():
+    """
+    Collects parameters and executes the test suite.
+
+    :return:
+    """
     args = parse_arguments()
     if args.generate_options:
         _generate_options()
