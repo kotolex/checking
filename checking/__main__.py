@@ -254,7 +254,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, r
                   random_order=random_order, generate_report=generate_report)
         # if options file was specified and doesn't exist, halt
         else:
-            raise ValueError(f"{file_name_} not found! Stopped")
+            raise ValueError(f"{file_name_} not found! Stopping...")
 
 
 def run():
