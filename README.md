@@ -248,7 +248,7 @@ def check_sum(it):   # The test function must take one argument, the data provid
 
 If you want to use a text file as a data source, you can use `DATA_FILE` helper function to skip the file handling boilerplate code:
 
-```
+
 You can specify mapping function to map values from the provider to some format, 
 this string representation will be shown in test parameter, by default it use str(value) result.
 Pay attention - mapping function just change parameter representation in logs, console or report, but not the values itself!
@@ -277,7 +277,6 @@ def check_cat(it):
 if __name__ == '__main__':
     start(3)
 ```
-
 In test logs you will see following information 
 
 ```text
