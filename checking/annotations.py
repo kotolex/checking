@@ -307,7 +307,7 @@ def DATA_FILE(file_path: str, name: str = None, cached: bool = False, encoding: 
     :param encoding: encoding of the text file (default UTF-8)
     :param map_function: function, which map line from text file
     :return: None
-    :raise: ValueError if file is not exists!
+    :raise FileNotFoundError if file is not exists!
     """
 
     def wrapper():
@@ -322,7 +322,7 @@ def DATA_FILE(file_path: str, name: str = None, cached: bool = False, encoding: 
         first_path = path.split(frame.f_globals['__file__'])[0]
         real_path = path.join(first_path, file_path)
         if not is_file_exists(real_path):
-            raise ValueError(f'Cant find file! Is file "{real_path}" exists?')
+            raise FileNotFoundError(f'Cant find file! Is file "{real_path}" exists?')
         provider(name=name, cached=cached)(wrapper)
     finally:
         del frame
