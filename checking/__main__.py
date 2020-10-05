@@ -63,6 +63,7 @@ def _get_default_params():
         'params': {},
         'listener': '',
         'modules': [],
+        'max_fail': 0,
         'threads': 1,
         'dry_run': False,
         'filter_by_name': '',
