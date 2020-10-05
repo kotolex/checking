@@ -79,7 +79,7 @@ def start_with_parameters(parameters: Dict):
             # if custom listener is specified, add it's module to the filter
             if listener_ not in DEFAULT_LISTENERS:
                 modules.append('.'.join(listener_.split('.')[:-1]))
-        _walk_throw_and_import(modules)
+        _walk_through_and_import(modules)
         if listener_:
             # if listener specified is one of the defaults, use it
             if listener_ in DEFAULT_LISTENERS:
@@ -126,7 +126,7 @@ def _is_import_in_file(file_name_: str) -> bool:
     return False
 
 
-def _walk_throw_and_import(filter_modules: List[str] = None):
+def _walk_through_and_import(filter_modules: List[str] = None):
     """
     Recursively looks up and imports modules, starting with the current folder.
     Finds "checking" imports, thus building the test suite.
@@ -242,7 +242,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, r
     else:
         if file_name_ == 'options.json':
             print(f"Options file is not found! Searching for tests in all subfolders...")
-            _walk_throw_and_import()
+            _walk_through_and_import()
             start(verbose=3, threads=1, params=p_, dry_run=dry_run_, filter_by_name=filter_by_name_,
                   random_order=random_order, generate_report=generate_report)
         # if options file was specified and doesn't exist, halt
