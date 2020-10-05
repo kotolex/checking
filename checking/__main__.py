@@ -43,17 +43,17 @@ def check_parameters(parameters: Dict):
             if element not in parameters:
                 continue
             if type(parameters[element]) is not key:
-                raise ValueError(f'{element.capitalize()} parameter must be {key}!')
+                raise ValueError(f'{element.capitalize()} parameter must be of type {key}!')
     for name in schema.get(list):
         if name not in parameters:
             continue
         if any(filter(lambda x: type(x) is not str, parameters[name])):
-            raise ValueError(f'{name.capitalize()} parameter must be list of strings (List[str])!')
+            raise ValueError(f'{name.capitalize()} parameter must be a list of strings (List[str])!')
     listener_ = parameters.get('listener')
     if listener_:
         if '.' not in listener_ and listener_ not in DEFAULT_LISTENERS:
-            raise ValueError(f'Listener parameter must contains module and class name, like "my_module.MyListener" or'
-                             f' it must be the name of one of the default listeners!')
+            raise ValueError(f'Listener parameter must contain the module and class names, e.g. "my_module.MyListener",'
+                             f' or it must point to a name of one of the default listeners!')
 
 
 def _get_default_params():
@@ -90,7 +90,7 @@ def start_with_parameters(parameters: Dict):
                 # Instantiate listener-class object
                 params_['listener'] = class_(params_['verbose'])
     except Exception:
-        print(f'Something wrong with importing!', file=sys.stderr)
+        print(f'Something went wrong during imports!', file=sys.stderr)
         raise
     start(**params_)
 
@@ -106,7 +106,7 @@ def _get_class_from_imported_modules(listener_name: str) -> Type:
     cl_ = listener_name.split('.')[-1]
     keys = [key for key in sys.modules.keys() if key.endswith(pack)]
     if not keys:
-        raise ValueError(f'Cant find listener {listener_name}')
+        raise ValueError(f"Can't find listener {listener_name}.")
     mod = sys.modules.get(keys[0])
     return getattr(mod, cl_)
 
@@ -192,8 +192,8 @@ def _get_file_name(arg: Union[str, None]) -> str:
     if arg:
         name = arg
         if not name.endswith('.json'):
-            raise ValueError('Only <name>.json files allowed! And it must contains valid json, '
-                             'you can generate it with -g option')
+            raise ValueError('Only <name>.json files are allowed and the file must define a valid JSON!'
+                             'You can generate one with the -g option.')
     return name
 
 
@@ -210,21 +210,21 @@ def _get_arg_dict(arg: Union[str, None]) -> Dict:
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--options_file', help="File with the options to run. "
-                                                     "If specified, -d and -f options will be ignored!")
-    parser.add_argument('-f', '--filter_test', help="Filter tests by name, only tests, whose names"
-                                                    " contain this value will run!")
-    parser.add_argument('-a', '--arg', help="Any argument for your test-suite")
-    parser.add_argument('-r', '--random', help="Runs tests inside group in random order", action='store_const',
+    parser.add_argument('-o', '--options_file', help="Specify a config file for the test suite. "
+                                                     "If set, -d and -f options are ignored!")
+    parser.add_argument('-f', '--filter_test', help="Filter tests by name. Only tests with names containing "
+                                                    " the specified string value will be executed!")
+    parser.add_argument('-a', '--arg', help="Any arbitrary argument for your test suite.")
+    parser.add_argument('-r', '--random', help="Run tests within a group in the random order", action='store_const',
                         const=True)
-    parser.add_argument('-d', '--dry_run', help="Dry-run for test-suite(run without actual functions executed)!",
+    parser.add_argument('-d', '--dry_run', help="Dry run for the test suite (no actual test functions are executed)!",
                         action='store_const', const=True)
     parser.add_argument('-g', '--generate_options',
-                        help="Not doing any work, just generates options.json in current folder!", action='store_const',
+                        help="Generate options.json in the current folder. No test are executed!", action='store_const',
                         const=True)
     parser.add_argument('-m', '--max_fail', help="Maximum count of failed test, if reached then suite will stops")
     parser.add_argument('-R', '--generate_report',
-                        help="Creates folder with html report in current folder!", action='store_const',
+                        help="Creates a folder with an html report in the current folder!", action='store_const',
                         const=True)
     return parser.parse_args()
 
@@ -233,7 +233,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, r
               generate_report: bool):
     # if options file exists get all from there
     if is_file_exists(file_name_):
-        print(f"{file_name_} found! Work with it...")
+        print(f"{file_name_} is found! Reading...")
         params_ = read_parameters_from_file(file_name_)
         if p_:
             params_.get("params").update(p_)
@@ -241,7 +241,7 @@ def _main_run(file_name_: str, p_: Dict, dry_run_: bool, filter_by_name_: str, r
     # or walk recursive and find all modules with tests
     else:
         if file_name_ == 'options.json':
-            print(f"No options found! Starts to look for tests in all sub-folders")
+            print(f"Options file is not found! Searching for tests in all subfolders...")
             _walk_throw_and_import()
             start(verbose=3, threads=1, params=p_, dry_run=dry_run_, filter_by_name=filter_by_name_,
                   random_order=random_order, max_fail=max_fail, generate_report=generate_report)
