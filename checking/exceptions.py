@@ -61,7 +61,7 @@ class ExceptionWrapper(Exception):
 
     def __init__(self):
         self.value = None
-        self.message = 'Expect exception, but none raised!'
+        self.message = 'Expected an exception, but none was raised!'
         self.args = (self.message,)
         self.type = type(self)
 
