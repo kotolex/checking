@@ -107,11 +107,11 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
     def real_decorator(func: Callable[[None], Iterable]):
         __check_is_function_without_args(func, 'data')
         if not _has_yield_or_return(func):
-            raise WrongAnnotationPlacement(f'Function marked with @data must returns or yields Iterable!')
+            raise WrongDecoratedObject(f'Function marked with @data must returns or yields Iterable!')
         name_ = name if name else func.__name__
         providers = TestSuite.get_instance().providers
         if name_ in providers:
-            raise DuplicateNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
+            raise DuplicateProviderNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
         providers[name_] = (func, map_to_str)
         nonlocal cached
         if cached:
@@ -275,7 +275,7 @@ def __check_is_function_without_args(func: Callable, annotation_name: str):
     :raise: WrongAnnotationPlacement
     """
     if not isfunction(func) or signature(func).parameters:
-        raise WrongAnnotationPlacement(
+        raise WrongDecoratedObject(
             f"Annotation '{annotation_name}' must be used only with no-argument functions! Its not supposed to work "
             f"with classes or class methods!")
 
@@ -288,9 +288,9 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
     :raise: WrongAnnotationPlacement
     """
     if not isfunction(func) or not signature(func).parameters:
-        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider has no argument!")
+        raise WrongDecoratedObject(f"Function '{func.__name__}' marked with data_provider has no argument!")
     if len(signature(func).parameters) > 1:
-        raise WrongAnnotationPlacement(f"Function '{func.__name__}' marked with data_provider "
+        raise WrongDecoratedObject(f"Function '{func.__name__}' marked with data_provider "
                                        f"has more than 1 argument!")
 
 
