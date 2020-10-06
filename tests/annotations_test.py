@@ -56,7 +56,7 @@ class TestAnnotations(TestCase):
         self.assertEqual(initial_count + 1, TestSuite.get_instance().tests_count())
 
     def test_raises_when_func_for_provider_has_no_arg(self):
-        with self.assertRaises(WrongAnnotationPlacement) as e:
+        with self.assertRaises(WrongDecoratedObject) as e:
             test(data_provider="good")(valid)
         self.assertEqual("Function 'valid' marked with data_provider has no argument!", e.exception.args[0])
 
@@ -71,17 +71,17 @@ class TestAnnotations(TestCase):
         test(enabled=False, data_provider="wrong")(valid)
 
     def test_raises_when_using_test_with_class(self):
-        with self.assertRaises(WrongAnnotationPlacement) as ex:
+        with self.assertRaises(WrongDecoratedObject) as ex:
             test(T)
         self.assertTrue('test' in ex.exception.args[0])
 
     def test_raises_when_using_function_with_arg(self):
-        with self.assertRaises(WrongAnnotationPlacement) as ex:
+        with self.assertRaises(WrongDecoratedObject) as ex:
             test(valid_for_provider)
         self.assertTrue('test' in ex.exception.args[0])
 
     def test_raises_when_using_test_with_class_methods(self):
-        with self.assertRaises(WrongAnnotationPlacement) as ex:
+        with self.assertRaises(WrongDecoratedObject) as ex:
             t = T()
             test(t.m)
         self.assertTrue('test' in ex.exception.args[0])
@@ -112,7 +112,7 @@ class TestAnnotations(TestCase):
         def _():
             return [1, 2]
 
-        with self.assertRaises(WrongAnnotationPlacement) as e:
+        with self.assertRaises(WrongDecoratedObject) as e:
             provider(name='another2')(_)
             test(data_provider='another2')(non_valid_for_provider)
         self.assertEqual("Function 'non_valid_for_provider' marked with data_provider has more than 1 argument!",
@@ -250,7 +250,7 @@ class TestAnnotations(TestCase):
             pass
 
         clear()
-        with self.assertRaises(WrongAnnotationPlacement):
+        with self.assertRaises(WrongDecoratedObject):
             provider(name='text')(fail)
 
 

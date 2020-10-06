@@ -1,4 +1,4 @@
-class WrongAnnotationPlacement(Exception):
+class WrongDecoratedObject(Exception):
     """
     Is raised when an incompatible object is decorated:
         - class
