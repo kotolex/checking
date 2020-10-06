@@ -102,7 +102,7 @@ class TestAnnotations(TestCase):
         self.assertTrue('any_name' in TestSuite.get_instance().providers)
 
     def test_data_raises_when_duplicate_name(self):
-        with self.assertRaises(DuplicateNameException) as e:
+        with self.assertRaises(DuplicateProviderNameException) as e:
             provider(valid_for_data)
             provider(valid_for_data)
         self.assertEqual('Provider with name "valid_for_data" already exists! Only unique names allowed!',

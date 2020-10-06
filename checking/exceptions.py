@@ -9,7 +9,7 @@ class WrongDecoratedObject(Exception):
     pass
 
 
-class DuplicateNameException(Exception):
+class DuplicateProviderNameException(Exception):
     """
     Is raised when a data provider name was already registered.
     Rename the data provider function or specify a unique name with the 'name' parameter.
