@@ -143,7 +143,7 @@ class AssertsTest(TestCase):
         with self.assertRaises(ExceptionWrapper) as e:
             with should_raise(ZeroDivisionError):
                 pass
-        self.assertEqual("Expect exception, but none raised!", e.exception.args[0])
+        self.assertEqual("Expected an exception, but none was raised!", e.exception.args[0])
 
     def test_failing_test_default(self):
         with self.assertRaises(AssertionError) as e:

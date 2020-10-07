@@ -1,63 +1,67 @@
-class WrongAnnotationPlacement(Exception):
+class WrongDecoratedObject(Exception):
     """
-    It throws if the annotation is set over a function that takes arguments, or over a class/class method. When using
-    the @test annotation with the data provider, it will be thrown if the function does not accept one argument.
+    Is raised when an incompatible object is decorated:
+        - class
+        - class method
+        - function, which takes arguments when a data provider is not used
+        - function, which doesn't take a single argument when a data provider is used
     """
     pass
 
 
-class DuplicateNameException(Exception):
+class DuplicateProviderNameException(Exception):
     """
-    It will be thrown if the provider name is already in the set, you need to rename the data provider method or give
-    it a name through the parameter.
+    Is raised when a data provider name was already registered.
+    Rename the data provider function or specify a unique name with the 'name' parameter.
     """
     pass
 
 
 class UnknownProviderName(Exception):
     """
-    It will be thrown if, after the formation of the test run (test-suite), the provider with the specified name is not
-    found.
+    Is raised when a data provider with the specified name is not found after the test suite is built.
     """
     pass
 
 
 class TestBrokenException(Exception):
     """
-    It will be thrown to notify of problems with the test, not related to assert.
+    Notification, is raised when there is a problem with a test definition,
+    a test does not comply with the library API or is marked as "broken" by the user explicitly.
     """
     pass
 
 
 class TestIgnoredException(Exception):
     """
-    It will be thrown to notify that the test is ignored because of fixtures.
+    Notification, is raised when a test is set up to be ignored by a fixture.
     """
     pass
 
 
 class OnlyIfFailedException(Exception):
     """
-    It will be thrown to notify that the test is ignored because of only_if function failed.
+    Notification, is raised when "only_if" predicate on a test case is evaluated to False.
     """
     pass
 
 
 class SkipTestException(Exception):
     """
-    It will be thrown when user use function test_skip() inside test.
+    Notification, is raised when user intentionally skips the test by calling test_skip() inside a test.
     """
     pass
 
 
 class ExceptionWrapper(Exception):
     """
-    The wrapper for exceptions to which you can then pass another exception. Used with waiting_exception.
+    Wrapper type used with the "should_raise" context manager,
+    exposes convenience methods to check for the wrapped exception type and text message.
     """
 
     def __init__(self):
         self.value = None
-        self.message = 'Expect exception, but none raised!'
+        self.message = 'Expected an exception, but none was raised!'
         self.args = (self.message,)
         self.type = type(self)
 
