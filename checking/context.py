@@ -91,7 +91,7 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
             return BytesIO(on_read_bytes)
         return StringIO(on_read_text, new_line)
 
-    # If we raise on open, then no need to check arguments
+    # skip argument parsing if raises on open
     if raises is None:
         if type(on_read_text) is not str:
             raise ValueError("Parameter on_read_text must be str!")
