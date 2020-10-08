@@ -14,11 +14,13 @@ from .classes.mocking.write_wrapper import WriteWrapper
 @contextmanager
 def mock_builtins(function_name: str, func: Callable):
     """
-    Mock of built-in functions like print, input and so on. After exiting the context manager, the original function
-    regains its previous behavior.
-    :param function_name: is the the name of one of the python built-in function
-    :param func: is the replacement function, which will be called instead of the original
-    :return:
+    Provides a context within which built-in functions (print, input, open, etc.),
+    can be replaced with a mock implementation.
+    Reverts the mocked function to the original implementation upon exiting the context.
+
+    :param function_name: a python built-in function name
+    :param func: callback to replace the original
+    :return: None
     """
     if function_name == 'open':
         print(f'WARNING! For using mock with open function, please use mock_open. '
@@ -39,10 +41,10 @@ def mock_builtins(function_name: str, func: Callable):
 @contextmanager
 def mock_input(iterable_: Iterable[str]):
     """
-    Context manager for mocking standard input function. Takes iterable argument to get data from. Pay attention that
-    all values will be cast to str, like real input works (always returns str).
-    It is just sugar instead of mock_builtins('input')
-    :param iterable_: container with data to set in input
+    Convenience helper, shorthand for mock_builtins('input', func).
+
+    :param iterable_: collection of values to feed via input.
+    Please note, that values will be forcibly cast to str to mimic the original behavior.
     :return: None
     """
     iterator = iter(iterable_)
@@ -53,10 +55,11 @@ def mock_input(iterable_: Iterable[str]):
 @contextmanager
 def mock_print(container: List[str]):
     """
-    Context manager for mocking standard print function. Takes list as argument to collect data.
-    It is just sugar instead of mock_builtins('print'). If you need some specific behaviour, like using some print
-    arguments (file, end etc.) than use mock_input('print'...
-    :param container: List of any types to save data
+    Convenience helper, shorthand for mock_builtins('print', func).
+    Accumulates the "print"-ed strings into the "container" argument.
+    If you need some specific behavior, e.g. use print arguments, please use generic mock_builtins('print', func).
+
+    :param container: a list container, to store the printed strings
     :return: None
     """
     with mock_builtins('print', lambda arg: container.append(arg)):
@@ -67,13 +70,15 @@ def mock_print(container: List[str]):
 def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
               new_line: str = '\n', raises: Exception = None) -> List[Union[str, bytes]]:
     """
-    Context manager for mocking open text ot byte file. Use it instead of mock_builtins('open', func)
-    :param on_read_text: string to get when open text file in read mode
-    :param on_read_bytes: bytes to get when open bytes file in read mode
-    :param new_line: how to determine new line, '\n' by default, will be ignored for bytes
-    :param raises: if need to raise exception on open file. If not None - other options will be ignored
-    :return: list with values, which be pushed into it by write on open file
-    :raise: ValueError if on_read_* not str or bytes
+    Convenience helper to mock the open() built-in.
+    Strongly recommended to use this one instead of mock_builtins('open', func)
+
+    :param on_read_text: string to return for mode="rt"
+    :param on_read_bytes: bytes to return for mode="rb"
+    :param new_line: new line delimiter, is ignored for mode="rb"
+    :param raises: error to raise on file open, other parameters are ignored
+    :return: a list of written str/bytes values for mode="w"
+    :raise: ValueError if on_read_* parameter does not have correct type
     """
     container = []
 
@@ -105,11 +110,13 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
 @contextmanager
 def mock(module_: types.ModuleType, function_name: str, func: Any):
     """
-    Context manager for mocking (spoofing) any function or module attribute.
-    :param module_: is the module object (not a name! it must be imported in the test)
-    :param function_name: is the function name
-    :param func: is the replacement function, but there may be an attribute
-    :return:
+    Provides a context within which an arbitrary object can be replaced with a mock implementation.
+    Restores the original behavior upon exiting the context.
+
+    :param module_: an imported module object
+    :param function_name: object name to mock
+    :param func: the replacement object
+    :return: None
     """
     if not ismodule(module_):
         raise TestBrokenException(f'"{module_} is not a module!')
@@ -128,18 +135,19 @@ def mock(module_: types.ModuleType, function_name: str, func: Any):
 @contextmanager
 def should_raise(exception: Type[Exception]) -> ExceptionWrapper:
     """
-    The context manager to check if an exception is thrown during certain actions. An example:
+    Expects and catches a specified exception.
 
-    with should_raise(ZeroDivisionError) as exc:
-        some_action()
-    print(exc.message) # Displays a message from the exception
+    Example:
 
-    :param exception: is the expected exception type, you cannot use BaseException, it is not recommended to use
-    Exception (better use specific exception)
-    :return: ExceptionWrapper context, which is initially empty, and when an exception is thrown, gets it in the value
-    parameter
-    :raise TestBrokenException if BaseException is used or not inheritors of Exception
-    :raise AssertionError if the wrong exception is thrown, which was expected
+        with should_raise(ZeroDivisionError) as exc:
+            some_action()
+        print(exc.message) # Displays a message from the exception
+
+    :param exception: expected exception type. While Exception itself is allowed, prefer using specific exception types.
+    The use of BaseException is forbidden.
+    :return: ExceptionWrapper helper object
+    :raise TestBrokenException if BaseException is used or exception parameter is not an Exception subclass
+    :raise AssertionError if a wrong exception is caught
     :raise ExceptionWrapper if no exceptions are raised
     """
     fake = ExceptionWrapper()
@@ -164,14 +172,15 @@ def should_raise(exception: Type[Exception]) -> ExceptionWrapper:
 @contextmanager
 def no_exception_expected():
     """
-    The context manager for situations where exceptions are not expected to raise is more explicit than just writing a
-    test without an assertion. An example:
+    Ensures no exception is raised within itself. Use this instead of a naked call.
 
-    with no_exception_expected():
-        some_action()
+    Example:
+
+        with no_exception_expected():
+            some_action()
 
     :return: None
-    :raise AssertionError if the exception (any descendant of Exception) nevertheless falls
+    :raise AssertionError if any exception is raised
     """
     try:
         yield
