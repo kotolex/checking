@@ -1,5 +1,4 @@
 import builtins
-import types.ModuleType
 
 from inspect import ismodule
 from io import StringIO, BytesIO
@@ -108,7 +107,7 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
 
 
 @contextmanager
-def mock(module_: types.ModuleType, function_name: str, func: Any):
+def mock(module_: Any, function_name: str, func: Any):
     """
     Provides a context within which an arbitrary object can be replaced with a mock implementation.
     Restores the original behavior upon exiting the context.
