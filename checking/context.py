@@ -1,8 +1,10 @@
 import builtins
+import types.ModuleType
+
 from inspect import ismodule
 from io import StringIO, BytesIO
 from contextlib import contextmanager
-from typing import Any, Type, Iterable, List
+from typing import Any, Type, Iterable, List, Callable, Union
 
 from .exceptions import ExceptionWrapper
 from .exceptions import TestBrokenException
@@ -10,7 +12,7 @@ from .classes.mocking.write_wrapper import WriteWrapper
 
 
 @contextmanager
-def mock_builtins(function_name: str, func):
+def mock_builtins(function_name: str, func: Callable):
     """
     Mock of built-in functions like print, input and so on. After exiting the context manager, the original function
     regains its previous behavior.
@@ -35,7 +37,7 @@ def mock_builtins(function_name: str, func):
 
 
 @contextmanager
-def mock_input(iterable_: Iterable):
+def mock_input(iterable_: Iterable[str]):
     """
     Context manager for mocking standard input function. Takes iterable argument to get data from. Pay attention that
     all values will be cast to str, like real input works (always returns str).
@@ -49,7 +51,7 @@ def mock_input(iterable_: Iterable):
 
 
 @contextmanager
-def mock_print(container: List[Any]):
+def mock_print(container: List[str]):
     """
     Context manager for mocking standard print function. Takes list as argument to collect data.
     It is just sugar instead of mock_builtins('print'). If you need some specific behaviour, like using some print
@@ -62,7 +64,8 @@ def mock_print(container: List[Any]):
 
 
 @contextmanager
-def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'', new_line: str = '\n', raises: Exception = None):
+def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
+              new_line: str = '\n', raises: Exception = None) -> List[Union[str, bytes]]:
     """
     Context manager for mocking open text ot byte file. Use it instead of mock_builtins('open', func)
     :param on_read_text: string to get when open text file in read mode
@@ -100,7 +103,7 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'', new_line: str 
 
 
 @contextmanager
-def mock(module_: Any, function_name: str, func: Any):
+def mock(module_: types.ModuleType, function_name: str, func: Any):
     """
     Context manager for mocking (spoofing) any function or module attribute.
     :param module_: is the module object (not a name! it must be imported in the test)
@@ -123,7 +126,7 @@ def mock(module_: Any, function_name: str, func: Any):
 
 
 @contextmanager
-def should_raise(exception: Type[Exception]):
+def should_raise(exception: Type[Exception]) -> ExceptionWrapper:
     """
     The context manager to check if an exception is thrown during certain actions. An example:
 
