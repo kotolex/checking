@@ -112,13 +112,13 @@ class AssertsTest(TestCase):
         with self.assertRaises(TestBrokenException) as e:
             with should_raise(BaseException):
                 pass
-        self.assertEqual('You must use concrete exception, except of BaseException!', e.exception.args[0])
+        self.assertEqual('BaseException is forbidden, you must use concrete exception types.', e.exception.args[0])
 
     def test_waiting_exception_with_not_Exception_failed(self):
         with self.assertRaises(TestBrokenException) as e:
             with should_raise('wrong'):
                 pass
-        self.assertEqual('Exception or its subclasses expected, but got "wrong"<str>', e.exception.args[0])
+        self.assertEqual('Expected Exception or a subclass, got "wrong"<str>', e.exception.args[0])
 
     def test_waiting_exception_ok_with_Exception(self):
         with should_raise(Exception) as e:
@@ -136,8 +136,8 @@ class AssertsTest(TestCase):
         with self.assertRaises(AssertionError) as e:
             with should_raise(ZeroDivisionError):
                 int('a')
-        self.assertEqual("Expect <class 'ZeroDivisionError'>, but raised ValueError"
-                         " (\"invalid literal for int() with base 10: 'a'\")", e.exception.args[0])
+        self.assertEqual('Expected <class \'ZeroDivisionError\'>, '
+                         'got ValueError ("invalid literal for int() with base 10: \'a\'")', e.exception.args[0])
 
     def test_waiting_exception_with_no_Exception_failed(self):
         with self.assertRaises(ExceptionWrapper) as e:
