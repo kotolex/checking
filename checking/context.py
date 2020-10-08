@@ -23,11 +23,11 @@ def mock_builtins(function_name: str, func: Callable):
     :return: None
     """
     if function_name == 'open':
-        print(f'WARNING! For using mock with open function, please use mock_open. '
-              f'Read the documentation at https://bitbucket.org/kotolex/atest/src')
+        print(f'WARNING! It\'s strongly recommended to use mock_open() to mock the open() built-in.'
+              f'Refer to: https://bitbucket.org/kotolex/atest/src')
     import builtins as b
     if not hasattr(b, function_name):
-        raise TestBrokenException(f'No build-in function "{function_name}"!')
+        raise TestBrokenException(f'No build-in "{function_name}" found!')
     temp_ = None
     try:
         temp_ = getattr(b, function_name)
@@ -94,9 +94,9 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
     # skip argument parsing if raises on open
     if raises is None:
         if type(on_read_text) is not str:
-            raise ValueError("Parameter on_read_text must be str!")
+            raise ValueError("on_read_text must be str")
         if type(on_read_bytes) is not bytes:
-            raise ValueError('Parameter on_read_bytes must be bytes')
+            raise ValueError('on_read_bytes must be bytes')
     temp_ = None
     try:
         temp_ = builtins.open
@@ -121,7 +121,7 @@ def mock(module_: types.ModuleType, function_name: str, func: Any):
     if not ismodule(module_):
         raise TestBrokenException(f'"{module_} is not a module!')
     if not hasattr(module_, function_name):
-        raise TestBrokenException(f'No function "{function_name} at module {module_}"!')
+        raise TestBrokenException(f'No object "{function_name} found in module {module_}"!')
     temp_ = None
     try:
         temp_ = getattr(module_, function_name)
@@ -153,9 +153,9 @@ def should_raise(exception: Type[Exception]) -> ExceptionWrapper:
     fake = ExceptionWrapper()
     try:
         if exception is BaseException:
-            raise TestBrokenException('You must use concrete exception, except of BaseException!')
+            raise TestBrokenException('BaseException is forbidden, you must use concrete exception types.')
         if not issubclass(type(exception), type(Exception)):
-            raise TestBrokenException(f'Exception or its subclasses expected, but got '
+            raise TestBrokenException(f'Expected Exception or a subclass, got '
                                       f'"{exception}"<{type(exception).__name__}>')
         yield fake
     except TestBrokenException as e:
@@ -164,7 +164,7 @@ def should_raise(exception: Type[Exception]) -> ExceptionWrapper:
         fake.set_value(e)
         return
     except Exception as e:
-        raise AssertionError(f'Expect {exception}, but raised {type(e).__name__} ("{e}")')
+        raise AssertionError(f'Expected {exception}, got {type(e).__name__} ("{e}")')
     else:
         raise fake
 
