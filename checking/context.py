@@ -61,7 +61,7 @@ def mock_print(container: List[str]):
     :param container: a list container, to store the printed strings
     :return: None
     """
-    with mock_builtins('print', lambda arg: container.append(arg)):
+    with mock_builtins('print', lambda *args, **kwargs: container.append(args)):
         yield container
 
 

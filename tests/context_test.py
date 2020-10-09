@@ -150,12 +150,20 @@ class ContextTest(TestCase):
         with mock_print([]) as result:
             my_print(1)
             my_print('1')
-        self.assertEqual([1, '1'], result)
+        self.assertEqual([(1,), ('1',)], result)
+
+    def test_mock_print_args_kwargs(self):
+        def _():
+            print(1, 2, end=",")
+
+        with mock_print([]) as result:
+            _()
+        self.assertEqual([(1, 2,)], result)
 
     def test_both_input_and_print(self):
         with mock_input(['a', 'b', 'exit']), mock_print([]) as result:
             use_both()
-        self.assertEqual(['a', 'b'], result)
+        self.assertEqual([('a',), ('b',)], result)
 
 
 if __name__ == '__main__':
