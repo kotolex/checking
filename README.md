@@ -300,7 +300,7 @@ def try_prov(it):
 ```
 
 The helper lazy-loads specified data file line by line. 
-Raises ValueError if the file is not found.
+Raises FileNotFoundError if the file is not found.
 Also, you can transform all of the lines before feeding them into the test, 
 for example delete trailing newlines at the end of each line:
 
@@ -765,6 +765,7 @@ Starting suite "My Suite"
 ==============================
 Total tests: 4, success tests: 2, failed tests: 1, broken tests: 1, ignored tests: 0
 Time elapsed: 0.00 seconds.
+Success percent: 50.00%
 ==============================
 ```
 If you will use parameter verbose=3 in example above, result will be:
@@ -773,11 +774,13 @@ If you will use parameter verbose=3 in example above, result will be:
 Starting suite "My Suite"
 ----------
 Test "__main__.some_check"  SUCCESS!
+
 ----------
 Test "__main__.some_check_two"  SUCCESS!
+
 ----------
 Test "__main__.failed"  FAILED!
-File "\checking\runner.py", line 265, in _run_test
+File "\checking\runner.py", line 285, in _run_test
 -->    test.run()
 File "your_module_with_test_path", line 16, in failed
 -->    equals(5, 2 + 2)  # Will fail
@@ -786,7 +789,7 @@ Expected:"5" <int>
 Actual  :"4" <int>!
 ----------
 Test "__main__.broken"  BROKEN!
-File "\checking\runner.py", line 265, in _run_test
+File "\checking\runner.py", line 285, in _run_test
 -->    test.run()
 File "your_module_with_test_path", line 21, in broken
 -->    int('a')  # Will be broken
@@ -795,6 +798,7 @@ invalid literal for int() with base 10: 'a'
 ==============================
 Total tests: 4, success tests: 2, failed tests: 1, broken tests: 1, ignored tests: 0
 Time elapsed: 0.00 seconds.
+Success percent: 50.00%
 
 Failed tests are:
      __main__.failed 
