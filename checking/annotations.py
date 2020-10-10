@@ -14,7 +14,8 @@ from .helpers.others import is_file_exists, fake
 
 
 def test(*args, enabled: bool = True, name: str = None, description: str = None, data_provider: str = None,
-         retries: int = 1, groups: Tuple[str] = None, priority: int = 0, timeout: int = 0, only_if: Callable = None):
+         retries: int = 1, groups: Tuple[str] = None, priority: int = 0, timeout: int = 0,
+         only_if: Callable[[], bool] = None):
     """
     The annotation that marks a function in a module as a test, does not work with classes and class methods and with
     functions, that take an argument (except using of data provider).
@@ -98,8 +99,8 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
     WARNING! Cache use memory, so it can take a lot of it for big data volumes.
     :param map_to_str: function-mapper to represent item of provider
     :return: fake
-    :raise: DuplicateNameException if provider with such name is already exists
-    :raise: WrongAnnotationPlacement if @data annotation used on function without return or yield statements
+    :raise DuplicateProviderNameException if provider with such name is already exists
+    :raise WrongDecoratedObject if @data annotation used on function without return or yield statements
     """
     if not enabled:
         return fake
@@ -111,7 +112,8 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
         name_ = name if name else func.__name__
         providers = TestSuite.get_instance().providers
         if name_ in providers:
-            raise DuplicateProviderNameException(f'Provider with name "{name_}" already exists! Only unique names allowed!')
+            raise DuplicateProviderNameException(f'Provider with name "{name_}" already exists! '
+                                                 f'Only unique names allowed!')
         providers[name_] = (func, map_to_str)
         nonlocal cached
         if cached:
@@ -285,13 +287,13 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
     Check that the function is suitable to accept values (use a data provider), that is, it has exactly 1 argument.
     :param func: is the function
     :return: None
-    :raise: WrongAnnotationPlacement
+    :raise WrongDecoratedObject
     """
     if not isfunction(func) or not signature(func).parameters:
         raise WrongDecoratedObject(f"Function '{func.__name__}' marked with data_provider has no argument!")
     if len(signature(func).parameters) > 1:
         raise WrongDecoratedObject(f"Function '{func.__name__}' marked with data_provider "
-                                       f"has more than 1 argument!")
+                                   f"has more than 1 argument!")
 
 
 def DATA_FILE(file_path: str, name: str = None, cached: bool = False, encoding: str = 'UTF-8',

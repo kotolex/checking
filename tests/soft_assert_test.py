@@ -155,6 +155,104 @@ class SoftAssertTest(TestCase):
         with self.assertRaises(AssertionError):
             soft.assert_all()
 
+    def test_is_zero_ok(self):
+        soft = SoftAssert()
+        soft.is_zero(0)
+        soft.assert_all()
+
+    def test_is_zero_failed(self):
+        soft = SoftAssert()
+        soft.is_zero(1)
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_positive_ok_int(self):
+        soft = SoftAssert()
+        soft.is_positive(1)
+        soft.assert_all()
+
+    def test_is_positive_ok_float(self):
+        soft = SoftAssert()
+        soft.is_positive(3.14)
+        soft.assert_all()
+
+    def test_is_positive_ok_list(self):
+        soft = SoftAssert()
+        soft.is_positive([1, 2])
+        soft.assert_all()
+
+    def test_is_positive_failed_int(self):
+        soft = SoftAssert()
+        soft.is_positive(0)
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_positive_failed_float(self):
+        soft = SoftAssert()
+        soft.is_positive(-1.2)
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_positive_failed_list(self):
+        soft = SoftAssert()
+        soft.is_positive([])
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_negative_ok_int(self):
+        soft = SoftAssert()
+        soft.is_negative(-1)
+        soft.assert_all()
+
+    def test_is_negative_ok_float(self):
+        soft = SoftAssert()
+        soft.is_negative(-3.14)
+        soft.assert_all()
+
+    def test_is_negative_failed_int(self):
+        soft = SoftAssert()
+        soft.is_negative(0)
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_negative_failed_float(self):
+        soft = SoftAssert()
+        soft.is_negative(1.2)
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_empty_ok_list(self):
+        soft = SoftAssert()
+        soft.is_empty([])
+        soft.assert_all()
+
+    def test_is_empty_ok_dict(self):
+        soft = SoftAssert()
+        soft.is_empty({})
+        soft.assert_all()
+
+    def test_is_empty_failed(self):
+        soft = SoftAssert()
+        soft.is_empty((1, 2))
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
+    def test_is_not_empty_ok_list(self):
+        soft = SoftAssert()
+        soft.is_not_empty([1, 2])
+        soft.assert_all()
+
+    def test_is_not_empty_ok_dict(self):
+        soft = SoftAssert()
+        soft.is_not_empty({1: 1})
+        soft.assert_all()
+
+    def test_is_not_empty_failed(self):
+        soft = SoftAssert()
+        soft.is_not_empty(set())
+        with self.assertRaises(AssertionError):
+            soft.assert_all()
+
 
 if __name__ == '__main__':
     main()
