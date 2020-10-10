@@ -1,7 +1,7 @@
-from typing import Iterable, Sized, Type
+from typing import Iterable, Type
 
-from checking.asserts import *
-from checking.helpers.others import short
+from ..asserts import *
+from ..helpers.others import short
 
 
 class FluentAssert:

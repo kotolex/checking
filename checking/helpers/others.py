@@ -1,7 +1,7 @@
 import glob
 from datetime import datetime
-from typing import Any, Iterable
 from collections.abc import Set, Mapping
+from typing import Any, Iterable, Callable
 
 
 def short(obj: Any, width: int = 45) -> str:
@@ -51,6 +51,18 @@ def fake(*args):
     :return: None
     """
     pass
+
+
+class FakePoolExecutor:
+    """
+    Fake to use 1 threaded execution, mimic real ThreadPool methods
+    """
+
+    def submit(self, func: Callable, param: Any):
+        func(param)
+
+    def shutdown(self, wait):
+        pass
 
 
 def format_seconds(seconds: float) -> str:
@@ -104,11 +116,11 @@ def diff(first: Any, second: Any) -> str:
         iter_2 = iter(second)
         for index, element in enumerate(first):
             sec_element = next(iter_2)
-            if type(element)!=type(sec_element):
+            if type(element) != type(sec_element):
                 return f'Different types at element with index {index}:\n    ' \
                        f'first  value="{short(element)}"{type(element)}\n    ' \
                        f'second value="{short(sec_element)}"{type(sec_element)}'
-            if element!=sec_element:
+            if element != sec_element:
                 return f'Diff at element with index {index}:\n    first  value="{short(element)}"{type(element)}\n    ' \
                        f'second value="{short(sec_element)}"{type(sec_element)}'
     return ''

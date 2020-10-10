@@ -3,11 +3,11 @@ import traceback
 from .basic import Listener
 from ..basic_test import Test
 from ..basic_suite import TestSuite
-from checking.helpers.others import short
-from checking.helpers.others import format_seconds
-from checking.exceptions import SkipTestException
-from checking.exceptions import OnlyIfFailedException
-from checking.helpers.exception_traceback import get_trace_filtered_by_filename
+from ...helpers.others import short
+from ...helpers.others import format_seconds
+from ...exceptions import SkipTestException
+from ...exceptions import OnlyIfFailedException
+from ...helpers.exception_traceback import get_trace_filtered_by_filename
 
 
 class DefaultListener(Listener):
@@ -58,7 +58,7 @@ class DefaultListener(Listener):
         print(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
               f'{b_count}, ignored tests: {i_count}')
         print(f'Time elapsed: {elapsed}.')
-        print(f'Success percent: {success_count / (all_count):.2%}')
+        print(f'Success percent: {success_count / all_count :.2%}')
         if self.verbose == 3:
             if f_count:
                 print(f'\nFailed tests are:')

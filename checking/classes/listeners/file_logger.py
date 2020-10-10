@@ -4,7 +4,7 @@ from threading import currentThread
 from .basic import Listener
 from ..basic_test import Test
 from ..basic_suite import TestSuite
-from checking.helpers.others import short, format_seconds, str_date_time
+from ...helpers.others import short, format_seconds, str_date_time
 
 
 class DefaultFileListener(Listener):
@@ -52,7 +52,7 @@ class DefaultFileListener(Listener):
         logger.info(f'Total tests: {all_count}, success tests: {success_count}, failed tests: {f_count}, broken tests: '
                     f'{b_count}, ignored tests: {i_count}')
         logger.info(f'Time elapsed: {elapsed}.')
-        logger.info(f'Success percent: {success_count / (all_count):.2%}')
+        logger.info(f'Success percent: {success_count / all_count :.2%}')
 
     def on_test_starts(self, test: Test):
         super().on_test_starts(test)

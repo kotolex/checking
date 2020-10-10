@@ -3,7 +3,7 @@ from threading import Lock
 from ..basic_test import Test
 from ..basic_case import TestCase
 from ..basic_suite import TestSuite
-from checking.helpers.others import short
+from ...helpers.others import short
 
 
 class Listener:

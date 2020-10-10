@@ -1,5 +1,4 @@
 import builtins
-
 from inspect import ismodule
 from io import StringIO, BytesIO
 from contextlib import contextmanager
@@ -23,18 +22,17 @@ def mock_builtins(function_name: str, func: Callable):
     """
     if function_name == 'open':
         print(f'WARNING! It\'s strongly recommended to use mock_open() to mock the open() built-in.'
-              f'Refer to: https://bitbucket.org/kotolex/atest/src')
-    import builtins as b
-    if not hasattr(b, function_name):
+              f'Refer to: https://github.com/kotolex/checking#mock-double-stub-and-spy')
+    if not hasattr(builtins, function_name):
         raise TestBrokenException(f'No build-in "{function_name}" found!')
     temp_ = None
     try:
-        temp_ = getattr(b, function_name)
-        setattr(b, function_name, func)
+        temp_ = getattr(builtins, function_name)
+        setattr(builtins, function_name, func)
         yield
     finally:
         if temp_:
-            setattr(b, function_name, temp_)
+            setattr(builtins, function_name, temp_)
 
 
 @contextmanager
@@ -77,7 +75,7 @@ def mock_open(on_read_text: str = '', on_read_bytes: bytes = b'',
     :param new_line: new line delimiter, is ignored for mode="rb"
     :param raises: error to raise on file open, other parameters are ignored
     :return: a list of written str/bytes values for mode="w"
-    :raise: ValueError if on_read_* parameter does not have correct type
+    :raise ValueError if on_read_* parameter does not have correct type
     """
     container = []
 

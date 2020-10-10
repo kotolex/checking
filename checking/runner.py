@@ -1,18 +1,18 @@
-from typing import Callable, Any, Dict, List
 from concurrent.futures import ThreadPoolExecutor
+from typing import Callable, Any, Dict, List, Union
 
 from .helpers.others import fake
 from .classes.basic_test import Test
+from .helpers.report import generate
 from .classes.basic_case import TestCase
 from .classes.basic_suite import TestSuite
 from .classes.basic_group import TestGroup
-from checking.helpers.report import generate
+from .helpers.others import FakePoolExecutor
 from .classes.listeners.basic import Listener
 from .classes.exc_thread import run_with_timeout
 from .classes.listeners.default import DefaultListener
-from checking.helpers.exception_traceback import exception_with_assert
+from .helpers.exception_traceback import exception_with_assert
 from .exceptions import UnknownProviderName, TestIgnoredException, OnlyIfFailedException, SkipTestException
-
 
 # Tests listener
 _listener: Listener
@@ -111,8 +111,8 @@ def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False, ge
             group.shuffle_tests()
         else:
             group.sort_test_by_priority()
-    # Create a pool of threads to run tests, by default 1 thread execution
-    pool = ThreadPoolExecutor(max_workers=threads)
+    # Create a pool of threads or fake pool to run tests, by default 1 thread execution
+    pool = FakePoolExecutor() if threads <= 1 else ThreadPoolExecutor(max_workers=threads)
     test_suite.start_suite()
     _listener.on_suite_starts(test_suite)
     try:
@@ -323,7 +323,7 @@ def _check_data_providers(suite: TestSuite):
                                   f'You must have method with @data annotation in this package!')
 
 
-def _run_before(test_case: TestCase):
+def _run_before(test_case: Union[TestCase, TestSuite]):
     """
     Runs all fixtures before test case. If failed - set flaf is_before_failed to True
     :param test_case: Test or TestGroup
@@ -335,7 +335,7 @@ def _run_before(test_case: TestCase):
             test_case.is_before_failed = True
 
 
-def _run_after(test_case: TestCase):
+def _run_after(test_case: Union[TestCase, TestSuite]):
     """
     Runs all fixtures after test or group
     :param test_case: Test or TestGroup

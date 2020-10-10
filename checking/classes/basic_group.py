@@ -59,7 +59,6 @@ class TestGroup(TestCase):
         """
         Adding the test in appropriate section of the results dictionary.
         :param test: is the instance of the TestCase
-        :param result: is the result, by default it is successful
         :return: None
         """
         self.test_results.append(test)

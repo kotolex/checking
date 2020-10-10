@@ -1,8 +1,8 @@
 from inspect import isfunction
 from typing import List, Callable
 
-from checking.asserts import *
-from checking.helpers.exception_traceback import get_trace_filtered_by_filename
+from ..asserts import *
+from ..helpers.exception_traceback import get_trace_filtered_by_filename
 
 
 class SoftAssert:
