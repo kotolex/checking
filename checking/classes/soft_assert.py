@@ -70,6 +70,9 @@ class SoftAssert:
     def equals(self, expected: Any, actual: Any, message: str = None):
         self.check(lambda: equals(expected, actual, message))
 
+    def not_equals(self, expected: Any, actual: Any, message: str = None):
+        self.check(lambda: not_equals(expected, actual, message))
+
     def is_none(self, obj: Any, message: str = None):
         self.check(lambda: is_none(obj, message))
 
@@ -87,6 +90,21 @@ class SoftAssert:
 
     def is_false(self, obj: Any, message: str = None):
         self.check(lambda: is_false(obj, message))
+
+    def is_zero(self, actual: Union[int, float]):
+        self.check(lambda: is_zero(actual))
+
+    def is_positive(self, actual: Union[int, float, Sequence]):
+        self.check(lambda: is_positive(actual))
+
+    def is_negative(self, actual: Union[int, float]):
+        self.check(lambda: is_negative(actual))
+
+    def is_empty(self, container: Sized, message: str = None):
+        self.check(lambda: is_empty(container, message))
+
+    def is_not_empty(self, container: Sized, message: str = None):
+        self.check(lambda: is_not_empty(container, message))
 
     @staticmethod
     def _create_message(exceptions: List[Exception]) -> str:

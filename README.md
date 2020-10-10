@@ -523,7 +523,7 @@ def check_print():
     with mock_print([]) as result: # now print just collects all to list result
         my_print(1)
         my_print('1')
-    equals([1,'1'], result) # checks all args are in result list
+    equals([(1,), ('1',)], result) # checks all args are in result list
 ```
 and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
 
@@ -542,7 +542,7 @@ def check_print_and_input():
     # be collected to result list
     with mock_input(['a', 'b', 'exit']), mock_print([]) as result:
         use_both()
-    equals(['a', 'b'], result)
+    equals([('a',), ('b',)], result)
 ```
 
 **2. Fake function of the 3-d party library**
