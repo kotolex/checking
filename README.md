@@ -25,7 +25,7 @@ Via pip:
 
 ### First test ###
 
-```
+```python
 from checking import *
 
 def my_function_to_test(a,b):
@@ -60,7 +60,7 @@ By default, even if you will use simple python assert like
 
 ###### Standard checks
 
-```
+```python
 #!python
 @test
 def checks_basic_asserts():
@@ -86,7 +86,7 @@ Messages in all asserts are optional, but it's strongly recommended to use them.
 If you need to check if an exception is raised or the message it contains, 
 you can use the provided context manager:
 
-```
+```python
 #!python
 @test
 def check_with_exception():
@@ -104,7 +104,7 @@ Use concrete exception types.
 In some cases you only need to run the code and make sure no exception is raised. 
 There is a special way to do that:
 
-```
+```python
 #!python
 @test
 def no_exceptions_bad():
@@ -122,7 +122,7 @@ The test fails if any exception is raised.
 
 Sometimes, you need to fail, skip or break a test during runtime due to some reason (wrong OS, wrong parameters, etc.)
 
-```
+```python
 #!python
 @test
 def must_fail_on_condition():
@@ -152,7 +152,7 @@ Soft Assert is a simple and convenient tool designed for this purpose.
 For example, you need to check all of the fields in a JSON object, 
 collecting the info on which fields are correct and which are not: 
 
-```
+```python
 #!python
 
 @test
@@ -175,7 +175,7 @@ Fluent assert is just syntactic sugar to make a series of checks for an object s
 Fluent assert is **not** a soft assert, if one of the checks fails -- the whole chain halts.
 Fluent assert interface has methods analogous to the basic asserts as well as exclusive ones:
 
-```
+```python
 #!python
 
 @test
@@ -198,7 +198,7 @@ def check_fluents():
 There are special "switches" to check some property of an object. 
 Please note, that after invoking a switch, you cannot return to the original object you started with.
 
-```
+```python
 #!python
 @test
 def switch_to_length():
@@ -234,7 +234,7 @@ It it not necessary to have data-provider with the test (in the same module)
 
 The data provider takes sets of values from the iterable one by one and pushes them onto your test.
 
-```
+```python
 #!python
 # Create data-provider
 @provider
@@ -254,7 +254,7 @@ this string representation will be shown in test parameter, by default it use st
 Pay attention - mapping function just change parameter representation in logs, console or report, but not the values itself!
 
 
-```
+```python
 #!python
 from checking import *
 
@@ -287,7 +287,7 @@ Test "__main__.check_cat" [Cat from 140288585437776] SUCCESS!
 
 If you need to use text file as a provider and get data line by line, you can use DATA_FILE function:
 
-```
+```python
 #!python
 from checking import *
 
@@ -304,7 +304,7 @@ Raises ValueError if the file is not found.
 Also, you can transform all of the lines before feeding them into the test, 
 for example delete trailing newlines at the end of each line:
 
-```
+```python
 #!python
 from checking import *
 
@@ -317,7 +317,7 @@ def try_prov(it):
 
 If you don't specify provider_name for the DATA_FILE helper, file_path will be used:
 
-```
+```python
 #!python
 from checking import *
 
@@ -336,7 +336,7 @@ Also, be careful when using the cache when running tests in parallel.
  
 DATA_FILE helper can use this parameter too.
 
-```
+```python
 #!python
 from checking import *
 
@@ -357,7 +357,7 @@ if __name__ == '__main__':
 If your provider is a simple one-liner (string, list comprehension, generator expression, etc.), 
 you can use the CONTAINER helper function to avoid full function definition boilerplate:  
 
-```
+```python
 #!python
 from checking import *
 
@@ -371,7 +371,7 @@ def try_container(it):
 'name' parameter is optional, 'container' is used by default,
 but it's strongly recommended to use a unique name:
 
-```
+```python
 #!python
 from checking import *
 
@@ -426,7 +426,7 @@ You can easily make it with before/after fixtures. The function that marked with
 @after  - run function after EACH test in group, by default group is current module, but you can specify it with parameter.
 This function will not be run if there is @before and it failed!
 
-```
+```python
 #!python
 @before(group_name='api')
 def my_func():
@@ -443,7 +443,7 @@ def another_func():
 @after_group - function run once after running all test in group, by default group is current module, but you can specify it with parameter. 
 This function will not be run if there is @before_group and it failed, except using parameter always_run = True
 
-```
+```python
 #!python
 @before_group(name='api')
 def my_func():
@@ -461,7 +461,7 @@ def another_func():
 @after_suite - function run once after all groups, at the end of the test-suite.
 This function will not be run if there is @before_suite and it failed, except using parameter 'always_run = True'
 
-```
+```python
 #!python
 @before_suite
 def my_func():
@@ -486,7 +486,7 @@ Let say you need to test function which is using standard input() inside.
 
 But you cannot wait for real user input during the test, so fake it with mock object.
 
-```
+```python
 #!python
 
 def our_weird_function_with_input_inside():
@@ -501,7 +501,7 @@ def mock_builtins_input():
 ```
 More convenient way is to use mock_input or mock_print for simple and most common cases.
 From code above we can test our_weird_function this way
-```
+```python
 #!python
 @test
 def check_input():
@@ -513,7 +513,7 @@ def check_input():
 
 Now let's say we have simple function with print inside and need to test it:
 
-```
+```python
 #!python
 def my_print(x):
     print(x)
@@ -527,7 +527,7 @@ def check_print():
 ```
 and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
 
-```
+```python
 #!python
 def use_both():
     while True:
@@ -552,7 +552,7 @@ For example, you need to test function, which is using requests.get inside, but 
 request. Let it mock
 
 some_module_to_test.py
-```
+```python
 #!python
 import requests
 
@@ -563,7 +563,7 @@ def func_with_get_inside(url):
 ```
 
 our_tests.py
-```
+```python
 #!python
 import requests # need to import it for mock!
 
@@ -584,7 +584,7 @@ def mock_requests_get():
 If you need to mock open function, push data to read from file and gets back with write to file, you can use
 mock_open context-manager
 
-```
+```python
 #!python
 def my_open():
     # We read from one file, uppercase results and write to another file
@@ -607,7 +607,7 @@ Spy is the object which has all attributes of original, but spy not performed an
 all methods return None (if not specified what to return). Therefore, spy log all actions and arguments.
 It can be useful if your code has inner object and you need to test what functions were called.
 
-```
+```python
 #!python
 
 def function_with_str_inside(value):
@@ -623,7 +623,7 @@ def spy_for_str():
 
 You can even specify what to return when some function of the spy will be called!
 
-```
+```python
 #!python
 
 def function_with_str_inside(value):
@@ -642,7 +642,7 @@ def spy_with_return():
 
 Spy object can be created without original inner object and can be call itself, it can be useful when you need
 some dumb object to know it was called.
-```
+```python
 #!python
 @test
 def check_spy():
@@ -656,7 +656,7 @@ def check_spy():
 Test-Double object is like the Spy, but it saves original object behaviour, so its methods returns 
 real object methods results if not specified otherwise.
 
-```
+```python
 #!python
 @test
 def check_double():
@@ -675,7 +675,7 @@ is not remember calls, it just a simple replacement for some object with minimum
 Lets say we have a function which gets some object, take its attribute, calculates something and 
 return result. We wish to isolate our testing from real objects, just test important behaviour, besides 
 this data-object can be hard to create or complicated.
-```
+```python
 #!python
 from checking import *
 
@@ -702,7 +702,7 @@ So, if you need to have some attribute (not method) on stub, you just use `stub.
 ### Function start() to runs test at module ###
 
 You can execute all test at current module using function start(). For example:
-```
+```python
 #!python
 from checking import *
 
@@ -727,7 +727,7 @@ tests, 2 - detail, indicating successful and fallen tests, 3 - detail and at the
 If verbose is not between 0 and 3, then 0 is accepted
 
 Example (name and verbose)
-```
+```python
 #!python
 from checking import *
 
@@ -805,7 +805,7 @@ Broken tests are:
 ```
 **groups** is the list of test-group names to run. Only tests with that group will be run.
 
-```
+```python
 #!python
 from checking import *
 
@@ -829,7 +829,7 @@ When you runs this example, only function api_check will be executed, because we
 
 **params**  is the dictionary of parameters available in all tests (general run parameters)
 
-```
+```python
 #!python
 from checking import *
 
@@ -852,7 +852,7 @@ number of tests, params of provider etc. No real tests or fixtures will be execu
 
 **filter_by_name** if specified - runs only tests with name **containing** this parameter
 
-```
+```python
 #!python
 from checking import *
 
