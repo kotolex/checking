@@ -65,12 +65,11 @@ def exception_with_assert(e: Exception) -> Exception:
         return e
     trace_last_line = trace_last_line.replace('-->', '').replace('assert', '').lstrip()
     message = ''
-    # if comma in line, so message text exist, parse it
-    if ',' in trace_last_line:
-        message = trace_last_line.partition(',')[2].lstrip()
-        trace_last_line = trace_last_line.replace(message, '')
-        trace_last_line = trace_last_line.replace(',', '').rstrip()
-        message += '\n'
+    # if line ends with quote and comma, so message text exist, parse it
+    if _is_line_ends_with_message(trace_last_line):
+        trace_last_line, _, message = trace_last_line.rpartition(',')
+        trace_last_line = trace_last_line.rstrip()
+        message = message.lstrip().replace('"', '').replace("'", '') + '\n'
     for key, value in CASES.items():
         if key in trace_last_line:
             first, second = [char.lstrip().rstrip() for char in trace_last_line.split(key)]
@@ -82,3 +81,15 @@ def exception_with_assert(e: Exception) -> Exception:
     error.__traceback__ = e.__traceback__
     del e
     return error
+
+
+def _is_line_ends_with_message(text: str) -> bool:
+    """
+    Function returns True if assert statement ends with message
+    """
+    text = text[::-1].replace(' ', '')
+    if not text[0] == "'" and not text[0] == '"':
+        return False
+    char = '"' if text[0] == '"' else "'"
+    index_of_last_quote = text.index(char, text.index(char) + 1)
+    return text[index_of_last_quote + 1] == ','

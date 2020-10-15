@@ -113,7 +113,34 @@ class AssertTest(TestCase):
         test(_)
         runner.start(listener=_listener)
         self.assertTrue(type(a_list[0]) is AssertionError)
-        self.assertEqual(a_list[0].args[0], '\'test\'\n"bool(0)" returns False but True was expected')
+        self.assertEqual(a_list[0].args[0], 'test\n"bool(0)" returns False but True was expected')
+
+    def test_assert_with_func_and_apos(self):
+        def _():
+            assert 'text'.replace('x', '') == 'test', 'test'
+
+        test(_)
+        runner.start(listener=_listener)
+        self.assertTrue(type(a_list[0]) is AssertionError)
+        self.assertEqual(a_list[0].args[0], "test\nObjects are not equals ('text'.replace('x', '') != 'test')")
+
+    def test_assert_with_func_and_quotes(self):
+        def _():
+            assert "text".replace("x", "") == "test", "test"
+
+        test(_)
+        runner.start(listener=_listener)
+        self.assertTrue(type(a_list[0]) is AssertionError)
+        self.assertEqual(a_list[0].args[0], 'test\nObjects are not equals ("text".replace("x", "") != "test")')
+
+    def test_assert_with_func_and_comma(self):
+        def _():
+            assert "text".replace("x", "") == ",t\'est"
+
+        test(_)
+        runner.start(listener=_listener)
+        self.assertTrue(type(a_list[0]) is AssertionError)
+        self.assertEqual(a_list[0].args[0], 'Objects are not equals ("text".replace("x", "") != ",t\\\'est")')
 
 
 if __name__ == '__main__':
