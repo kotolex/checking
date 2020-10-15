@@ -168,10 +168,12 @@ def after(*args, group_name: str = None):
 
 def before_group(*args, name: str = None):
     """
-    It marks the function as mandatory to run before the module/group is executed, that is, it is executed once before
-    all module/group tests are run.
-    :param name: is the name of the module or group, before which tests the function will be executed once. If no name
-    is specified, then the name of the current module where the annotation is used is taken.
+    Marks a function as a mandatory part of a test group bootstrap process.
+    The marked function is executed once strictly before any of the tests in the specified test group.
+    Use this decorator to build test fixtures for individual test groups.
+
+    :param name: the name of a module or a test group the function is executed in advance of,
+    if no name is specified, the name of the current module is used
     :return: fake
     """
 
@@ -188,15 +190,16 @@ def before_group(*args, name: str = None):
 
 def after_group(*args, name: str = None, always_run: bool = False):
     """
-    It marks the function as mandatory for run after the module/group is executed, that is, it is executed once after
-    all module/group tests have been completed. If there is a function running before the module/group
-    (@before_module) and it failed, then this function will not be launched if the always_run=True flag is not used.
-    With this flag, the function ignores the results of preliminary functions and always starts.
-    :param name: is the name of the module or group after which tests will be executed once the function. If no name is
-    specified, then the name of the current module where the annotation is used is taken
-    :param args: are parameters in which a function may come if the method is marked simply by @after_module
-    :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
-    will be launched anyway
+    Marks a function as a mandatory part of a test group teardown process.
+    The marked function is executed once strictly after all of the tests in a group have finished running.
+    The marked function is not executed if @before_group fails, unless always_run set to True.
+    Use this decorator to correctly tear down fixtures built for individual test groups.
+
+    :param name: the name of a module or a test group the function is executed after
+    if no name is specified, the name of the current module is used
+    :param args: handles the call-less @after_group decorator shorthand, holds the wrapped function reference
+    :param always_run: if False, execute only if @before_group has finished successfully,
+    if True, force the function execution anyway
     :return: fake
     """
 
