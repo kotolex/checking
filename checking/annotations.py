@@ -168,9 +168,9 @@ def after(*args, group_name: str = None):
 
 def before_group(*args, name: str = None):
     """
-    Marks a function as a mandatory part of a test suite bootstrap process.
-    The marked function is executed once strictly before any of the tests.
-    Use this decorator to build test fixtures.
+    Marks a function as a mandatory part of a test group bootstrap process.
+    The marked function is executed once strictly before any of the tests in the specified test group.
+    Use this decorator to build test fixtures for individual test groups.
 
     :param name: the name of a module or a test group the function is executed in advance of,
     if no name is specified, the name of the current module is used
@@ -190,10 +190,10 @@ def before_group(*args, name: str = None):
 
 def after_group(*args, name: str = None, always_run: bool = False):
     """
-    Marks a function as a mandatory part of a test suite teardown process.
-    The marked function is executed once strictly after all of the tests finished running.
+    Marks a function as a mandatory part of a test group teardown process.
+    The marked function is executed once strictly after all of the tests in a group have finished running.
     The marked function is not executed if @before_group fails, unless always_run set to True.
-    Use this decorator to correctly tear down test fixtures.
+    Use this decorator to correctly tear down fixtures built for individual test groups.
 
     :param name: the name of a module or a test group the function is executed after
     if no name is specified, the name of the current module is used
