@@ -218,9 +218,11 @@ def after_group(*args, name: str = None, always_run: bool = False):
 
 def before_suite(func: Callable[[], None]):
     """
-    Marks the function as mandatory to run before executing the entire test-suite, that is, it is performed
-    once at the very beginning of testing.
-    :param func: is the function that does not take any argument
+    Marks a function as a mandatory part of the whole test suite bootstrap process.
+    The marked function is executed once strictly before any of the tests and functions, marked with @before_group.
+    Use this decorator to build test fixtures for the whole test suite.
+
+    :param func: a callable object, must not take any arguments
     :return: None
     """
     __check_is_function_without_args(func, 'before_suite')
@@ -229,13 +231,15 @@ def before_suite(func: Callable[[], None]):
 
 def after_suite(*args, always_run: bool = False):
     """
-    It marks the function as mandatory for the run after the entire test run (test suite) has been completed, that is,
-    it is performed once at the very end of the test after all groups and tests. If there are functions before the whole
-    run (@before_suite) and they failed, then this function will not be executed, except when using the
-    always_run=True flag. In this case, it will always be launched.
-    :param args: are parameters in which a function may come if the method is marked simply @after_suite
-    :param always_run: is the function start flag, regardless of the result of the preliminary functions. If True, it
-    will be launched anyway
+    Marks a function as a mandatory part of a test suite teardown process.
+    The marked function is executed once strictly after all of the test in the suite have finished running and
+    all of the functions marked with @before_group are executed.
+    The marked function is not executed if @before_suite fails, unless always_run set to True.
+    Use this decorator to correctly tear down fixtures built for the whole test suite.
+
+    :param args: handles the call-less @after_suite decorator shorthand, holds the wrapped function reference
+    :param always_run: if False, execute only if @before_suite has finished successfully,
+    if True, force the function execution anyway
     :return: fake
     """
 
