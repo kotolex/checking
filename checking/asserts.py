@@ -20,7 +20,9 @@ def is_true(obj: Any, message: Optional[str] = None):
     """
     if not obj:
         _message = _mess(message)
-        raise AssertionError(f'{_message}Expected True, but got False! ')
+        raise AssertionError(f'{_message}'
+                             'Expected: True'
+                             '\nActual  : False')
 
 
 def is_false(obj: Any, message: Optional[str] = None):
@@ -34,7 +36,9 @@ def is_false(obj: Any, message: Optional[str] = None):
     """
     if obj:
         _message = _mess(message)
-        raise AssertionError(f'{_message}Expected False, but got True')
+        raise AssertionError(f'{_message}'
+                             'Expected: False'
+                             '\nActual  : True')
 
 
 def equals(expected: Any, actual: Any, message: Optional[str] = None):

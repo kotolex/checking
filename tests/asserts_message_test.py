@@ -10,12 +10,40 @@ class AssertsTest(TestCase):
     def test_is_true(self):
         with self.assertRaises(AssertionError) as e:
             is_true(False)
-        self.assertEqual(e.exception.args[0], 'Expected True, but got False! ')
+        self.assertEqual(
+            e.exception.args[0],
+            'Expected: True'
+            '\nActual  : False'
+        )
+
+    def test_is_true_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            is_true(False, 'should be true')
+        self.assertEqual(
+            e.exception.args[0],
+            'should be true'
+            '\nExpected: True'
+            '\nActual  : False'
+        )
 
     def test_is_false(self):
         with self.assertRaises(AssertionError) as e:
             is_false(True)
-        self.assertEqual(e.exception.args[0], 'Expected False, but got True')
+        self.assertEqual(
+            e.exception.args[0],
+            'Expected: False'
+            '\nActual  : True'
+        )
+
+    def test_is_false_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            is_false(True, 'should be false')
+        self.assertEqual(
+            e.exception.args[0],
+            'should be false'
+            '\nExpected: False'
+            '\nActual  : True'
+        )
 
     def test_equals(self):
         with self.assertRaises(AssertionError) as e:
