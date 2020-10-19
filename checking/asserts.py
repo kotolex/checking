@@ -1,6 +1,6 @@
 """
 This module contains helper functions, implementing various assertions and providing a convenient reporting facility.
-All helpers have *message* parameter which, while optional, is strongly recommended to use.
+Most helpers have *message* parameter which, while optional, is strongly recommended to use.
 """
 from typing import Any, Union, Sequence, Sized, Optional
 
@@ -221,6 +221,8 @@ def is_empty(container: Sized, message: Optional[str] = None):
     :param container: object to evaluate
     :param message: concrete failure description
     :return: None
+    :raise AssertionError: if object is not empty (has length greater than zero)
+    :raise TestBrokenException: if object has ho length attribute
     """
     _message = _mess(message)
     if _get_length_if_sized(container):
@@ -235,6 +237,8 @@ def is_not_empty(container: Sized, message: Optional[str] = None):
     :param container: object to evaluate
     :param message: concrete failure description
     :return: None
+    :raise AssertionError: if object is empty (has length equal to zero)
+    :raise TestBrokenException: if object has ho length attribute
     """
     _message = _mess(message)
     if not _get_length_if_sized(container):
