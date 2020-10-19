@@ -53,9 +53,9 @@ def equals(expected: Any, actual: Any, message: Optional[str] = None):
     differs = diff(expected, actual)
     if differs:
         _message = f'{_message}{differs}\n'
-    raise AssertionError(f'{_message}Objects are not equal!\n'
-                         f'Expected:"{short(expected, 150)}" <{type(expected).__name__}>\n'
-                         f'Actual  :"{short(actual, 150)}" <{type(actual).__name__}>!')
+    raise AssertionError(f'{_message}Objects are not equal:\n'
+                         f'Expected: "{short(expected, 150)}" <{type(expected).__name__}>\n'
+                         f'Actual  : "{short(actual, 150)}" <{type(actual).__name__}>')
 
 
 def not_equals(expected: Any, actual: Any, message: Optional[str] = None):
@@ -84,7 +84,7 @@ def is_none(obj: Any, message: Optional[str] = None):
     """
     _message = _mess(message)
     if obj is not None:
-        raise AssertionError(f'{_message}Object {short(obj)}<{type(obj).__name__}> is not None!')
+        raise AssertionError(f'{_message}Object {short(obj)} <{type(obj).__name__}> is not None!')
 
 
 def is_not_none(obj: Any, message: Optional[str] = None):
@@ -179,7 +179,7 @@ def is_zero(actual: Union[int, float]):
     """
     _check_argument_is_number(actual, 'is_zero')
     if actual != 0:
-        raise AssertionError(f'"{short(actual)}"<{type(actual).__name__}> is not equal to zero!')
+        raise AssertionError(f'"{short(actual)}" <{type(actual).__name__}> is not equal to zero!')
 
 
 def is_positive(actual: Union[int, float, Sequence]):
@@ -194,7 +194,7 @@ def is_positive(actual: Union[int, float, Sequence]):
             raise AssertionError(f'{actual} is not positive!')
     else:
         if _get_length_if_sized(actual) <= 0:
-            raise AssertionError(f'Length of "{short(actual)}"<{type(actual).__name__}> is not positive!')
+            raise AssertionError(f'Length of "{short(actual)}" <{type(actual).__name__}> is not positive!')
 
 
 def is_negative(actual: Union[int, float]):
@@ -206,7 +206,7 @@ def is_negative(actual: Union[int, float]):
     """
     _check_argument_is_number(actual, 'is_negative')
     if actual >= 0:
-        raise AssertionError(f'"{short(actual)}"<{type(actual).__name__}> is not negative!')
+        raise AssertionError(f'"{short(actual)}" <{type(actual).__name__}> is not negative!')
 
 
 def is_empty(container: Sized, message: Optional[str] = None):
@@ -220,7 +220,7 @@ def is_empty(container: Sized, message: Optional[str] = None):
     """
     _message = _mess(message)
     if _get_length_if_sized(container):
-        raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is not empty!')
+        raise AssertionError(f'{_message}"{short(container)}" <{type(container).__name__}> is not empty!')
 
 
 def is_not_empty(container: Sized, message: Optional[str] = None):
@@ -234,7 +234,7 @@ def is_not_empty(container: Sized, message: Optional[str] = None):
     """
     _message = _mess(message)
     if not _get_length_if_sized(container):
-        raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is empty!')
+        raise AssertionError(f'{_message}"{short(container)}" <{type(container).__name__}> is empty!')
 
 
 def __contains_or_not(part, whole, is_contains: Optional[bool] = True, message: Optional[str] = None):
@@ -246,14 +246,14 @@ def __contains_or_not(part, whole, is_contains: Optional[bool] = True, message: 
     except TypeError as e:
         if 'requires' in e.args[0]:
             raise TestBrokenException(f'Object "{short(part)}" <{type(part).__name__}> and '
-                                      f'"{short(whole)}"<{type(whole).__name__}> are of different types and '
+                                      f'"{short(whole)}" <{type(whole).__name__}> are of different types and '
                                       f'cant be check for contains!')
         raise TestBrokenException(
             f'"{short(whole)}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
     _message = _mess(message)
     add_ = 'is a' if not is_contains else 'is not'
     raise AssertionError(f'{_message}Object "{short(part)}" <{type(part).__name__}>, {add_} part of \n'
-                         f'"{short(whole, 150)}"<{type(whole).__name__}>!')
+                         f'"{short(whole, 150)}" <{type(whole).__name__}>!')
 
 
 def _mess(message: str) -> str:
@@ -271,11 +271,11 @@ def _get_length_if_sized(container: Sized) -> int:
     try:
         return len(container)
     except TypeError:
-        raise TestBrokenException(f'"{short(container)}"<{type(container).__name__}> '
+        raise TestBrokenException(f'"{short(container)}" <{type(container).__name__}> '
                                   f'has no len and cant be checked for emptiness!')
 
 
 def _check_argument_is_number(actual, name: str):
     if type(actual) not in (int, float):
         raise TestBrokenException(f"Only int or float types allowed for {name}," +
-                                  f" but got '{short(actual)}'<{type(actual).__name__}>")
+                                  f" but got '{short(actual)}' <{type(actual).__name__}>")

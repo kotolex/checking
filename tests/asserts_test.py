@@ -74,12 +74,12 @@ class AssertsTest(TestCase):
     def test_equals_failed(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2)
-        self.assertEqual('Objects are not equal!\nExpected:"1" <int>\nActual  :"2" <int>!', e.exception.args[0])
+        self.assertEqual('Objects are not equal:\nExpected: "1" <int>\nActual  : "2" <int>', e.exception.args[0])
 
     def test_equals_failed_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals(1, 2, 'message')
-        self.assertEqual('message\nObjects are not equal!\nExpected:"1" <int>\nActual  :"2" <int>!',
+        self.assertEqual('message\nObjects are not equal:\nExpected: "1" <int>\nActual  : "2" <int>',
                          e.exception.args[0])
 
     def test_is_none_ok(self):
@@ -88,12 +88,12 @@ class AssertsTest(TestCase):
     def test_is_none_failed(self):
         with self.assertRaises(AssertionError) as e:
             is_none(1)
-        self.assertEqual('Object 1<int> is not None!', e.exception.args[0])
+        self.assertEqual('Object 1 <int> is not None!', e.exception.args[0])
 
     def test_is_none_failed_with_message(self):
         with self.assertRaises(AssertionError) as e:
             is_none(1, 'message')
-        self.assertEqual('message\nObject 1<int> is not None!', e.exception.args[0])
+        self.assertEqual('message\nObject 1 <int> is not None!', e.exception.args[0])
 
     def test_not_none_ok(self):
         is_not_none(1)
@@ -210,17 +210,17 @@ class AssertsTest(TestCase):
     def test_contains_failed_if_not_contains_str(self):
         with self.assertRaises(AssertionError) as e:
             contains('1', '234')
-        self.assertEqual("Object \"1\" <str>, is not part of \n\"234\"<str>!", e.exception.args[0])
+        self.assertEqual("Object \"1\" <str>, is not part of \n\"234\" <str>!", e.exception.args[0])
 
     def test_contains_failed_if_not_contains_list(self):
         with self.assertRaises(AssertionError) as e:
             contains('1', [2, 3])
-        self.assertEqual("Object \"1\" <str>, is not part of \n\"[2, 3]\"<list>!", e.exception.args[0])
+        self.assertEqual("Object \"1\" <str>, is not part of \n\"[2, 3]\" <list>!", e.exception.args[0])
 
     def test_contains_failed_if_wrong_types(self):
         with self.assertRaises(TestBrokenException) as e:
             contains(1, '123')
-        self.assertEqual("Object \"1\" <int> and \"123\"<str> are of different types and cant be check for contains!",
+        self.assertEqual("Object \"1\" <int> and \"123\" <str> are of different types and cant be check for contains!",
                          e.exception.args[0])
 
     def test_is_true(self):
