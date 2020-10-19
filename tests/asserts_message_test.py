@@ -53,9 +53,22 @@ class AssertsTest(TestCase):
             """Diff at element with index 0:\n    first  value="1"<class 'str'>\n    second value="2"<class 'str'>\nObjects are not equal:\nExpected: "1" <str>\nActual  : "2" <str>"""
         )
 
+    def test_equals_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            equals('1', '2', 'should be equal')
+        self.assertEqual(
+            e.exception.args[0],
+            """should be equal\nDiff at element with index 0:\n    first  value="1"<class 'str'>\n    second value="2"<class 'str'>\nObjects are not equal:\nExpected: "1" <str>\nActual  : "2" <str>"""
+        )
+
     def test_not_equals(self):
         with self.assertRaises(AssertionError) as e:
             not_equals('1', '1')
+        self.assertEqual(e.exception.args[0], "Objects are equal: (1, 1)!")
+
+    def test_not_equals_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            not_equals('1', '1', 'should not be equal')
         self.assertEqual(e.exception.args[0], "Objects are equal: (1, 1)!")
 
     def test_is_none(self):
@@ -63,12 +76,22 @@ class AssertsTest(TestCase):
             is_none('1')
         self.assertEqual(e.exception.args[0], "Object 1 <str> is not None!")
 
+    def test_is_none_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            is_none('1', 'should be None')
+        self.assertEqual(e.exception.args[0], "should be None\nObject 1 <str> is not None!")
+
     def test_is_not_none(self):
         with self.assertRaises(AssertionError) as e:
             is_not_none(None)
         self.assertEqual(e.exception.args[0], "Unexpected None!")
 
-    def test_fail_with_no_message(self):
+    def test_is_not_none_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            is_not_none(None, 'should not be None')
+        self.assertEqual(e.exception.args[0], "should not be None\nUnexpected None!")
+
+    def test_fail(self):
         with self.assertRaises(AssertionError) as e:
             test_fail()
         self.assertEqual(e.exception.args[0], "Test was intentionally failed!")
@@ -78,7 +101,7 @@ class AssertsTest(TestCase):
             test_fail('failed because reasons')
         self.assertEqual(e.exception.args[0], "failed because reasons")
 
-    def test_break_with_no_message(self):
+    def test_break(self):
         with self.assertRaises(TestBrokenException) as e:
             test_break()
         self.assertEqual(e.exception.args[0], "Test was intentionally broken!")
@@ -88,7 +111,7 @@ class AssertsTest(TestCase):
             test_break('broken because reasons')
         self.assertEqual(e.exception.args[0], "broken because reasons")
 
-    def test_skip_with_no_message(self):
+    def test_skip(self):
         with self.assertRaises(SkipTestException) as e:
             test_skip()
         self.assertEqual(e.exception.args[0], "Test was intentionally ignored!")
@@ -103,9 +126,19 @@ class AssertsTest(TestCase):
             contains('1', '234')
         self.assertEqual(e.exception.args[0], 'Object "1" <str>, is not part of \n"234" <str>!')
 
+    def test_contains_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            contains('1', '234', 'should present in')
+        self.assertEqual(e.exception.args[0], 'should present in\nObject "1" <str>, is not part of \n"234" <str>!')
+
     def test_contains_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             contains('1', 2)
+        self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
+
+    def test_contains_broken_with_message(self):
+        with self.assertRaises(TestBrokenException) as e:
+            contains('1', 2, 'should present in')
         self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
 
     def test_not_contains(self):
@@ -113,9 +146,19 @@ class AssertsTest(TestCase):
             not_contains('1', '1234')
         self.assertEqual(e.exception.args[0], 'Object "1" <str>, is a part of \n"1234" <str>!')
 
+    def test_not_contains_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            not_contains('1', '1234', 'should not be in')
+        self.assertEqual(e.exception.args[0], 'should not be in\nObject "1" <str>, is a part of \n"1234" <str>!')
+
     def test_not_contains_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             not_contains('1', 2)
+        self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
+
+    def test_not_contains_broken_with_message(self):
+        with self.assertRaises(TestBrokenException) as e:
+            not_contains('1', 2, 'should not be in')
         self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
 
     def test_is_zero(self):
@@ -143,10 +186,40 @@ class AssertsTest(TestCase):
             is_empty([1])
         self.assertEqual(e.exception.args[0], '"[1]" <list> is not empty!')
 
+    def test_is_empty_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            is_empty([1], 'should be empty')
+        self.assertEqual(e.exception.args[0], 'should be empty\n"[1]" <list> is not empty!')
+
+    def test_is_empty_broken(self):
+        with self.assertRaises(TestBrokenException) as e:
+            is_empty(1)
+        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+
+    def test_is_empty_broken_with_message(self):
+        with self.assertRaises(TestBrokenException) as e:
+            is_empty(1, 'should be empty')
+        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+
     def test_is_not_empty(self):
         with self.assertRaises(AssertionError) as e:
             is_not_empty([])
         self.assertEqual(e.exception.args[0], '"[]" <list> is empty!')
+
+    def test_is_not_empty_with_message(self):
+        with self.assertRaises(AssertionError) as e:
+            is_not_empty([], 'should not be empty')
+        self.assertEqual(e.exception.args[0], 'should not be empty\n"[]" <list> is empty!')
+
+    def test_is_not_empty_broken(self):
+        with self.assertRaises(TestBrokenException) as e:
+            is_not_empty(1)
+        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+
+    def test_is_not_empty_broken_with_message(self):
+        with self.assertRaises(TestBrokenException) as e:
+            is_not_empty(1, 'should not be empty')
+        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
 
 
 if __name__ == '__main__':
