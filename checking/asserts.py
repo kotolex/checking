@@ -1,11 +1,12 @@
 from typing import Any, Union, Sequence, Sized
+from typing import Any, Union, Sequence, Sized, Optional
 
 from .helpers.others import short, diff
 from .exceptions import SkipTestException
 from .exceptions import TestBrokenException
 
 
-def is_true(obj: Any, message: str = None):
+def is_true(obj: Any, message: Optional[str] = None):
     """
     Checking of the object for truth.
     :param obj: is the object for checking
@@ -17,7 +18,7 @@ def is_true(obj: Any, message: str = None):
         raise AssertionError(f'{_message}Expected True, but got False! ')
 
 
-def is_false(obj: Any, message: str = None):
+def is_false(obj: Any, message: Optional[str] = None):
     """
     Checking an object for non-truth (false).
     :param obj: is the object for checking
@@ -29,7 +30,7 @@ def is_false(obj: Any, message: str = None):
         raise AssertionError(f'{_message}Expected False, but got True')
 
 
-def equals(expected: Any, actual: Any, message: str = None):
+def equals(expected: Any, actual: Any, message: Optional[str] = None):
     """
     It compares the equality of two objects.
     :param expected: is the expected object
@@ -49,7 +50,7 @@ def equals(expected: Any, actual: Any, message: str = None):
                          f'Actual  :"{short(actual, 150)}" <{type(actual).__name__}>!')
 
 
-def not_equals(expected: Any, actual: Any, message: str = None):
+def not_equals(expected: Any, actual: Any, message: Optional[str] = None):
     """
     It checks that objects are not equal.
     :param expected: is the expected object
@@ -63,7 +64,7 @@ def not_equals(expected: Any, actual: Any, message: str = None):
         raise AssertionError(f'Objects are equal: ({short(expected)}, {short(actual)})!')
 
 
-def is_none(obj: Any, message: str = None):
+def is_none(obj: Any, message: Optional[str] = None):
     """
     It checks that the object is None, the inverse function for checking not_none.
     :param obj: is the checked object
@@ -76,7 +77,7 @@ def is_none(obj: Any, message: str = None):
         raise AssertionError(f'{_message}Object {short(obj)}<{type(obj).__name__}> is not None!')
 
 
-def is_not_none(obj: Any, message: str = None):
+def is_not_none(obj: Any, message: Optional[str] = None):
     """
     It checks that the object is not None, the inverse function for is_none.
     :param obj: is the checked object
@@ -89,7 +90,7 @@ def is_not_none(obj: Any, message: str = None):
         raise AssertionError(f'{_message}Unexpected None!')
 
 
-def test_fail(message: str = None):
+def test_fail(message: Optional[str] = None):
     """
     Intentionally failure of the test, can be used in rare conditions instead of checking obviously wrong conditions.
     :param message: is the optional message
@@ -98,7 +99,8 @@ def test_fail(message: str = None):
     raise AssertionError(message if message else 'Test was intentionally failed!')
 
 
-def test_brake(message: str = None):
+# TODO fix typo in the function name
+def test_brake(message: Optional[str] = None):
     """
     Intentionally bring the test to a broken state, can be used in rare conditions instead of throwing exceptions.
     :param message: is the optional message
@@ -107,7 +109,7 @@ def test_brake(message: str = None):
     raise TestBrokenException(message if message else 'Test was intentionally broken!')
 
 
-def test_skip(message: str = None):
+def test_skip(message: Optional[str] = None):
     """
     Intentionally bring the test to a IGNORED state, can be used in rare situations, when some condition makes
     no further test execution is possible.
@@ -117,7 +119,7 @@ def test_skip(message: str = None):
     raise SkipTestException(message if message else 'Test was intentionally ignored!')
 
 
-def contains(part: Any, whole: Any, message: str = None):
+def contains(part: Any, whole: Any, message: Optional[str] = None):
     """
     Checks that one object is part of (enters) another. Similar to check a in b.
     :param part: is the object-part that is part of the whole
@@ -131,7 +133,7 @@ def contains(part: Any, whole: Any, message: str = None):
     __contains_or_not(part, whole, message=message)
 
 
-def not_contains(part: Any, whole: Any, message: str = None):
+def not_contains(part: Any, whole: Any, message: Optional[str] = None):
     """
     Checks that one object is not part (not included) of the second. Similar to checking a not in b.
     :param part: is the part object that is part of the whole
@@ -181,7 +183,7 @@ def is_negative(actual: Union[int, float]):
         raise AssertionError(f'"{short(actual)}"<{type(actual).__name__}> is not negative!')
 
 
-def is_empty(container: Sized, message: str = None):
+def is_empty(container: Sized, message: Optional[str] = None):
     """
     Function checks the container is empty (len==0)
     :param message: optional message
@@ -193,7 +195,7 @@ def is_empty(container: Sized, message: str = None):
         raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is not empty!')
 
 
-def is_not_empty(container: Sized, message: str = None):
+def is_not_empty(container: Sized, message: Optional[str] = None):
     """
     Function checks the container is NOT empty (len>0)
     :param message: optional message
@@ -205,7 +207,7 @@ def is_not_empty(container: Sized, message: str = None):
         raise AssertionError(f'{_message}"{short(container)}"<{type(container).__name__}> is empty!')
 
 
-def __contains_or_not(part, whole, is_contains: bool = True, message: str = None):
+def __contains_or_not(part, whole, is_contains: Optional[bool] = True, message: Optional[str] = None):
     try:
         if is_contains and part in whole:
             return
