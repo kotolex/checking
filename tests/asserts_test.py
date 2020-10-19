@@ -167,12 +167,12 @@ class AssertsTest(TestCase):
 
     def test_braking_test_default(self):
         with self.assertRaises(TestBrokenException) as e:
-            test_brake()
+            test_break()
         self.assertEqual("Test was intentionally broken!", e.exception.args[0])
 
     def test_braking_test_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
-            test_brake('message')
+            test_break('message')
         self.assertEqual("message", e.exception.args[0])
 
     def test_no_exception_expected_ok(self):

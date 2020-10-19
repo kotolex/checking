@@ -113,8 +113,7 @@ def test_fail(message: Optional[str] = None):
     raise AssertionError(message if message else 'Test was intentionally failed!')
 
 
-# TODO fix typo in the function name
-def test_brake(message: Optional[str] = None):
+def test_break(message: Optional[str] = None):
     """
     Break and mark as *broken* the test intentionally, detailing the reason.
     Use this instead of throwing arbitrary exceptions when you need to break a test.

@@ -313,7 +313,7 @@ class BehaviourTest(TestCase):
     def test_provider_with_brake(self):
         def _if2(it):
             if it == 2:
-                test_brake()
+                test_break()
 
         clear()
         CONTAINER([1, 2, 3, 4], name='three')
@@ -341,7 +341,7 @@ class BehaviourTest(TestCase):
 
     def test__with_brake(self):
         def _if2():
-            test_brake()
+            test_break()
 
         clear()
         test(_if2)
