@@ -107,7 +107,7 @@ def diff(first: Any, second: Any) -> str:
     if isinstance(first, Mapping):
         for key, value in first.items():
             if key not in second:
-                return f"Dict {short(second, 20)} has no key={key}, but it contains key(s)" \
+                return f"Dict {short(second, 20)} has no key='{key}' <{type(key).__name__}>, but contains key(s)" \
                        f" {short(set(second.keys() - set(first.keys())), 100)}"
             if value != second[key]:
                 return f'Diff at element with key="{short(key)}"({type(key)}): ' \

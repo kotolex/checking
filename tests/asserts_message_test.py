@@ -113,6 +113,17 @@ class AssertsTest(TestCase):
             "\nActual  : '{1, 3}' <set>"
         )
 
+    def test_equals_dict_missing_key(self):
+        with self.assertRaises(AssertionError) as e:
+            equals({1: 1, 2: 2}, {1: 1, 3: 3})
+        self.assertEqual(
+            e.exception.args[0],
+            "Dict {1: 1, 3: 3} has no key='2' <int>, but contains key(s) {3}"
+            "\nObjects are not equal:"
+            "\nExpected: '{1: 1, 2: 2}' <dict>"
+            "\nActual  : '{1: 1, 3: 3}' <dict>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')
