@@ -102,6 +102,17 @@ class AssertsTest(TestCase):
             "\nActual  : '11' <str>"
         )
 
+    def test_equals_set(self):
+        with self.assertRaises(AssertionError) as e:
+            equals({1, 2}, {1, 3})
+        self.assertEqual(
+            e.exception.args[0],
+            "Different elements in two sets: {2, 3}"
+            "\nObjects are not equal:"
+            "\nExpected: '{1, 2}' <set>"
+            "\nActual  : '{1, 3}' <set>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')

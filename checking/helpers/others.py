@@ -103,7 +103,7 @@ def diff(first: Any, second: Any) -> str:
     except TypeError:
         return ''
     if isinstance(first, Set):
-        return f'Different elements in sets: ({short(first ^ second)})'
+        return f"Different elements in two sets: {short(first ^ second)}"
     if isinstance(first, Mapping):
         for key, value in first.items():
             if key not in second:
