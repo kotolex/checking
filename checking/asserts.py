@@ -282,8 +282,8 @@ def _get_length_if_sized(container: Sized) -> int:
     try:
         return len(container)
     except TypeError:
-        raise TestBrokenException(f"'{short(container)}' <{type(container).__name__}> "
-                                  f"has no len and cant be checked for emptiness!")
+        raise TestBrokenException(f"Cannot execute emptiness test:"
+                                  f"\n'{short(container)}' <{type(container).__name__}> has no 'len' attribute!")
 
 
 def _check_argument_is_number(actual, name: str):

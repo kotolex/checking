@@ -346,12 +346,20 @@ class AssertsTest(TestCase):
     def test_is_empty_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             is_empty(1)
-        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute emptiness test:"
+            "\n'1' <int> has no 'len' attribute!"
+        )
 
     def test_is_empty_broken_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
             is_empty(1, 'should be empty')
-        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute emptiness test:"
+            "\n'1' <int> has no 'len' attribute!"
+        )
 
     def test_is_not_empty(self):
         with self.assertRaises(AssertionError) as e:
@@ -366,12 +374,20 @@ class AssertsTest(TestCase):
     def test_is_not_empty_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             is_not_empty(1)
-        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute emptiness test:"
+            "\n'1' <int> has no 'len' attribute!"
+        )
 
     def test_is_not_empty_broken_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
             is_not_empty(1, 'should not be empty')
-        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute emptiness test:"
+            "\n'1' <int> has no 'len' attribute!"
+        )
 
 
 if __name__ == '__main__':
