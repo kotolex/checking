@@ -81,6 +81,16 @@ class AssertsTest(TestCase):
             "\nActual  : '1.2' <float>"
         )
 
+    def test_equals_mismatched_type(self):
+        with self.assertRaises(AssertionError) as e:
+            equals(1, '1')
+        self.assertEqual(
+            e.exception.args[0],
+            "Objects are not equal:"
+            "\nExpected: '1' <int>"
+            "\nActual  : '1' <str>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')
