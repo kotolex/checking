@@ -98,29 +98,31 @@ def diff(first: Any, second: Any) -> str:
         len_first = len(first)
         len_second = len(second)
         if len_first != len_second:
-            return f'Length of "{short(first, 20)}"({type_1})={len_first} and length of "{short(second, 20)}"({type_1})={len_second}'
+            return f"Length of '{short(first, 20)}' <{type_1.__name__}> == {len_first} but " \
+                   f"length of '{short(second, 20)}' <{type_1.__name__}> == {len_second}"
     except TypeError:
         return ''
     if isinstance(first, Set):
-        return f'Different elements in sets: ({short(first ^ second)})'
+        return f"Different elements in two sets: {short(first ^ second)}"
     if isinstance(first, Mapping):
         for key, value in first.items():
             if key not in second:
-                return f"Dict {short(second, 20)} has no key={key}, but it contains key(s)" \
+                return f"Dict {short(second, 20)} has no key='{key}' <{type(key).__name__}>, but contains key(s)" \
                        f" {short(set(second.keys() - set(first.keys())), 100)}"
             if value != second[key]:
-                return f'Diff at element with key="{short(key)}"({type(key)}): ' \
-                       f'\n    first  value="{short(value)}"({type(value)}) ' \
-                       f'\n    second value="{short(second[key])}"({type(second[key])})'
+                return f"Diff in entry under key='{short(key)}' <{type(key).__name__}>:" \
+                       f"\n    first  value='{short(value)}' <{type(value).__name__}>" \
+                       f"\n    second value='{short(second[key])}' <{type(second[key]).__name__}>"
     if isinstance(first, Iterable):
         iter_2 = iter(second)
         for index, element in enumerate(first):
             sec_element = next(iter_2)
             if type(element) != type(sec_element):
-                return f'Different types at element with index {index}:\n    ' \
-                       f'first  value="{short(element)}"{type(element)}\n    ' \
-                       f'second value="{short(sec_element)}"{type(sec_element)}'
+                return f"Different types at element index {index}:" \
+                       f"\n    first  value='{short(element)}' <{type(element).__name__}>" \
+                       f"\n    second value='{short(sec_element)}' <{type(sec_element).__name__}>"
             if element != sec_element:
-                return f'Diff at element with index {index}:\n    first  value="{short(element)}"{type(element)}\n    ' \
-                       f'second value="{short(sec_element)}"{type(sec_element)}'
+                return f"Diff at element index {index}:" \
+                       f"\n    first  value='{short(element)}' <{type(element).__name__}>" \
+                       f"\n    second value='{short(sec_element)}' <{type(sec_element).__name__}>"
     return ''
