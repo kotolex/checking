@@ -288,5 +288,6 @@ def _get_length_if_sized(container: Sized) -> int:
 
 def _check_argument_is_number(actual, name: str):
     if type(actual) not in (int, float):
-        raise TestBrokenException(f"Only int or float types allowed for {name}," +
-                                  f" but got '{short(actual)}' <{type(actual).__name__}>")
+        raise TestBrokenException(f"Cannot execute '{name}', wrong type:"
+                                  f"\nExpected: Union[int, float]"
+                                  f"\nActual  : '{short(actual)}' <{type(actual).__name__}>")

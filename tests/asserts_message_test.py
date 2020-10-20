@@ -308,6 +308,16 @@ class AssertsTest(TestCase):
             is_zero(1)
         self.assertEqual(e.exception.args[0], "'1' <int> is not equal to zero!")
 
+    def test_is_zero_wrong_type(self):
+        with self.assertRaises(TestBrokenException) as e:
+            is_zero('1')
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute 'is_zero', wrong type:"
+            "\nExpected: Union[int, float]"
+            "\nActual  : '1' <str>"
+        )
+
     def test_is_positive_number(self):
         with self.assertRaises(AssertionError) as e:
             is_positive(-1)
