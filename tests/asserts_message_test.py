@@ -167,12 +167,22 @@ class AssertsTest(TestCase):
     def test_not_equals(self):
         with self.assertRaises(AssertionError) as e:
             not_equals('1', '1')
-        self.assertEqual(e.exception.args[0], "Objects are equal: (1, 1)!")
+        self.assertEqual(
+            e.exception.args[0],
+            "Objects are equal:"
+            "\nExpected: 1"
+            "\nActual  : 1"
+        )
 
     def test_not_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             not_equals('1', '1', 'should not be equal')
-        self.assertEqual(e.exception.args[0], "Objects are equal: (1, 1)!")
+        self.assertEqual(
+            e.exception.args[0],
+            "Objects are equal:"
+            "\nExpected: 1"
+            "\nActual  : 1"
+        )
 
     def test_is_none(self):
         with self.assertRaises(AssertionError) as e:

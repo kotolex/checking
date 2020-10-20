@@ -74,7 +74,9 @@ def not_equals(expected: Any, actual: Any, message: Optional[str] = None):
     """
     if (expected is actual) or expected == actual:
         _message = _mess(message)
-        raise AssertionError(f'Objects are equal: ({short(expected)}, {short(actual)})!')
+        raise AssertionError(f'Objects are equal:'
+                             f'\nExpected: {short(expected)}'
+                             f'\nActual  : {short(actual)}')
 
 
 def is_none(obj: Any, message: Optional[str] = None):
