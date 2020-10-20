@@ -45,12 +45,12 @@ class AssertsTest(TestCase):
             '\nActual  : True'
         )
 
-    def test_equals(self):
+    def test_equals_string(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2')
         self.assertEqual(
             e.exception.args[0],
-            "Diff at element with index 0:"
+            "Diff at element index 0:"
             "\n    first  value='1' <str>"
             "\n    second value='2' <str>"
             "\nObjects are not equal:"
@@ -77,7 +77,7 @@ class AssertsTest(TestCase):
         self.assertEqual(
             e.exception.args[0],
             "should be equal"
-            "\nDiff at element with index 0:"
+            "\nDiff at element index 0:"
             "\n    first  value='1' <str>"
             "\n    second value='2' <str>"
             "\nObjects are not equal:"

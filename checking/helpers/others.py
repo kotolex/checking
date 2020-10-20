@@ -117,11 +117,11 @@ def diff(first: Any, second: Any) -> str:
         for index, element in enumerate(first):
             sec_element = next(iter_2)
             if type(element) != type(sec_element):
-                return f"Different types at element with index {index}:" \
+                return f"Different types at element index {index}:" \
                        f"\n    first  value='{short(element)}' <{type(element).__name__}>" \
                        f"\n    second value='{short(sec_element)}' <{type(sec_element).__name__}"
             if element != sec_element:
-                return f"Diff at element with index {index}:" \
+                return f"Diff at element index {index}:" \
                        f"\n    first  value='{short(element)}' <{type(element).__name__}>" \
                        f"\n    second value='{short(sec_element)}' <{type(sec_element).__name__}>"
     return ''
