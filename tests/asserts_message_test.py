@@ -50,7 +50,12 @@ class AssertsTest(TestCase):
             equals('1', '2')
         self.assertEqual(
             e.exception.args[0],
-            """Diff at element with index 0:\n    first  value="1"<class 'str'>\n    second value="2"<class 'str'>\nObjects are not equal:\nExpected: "1" <str>\nActual  : "2" <str>"""
+            "Diff at element with index 0:"
+            "\n    first  value='1' <str>"
+            "\n    second value='2' <str>"
+            "\nObjects are not equal:"
+            "\nExpected: '1' <str>"
+            "\nActual  : '2' <str>"
         )
 
     def test_equals_with_message(self):
@@ -58,7 +63,13 @@ class AssertsTest(TestCase):
             equals('1', '2', 'should be equal')
         self.assertEqual(
             e.exception.args[0],
-            """should be equal\nDiff at element with index 0:\n    first  value="1"<class 'str'>\n    second value="2"<class 'str'>\nObjects are not equal:\nExpected: "1" <str>\nActual  : "2" <str>"""
+            "should be equal"
+            "\nDiff at element with index 0:"
+            "\n    first  value='1' <str>"
+            "\n    second value='2' <str>"
+            "\nObjects are not equal:"
+            "\nExpected: '1' <str>"
+            "\nActual  : '2' <str>"
         )
 
     def test_not_equals(self):
