@@ -110,9 +110,9 @@ def diff(first: Any, second: Any) -> str:
                 return f"Dict {short(second, 20)} has no key='{key}' <{type(key).__name__}>, but contains key(s)" \
                        f" {short(set(second.keys() - set(first.keys())), 100)}"
             if value != second[key]:
-                return f'Diff at element with key="{short(key)}"({type(key)}): ' \
-                       f'\n    first  value="{short(value)}"({type(value)}) ' \
-                       f'\n    second value="{short(second[key])}"({type(second[key])})'
+                return f"Diff in entry under key='{short(key)}' <{type(key).__name__}>:" \
+                       f"\n    first  value='{short(value)}' <{type(value).__name__}>" \
+                       f"\n    second value='{short(second[key])}' <{type(second[key]).__name__}>"
     if isinstance(first, Iterable):
         iter_2 = iter(second)
         for index, element in enumerate(first):

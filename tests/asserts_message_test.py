@@ -124,6 +124,19 @@ class AssertsTest(TestCase):
             "\nActual  : '{1: 1, 3: 3}' <dict>"
         )
 
+    def test_equals_dict_wrong_value(self):
+        with self.assertRaises(AssertionError) as e:
+            equals({1: 1, 2: 2, 3: 3}, {1: 1, 2: 3, 3: 4})
+        self.assertEqual(
+            e.exception.args[0],
+            "Diff in entry under key='2' <int>:"
+            "\n    first  value='2' <int>" 
+            "\n    second value='3' <int>"
+            "\nObjects are not equal:"
+            "\nExpected: '{1: 1, 2: 2, 3: 3}' <dict>"
+            "\nActual  : '{1: 1, 2: 3, 3: 4}' <dict>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')
