@@ -91,6 +91,17 @@ class AssertsTest(TestCase):
             "\nActual  : '1' <str>"
         )
 
+    def test_equals_mismatched_length(self):
+        with self.assertRaises(AssertionError) as e:
+            equals('1', '11')
+        self.assertEqual(
+            e.exception.args[0],
+            "Length of '1' <str> == 1 but length of '11' <str> == 2"
+            "\nObjects are not equal:"
+            "\nExpected: '1' <str>"
+            "\nActual  : '11' <str>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')

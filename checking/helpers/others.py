@@ -98,7 +98,8 @@ def diff(first: Any, second: Any) -> str:
         len_first = len(first)
         len_second = len(second)
         if len_first != len_second:
-            return f'Length of "{short(first, 20)}"({type_1})={len_first} and length of "{short(second, 20)}"({type_1})={len_second}'
+            return f"Length of '{short(first, 20)}' <{type_1.__name__}> == {len_first} but " \
+                   f"length of '{short(second, 20)}' <{type_1.__name__}> == {len_second}"
     except TypeError:
         return ''
     if isinstance(first, Set):
