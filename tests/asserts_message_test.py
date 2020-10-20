@@ -58,6 +58,19 @@ class AssertsTest(TestCase):
             "\nActual  : '2' <str>"
         )
 
+    def test_equals_long_string(self):
+        with self.assertRaises(AssertionError) as e:
+            equals('11', '12')
+        self.assertEqual(
+            e.exception.args[0],
+            "Diff at element index 1:"
+            "\n    first  value='1' <str>"
+            "\n    second value='2' <str>"
+            "\nObjects are not equal:"
+            "\nExpected: '11' <str>"
+            "\nActual  : '12' <str>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')
