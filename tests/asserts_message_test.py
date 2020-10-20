@@ -137,6 +137,19 @@ class AssertsTest(TestCase):
             "\nActual  : '{1: 1, 2: 3, 3: 4}' <dict>"
         )
 
+    def test_equals_list_mismatched_type(self):
+        with self.assertRaises(AssertionError) as e:
+            equals([1, 2], [1, '2'])
+        self.assertEqual(
+            e.exception.args[0],
+            "Different types at element index 1:"
+            "\n    first  value='2' <int>" 
+            "\n    second value='2' <str>"
+            "\nObjects are not equal:"
+            "\nExpected: '[1, 2]' <list>"
+            "\nActual  : '[1, '2']' <list>"
+        )
+
     def test_equals_with_message(self):
         with self.assertRaises(AssertionError) as e:
             equals('1', '2', 'should be equal')
