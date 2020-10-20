@@ -255,15 +255,16 @@ def __contains_or_not(part, whole, is_contains: Optional[bool] = True, message: 
             return
     except TypeError as e:
         if 'requires' in e.args[0]:
-            raise TestBrokenException(f'Object "{short(part)}" <{type(part).__name__}> and '
-                                      f'"{short(whole)}" <{type(whole).__name__}> are of different types and '
-                                      f'cant be check for contains!')
-        raise TestBrokenException(
-            f'"{short(whole)}"<{type(whole).__name__}> is not iterable and cant be check for contains!')
+            raise TestBrokenException(f"Cannot execute 'contains' check, incompatible objects:"
+                                      f"\nPart : '{short(part)}' <{type(part).__name__}>"
+                                      f"\nWhole: '{short(whole)}' <{type(whole).__name__}>")
+        raise TestBrokenException(f"Cannot execute 'contains' check, 'whole' is not an iterable:"
+                                  f"\nWhole: '{short(whole)}' <{type(whole).__name__}>")
+
     _message = _mess(message)
-    add_ = 'is a' if not is_contains else 'is not'
-    raise AssertionError(f'{_message}Object "{short(part)}" <{type(part).__name__}>, {add_} part of \n'
-                         f'"{short(whole, 150)}" <{type(whole).__name__}>!')
+    add_ = 'contains' if not is_contains else "doesn't contain"
+    raise AssertionError(f"{_message}Object '{short(whole, 150)}' <{type(whole).__name__}> {add_} "
+                         f"object '{short(part)}' <{type(part).__name__}>!")
 
 
 def _mess(message: str) -> str:

@@ -237,42 +237,71 @@ class AssertsTest(TestCase):
     def test_contains(self):
         with self.assertRaises(AssertionError) as e:
             contains('1', '234')
-        self.assertEqual(e.exception.args[0], 'Object "1" <str>, is not part of \n"234" <str>!')
+        self.assertEqual(e.exception.args[0], "Object '234' <str> doesn't contain object '1' <str>!")
 
     def test_contains_with_message(self):
         with self.assertRaises(AssertionError) as e:
             contains('1', '234', 'should present in')
-        self.assertEqual(e.exception.args[0], 'should present in\nObject "1" <str>, is not part of \n"234" <str>!')
+        self.assertEqual(e.exception.args[0], "should present in\nObject '234' <str> doesn't contain object '1' <str>!")
+
+    def test_contains_contains_no_action(self):
+        contains('1', '1234')
+
+    def test_not_contains_contains_no_action(self):
+        with self.assertRaises(TestBrokenException) as e:
+            not_contains(1, '1234')
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute 'contains' check, incompatible objects:"
+            "\nPart : '1' <int>"
+            "\nWhole: '1234' <str>"
+        )
 
     def test_contains_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             contains('1', 2)
-        self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute 'contains' check, 'whole' is not an iterable:"
+            "\nWhole: '2' <int>"
+        )
 
     def test_contains_broken_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
             contains('1', 2, 'should present in')
-        self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute 'contains' check, 'whole' is not an iterable:"
+            "\nWhole: '2' <int>"
+        )
 
     def test_not_contains(self):
         with self.assertRaises(AssertionError) as e:
             not_contains('1', '1234')
-        self.assertEqual(e.exception.args[0], 'Object "1" <str>, is a part of \n"1234" <str>!')
+        self.assertEqual(e.exception.args[0], "Object '1234' <str> contains object '1' <str>!")
 
     def test_not_contains_with_message(self):
         with self.assertRaises(AssertionError) as e:
             not_contains('1', '1234', 'should not be in')
-        self.assertEqual(e.exception.args[0], 'should not be in\nObject "1" <str>, is a part of \n"1234" <str>!')
+        self.assertEqual(e.exception.args[0], "should not be in\nObject '1234' <str> contains object '1' <str>!")
 
     def test_not_contains_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             not_contains('1', 2)
-        self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute 'contains' check, 'whole' is not an iterable:"
+            "\nWhole: '2' <int>"
+        )
 
     def test_not_contains_broken_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
             not_contains('1', 2, 'should not be in')
-        self.assertEqual(e.exception.args[0], '"2"<int> is not iterable and cant be check for contains!')
+        self.assertEqual(
+            e.exception.args[0],
+            "Cannot execute 'contains' check, 'whole' is not an iterable:"
+            "\nWhole: '2' <int>"
+        )
 
     def test_is_zero(self):
         with self.assertRaises(AssertionError) as e:
