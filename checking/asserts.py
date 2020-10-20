@@ -185,7 +185,7 @@ def is_zero(actual: Union[int, float]):
     """
     _check_argument_is_number(actual, 'is_zero')
     if actual != 0:
-        raise AssertionError(f'"{short(actual)}" <{type(actual).__name__}> is not equal to zero!')
+        raise AssertionError(f"'{short(actual)}' <{type(actual).__name__}> is not equal to zero!")
 
 
 def is_positive(actual: Union[int, float, Sequence]):
@@ -197,10 +197,10 @@ def is_positive(actual: Union[int, float, Sequence]):
     """
     if type(actual) in (int, float):
         if actual <= 0:
-            raise AssertionError(f'{actual} is not positive!')
+            raise AssertionError(f"'{short(actual)}' <{type(actual).__name__}> is not positive!")
     else:
         if _get_length_if_sized(actual) <= 0:
-            raise AssertionError(f'Length of "{short(actual)}" <{type(actual).__name__}> is not positive!')
+            raise AssertionError(f"Length of '{short(actual)}' <{type(actual).__name__}> is not positive!")
 
 
 def is_negative(actual: Union[int, float]):
@@ -212,7 +212,7 @@ def is_negative(actual: Union[int, float]):
     """
     _check_argument_is_number(actual, 'is_negative')
     if actual >= 0:
-        raise AssertionError(f'"{short(actual)}" <{type(actual).__name__}> is not negative!')
+        raise AssertionError(f"'{short(actual)}' <{type(actual).__name__}> is not negative!")
 
 
 def is_empty(container: Sized, message: Optional[str] = None):
@@ -228,7 +228,7 @@ def is_empty(container: Sized, message: Optional[str] = None):
     """
     _message = _mess(message)
     if _get_length_if_sized(container):
-        raise AssertionError(f'{_message}"{short(container)}" <{type(container).__name__}> is not empty!')
+        raise AssertionError(f"{_message}'{short(container)}' <{type(container).__name__}> is not empty!")
 
 
 def is_not_empty(container: Sized, message: Optional[str] = None):
@@ -244,7 +244,7 @@ def is_not_empty(container: Sized, message: Optional[str] = None):
     """
     _message = _mess(message)
     if not _get_length_if_sized(container):
-        raise AssertionError(f'{_message}"{short(container)}" <{type(container).__name__}> is empty!')
+        raise AssertionError(f"{_message}'{short(container)}' <{type(container).__name__}> is empty!")
 
 
 def __contains_or_not(part, whole, is_contains: Optional[bool] = True, message: Optional[str] = None):
@@ -282,8 +282,8 @@ def _get_length_if_sized(container: Sized) -> int:
     try:
         return len(container)
     except TypeError:
-        raise TestBrokenException(f'"{short(container)}" <{type(container).__name__}> '
-                                  f'has no len and cant be checked for emptiness!')
+        raise TestBrokenException(f"'{short(container)}' <{type(container).__name__}> "
+                                  f"has no len and cant be checked for emptiness!")
 
 
 def _check_argument_is_number(actual, name: str):

@@ -306,62 +306,62 @@ class AssertsTest(TestCase):
     def test_is_zero(self):
         with self.assertRaises(AssertionError) as e:
             is_zero(1)
-        self.assertEqual(e.exception.args[0], '"1" <int> is not equal to zero!')
+        self.assertEqual(e.exception.args[0], "'1' <int> is not equal to zero!")
 
     def test_is_positive_number(self):
         with self.assertRaises(AssertionError) as e:
             is_positive(-1)
-        self.assertEqual(e.exception.args[0], '-1 is not positive!')
+        self.assertEqual(e.exception.args[0], "'-1' <int> is not positive!")
 
     def test_is_positive_sequence(self):
         with self.assertRaises(AssertionError) as e:
             is_positive([])
-        self.assertEqual(e.exception.args[0], 'Length of "[]" <list> is not positive!')
+        self.assertEqual(e.exception.args[0], "Length of '[]' <list> is not positive!")
 
     def test_is_negative(self):
         with self.assertRaises(AssertionError) as e:
             is_negative(1)
-        self.assertEqual(e.exception.args[0], '"1" <int> is not negative!')
+        self.assertEqual(e.exception.args[0], "'1' <int> is not negative!")
 
     def test_is_empty(self):
         with self.assertRaises(AssertionError) as e:
             is_empty([1])
-        self.assertEqual(e.exception.args[0], '"[1]" <list> is not empty!')
+        self.assertEqual(e.exception.args[0], "'[1]' <list> is not empty!")
 
     def test_is_empty_with_message(self):
         with self.assertRaises(AssertionError) as e:
             is_empty([1], 'should be empty')
-        self.assertEqual(e.exception.args[0], 'should be empty\n"[1]" <list> is not empty!')
+        self.assertEqual(e.exception.args[0], "should be empty\n'[1]' <list> is not empty!")
 
     def test_is_empty_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             is_empty(1)
-        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
 
     def test_is_empty_broken_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
             is_empty(1, 'should be empty')
-        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
 
     def test_is_not_empty(self):
         with self.assertRaises(AssertionError) as e:
             is_not_empty([])
-        self.assertEqual(e.exception.args[0], '"[]" <list> is empty!')
+        self.assertEqual(e.exception.args[0], "'[]' <list> is empty!")
 
     def test_is_not_empty_with_message(self):
         with self.assertRaises(AssertionError) as e:
             is_not_empty([], 'should not be empty')
-        self.assertEqual(e.exception.args[0], 'should not be empty\n"[]" <list> is empty!')
+        self.assertEqual(e.exception.args[0], "should not be empty\n'[]' <list> is empty!")
 
     def test_is_not_empty_broken(self):
         with self.assertRaises(TestBrokenException) as e:
             is_not_empty(1)
-        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
 
     def test_is_not_empty_broken_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
             is_not_empty(1, 'should not be empty')
-        self.assertEqual(e.exception.args[0], '"1" <int> has no len and cant be checked for emptiness!')
+        self.assertEqual(e.exception.args[0], "'1' <int> has no len and cant be checked for emptiness!")
 
 
 if __name__ == '__main__':
