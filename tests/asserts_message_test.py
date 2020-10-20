@@ -187,12 +187,12 @@ class AssertsTest(TestCase):
     def test_is_none(self):
         with self.assertRaises(AssertionError) as e:
             is_none('1')
-        self.assertEqual(e.exception.args[0], "Object 1 <str> is not None!")
+        self.assertEqual(e.exception.args[0], "Object '1' <str> is not None!")
 
     def test_is_none_with_message(self):
         with self.assertRaises(AssertionError) as e:
             is_none('1', 'should be None')
-        self.assertEqual(e.exception.args[0], "should be None\nObject 1 <str> is not None!")
+        self.assertEqual(e.exception.args[0], "should be None\nObject '1' <str> is not None!")
 
     def test_is_not_none(self):
         with self.assertRaises(AssertionError) as e:
@@ -207,7 +207,7 @@ class AssertsTest(TestCase):
     def test_fail(self):
         with self.assertRaises(AssertionError) as e:
             test_fail()
-        self.assertEqual(e.exception.args[0], "Test was intentionally failed!")
+        self.assertEqual(e.exception.args[0], "Test was failed intentionally!")
 
     def test_fail_with_message(self):
         with self.assertRaises(AssertionError) as e:
@@ -217,7 +217,7 @@ class AssertsTest(TestCase):
     def test_break(self):
         with self.assertRaises(TestBrokenException) as e:
             test_break()
-        self.assertEqual(e.exception.args[0], "Test was intentionally broken!")
+        self.assertEqual(e.exception.args[0], "Test was broken intentionally!")
 
     def test_break_with_message(self):
         with self.assertRaises(TestBrokenException) as e:
@@ -227,7 +227,7 @@ class AssertsTest(TestCase):
     def test_skip(self):
         with self.assertRaises(SkipTestException) as e:
             test_skip()
-        self.assertEqual(e.exception.args[0], "Test was intentionally ignored!")
+        self.assertEqual(e.exception.args[0], "Test was ignored intentionally!")
 
     def test_skip_with_message(self):
         with self.assertRaises(SkipTestException) as e:

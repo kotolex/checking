@@ -90,7 +90,7 @@ def is_none(obj: Any, message: Optional[str] = None):
     """
     _message = _mess(message)
     if obj is not None:
-        raise AssertionError(f'{_message}Object {short(obj)} <{type(obj).__name__}> is not None!')
+        raise AssertionError(f"{_message}Object '{short(obj)}' <{type(obj).__name__}> is not None!")
 
 
 def is_not_none(obj: Any, message: Optional[str] = None):
@@ -116,7 +116,7 @@ def test_fail(message: Optional[str] = None):
     :return: None
     :raise AssertionError: always raises
     """
-    raise AssertionError(message if message else 'Test was intentionally failed!')
+    raise AssertionError(message if message else 'Test was failed intentionally!')
 
 
 def test_break(message: Optional[str] = None):
@@ -128,7 +128,7 @@ def test_break(message: Optional[str] = None):
     :return: None
     :raise AssertionError: always raises
     """
-    raise TestBrokenException(message if message else 'Test was intentionally broken!')
+    raise TestBrokenException(message if message else 'Test was broken intentionally!')
 
 
 def test_skip(message: Optional[str] = None):
@@ -140,7 +140,7 @@ def test_skip(message: Optional[str] = None):
     :return: None
     :raise AssertionError: always raises
     """
-    raise SkipTestException(message if message else 'Test was intentionally ignored!')
+    raise SkipTestException(message if message else 'Test was ignored intentionally!')
 
 
 def contains(part: Any, whole: Any, message: Optional[str] = None):
