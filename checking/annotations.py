@@ -54,13 +54,13 @@ def test(*args, enabled: bool = True, name: Optional[str] = None, description: O
         name_ = name if name else func.__name__
         _check_func_for_soft_assert(func)
         if only_if is not None and not callable(only_if):
-            raise ValueError('Only_if parameter of @test annotation must be a function, returning True or False!')
+            raise ValueError("'only_if' parameter for '@test' decorator must be a callable returning <bool>.")
         nonlocal groups
         if not groups:
             groups = [func.__module__]
         else:
             if type(groups) not in (list, tuple, set):
-                raise ValueError('Group parameter of @test annotation must be a tuple of strings (Tuple[str])!')
+                raise ValueError("'group' parameter for '@test' decorator must be a tuple of strings <Tuple[str]>.")
         for group in groups:
             test_object = Test(name_, func)
             test_object.only_if = only_if
@@ -109,12 +109,13 @@ def provider(*args, enabled: bool = True, name: Optional[str] = None, cached: bo
     def real_decorator(func: Callable[[None], Iterable]):
         __check_is_function_without_args(func, 'provider')
         if not _has_yield_or_return(func):
-            raise WrongDecoratedObject(f'Function marked with @data must returns or yields Iterable!')
+            raise WrongDecoratedObject("Function marked with '@provider' decorator must yield "
+                                       "or return an <Iterable>.")
         name_ = name if name else func.__name__
         providers = TestSuite.get_instance().providers
         if name_ in providers:
-            raise DuplicateProviderNameException(f'Provider with name "{name_}" already exists! '
-                                                 f'Only unique names allowed!')
+            raise DuplicateProviderNameException(f"Provider named '{name_}' already exists. "
+                                                 f"Provider names must be unique.")
         providers[name_] = (func, map_to_str)
         nonlocal cached
         if cached:
@@ -277,8 +278,8 @@ def _check_func_for_soft_assert(func):
         if not is_soft_assert_there:
             return
         if 'assert_all()' not in code:
-            print(f'WARNING! Function {func.__module__}.{func.__name__} marked with @test seems to contains SoftAssert '
-                  f'object without calling assert_all()!', file=stderr)
+            print(f"WARNING: function {func.__module__}.{func.__name__} marked with '@test' seems to contain a "
+                  f"SoftAssert object with no 'assert_all' call.", file=stderr)
     except Exception:
         # Safe to ignore since the warning was issued
         pass
@@ -296,8 +297,8 @@ def __check_is_function_without_args(func: Callable, decorator_name: str):
     """
     if not isfunction(func) or signature(func).parameters:
         raise WrongDecoratedObject(
-            f"Annotation '{decorator_name}' must be used only with no-argument functions! Its not supposed to work "
-            f"with classes or class methods!")
+            f"Decorator '{decorator_name}' must only be used with zero parameter functions. "
+            f"Classes, class methods and multi-parameter functions are not allowed.")
 
 
 def __check_is_function_for_provider(func: Callable[[Any], None]):
@@ -310,10 +311,10 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
     :raise WrongDecoratedObject if marked function is not a free function with exactly one argument
     """
     if not isfunction(func) or not signature(func).parameters:
-        raise WrongDecoratedObject(f"Function '{func.__name__}' marked with data_provider has no argument!")
+        raise WrongDecoratedObject(f"Test named '{func.__name__}' uses a data provider, but takes no arguments.")
     if len(signature(func).parameters) > 1:
-        raise WrongDecoratedObject(f"Function '{func.__name__}' marked with data_provider "
-                                   f"has more than 1 argument!")
+        raise WrongDecoratedObject(f"Test named '{func.__name__}' uses a data provider, "
+                                   f"but takes more than one argument.")
 
 
 def DATA_FILE(file_path: str, name: Optional[str] = None, cached: bool = False, encoding: str = 'UTF-8',
@@ -352,7 +353,7 @@ def DATA_FILE(file_path: str, name: Optional[str] = None, cached: bool = False, 
 
     try:
         if not is_file_exists(real_path):
-            raise FileNotFoundError(f'Cant find file! Is file "{real_path}" exists?')
+            raise FileNotFoundError(f"Data source file '{real_path}' not found.")
         provider(name=name, cached=cached)(wrapper)
     finally:
         del frame
