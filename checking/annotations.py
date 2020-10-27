@@ -342,12 +342,15 @@ def DATA_FILE(file_path: str, name: Optional[str] = None, cached: bool = False, 
 
     if name is None:
         name = file_path
+
+    # get the last code frame to verify the file path
+    frame = _getframe(1)
+    assert frame   # code frame should always be present
+
+    module_path = path.split(frame.f_globals['__file__'])[0]
+    real_path = path.join(module_path, file_path)
+
     try:
-        # Get last frame to verify file-path
-        frame = _getframe(1)
-        assert frame  # It can't be no last frame!
-        first_path = path.split(frame.f_globals['__file__'])[0]
-        real_path = path.join(first_path, file_path)
         if not is_file_exists(real_path):
             raise FileNotFoundError(f'Cant find file! Is file "{real_path}" exists?')
         provider(name=name, cached=cached)(wrapper)
