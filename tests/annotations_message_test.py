@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase, main
 
 from checking.annotations import *
@@ -125,12 +126,16 @@ class TestAnnotationMessages(TestCase):
 
     def test_provider_data_file_guard_fails(self):
         clear()
+
+        file_path = 'dummy.txt'
         with self.assertRaises(FileNotFoundError) as e:
-            DATA_FILE('c:\dummy.txt')
+            DATA_FILE(file_path)
+
+        real_path = path.join(os.getcwd(), file_path)
 
         self.assertEqual(
             e.exception.args[0],
-            "Data source file 'c:\dummy.txt' not found."
+            f"Data source file '{real_path}' not found."
         )
 
 
