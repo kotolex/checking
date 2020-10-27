@@ -358,7 +358,8 @@ def DATA_FILE(file_path: str, name: Optional[str] = None, cached: bool = False, 
         del frame
 
 
-def CONTAINER(value: Union[Sequence, Iterable, Container], name: str = None, map_to_str: Callable[[Any], str] = str):
+def CONTAINER(value: Union[Sequence, Iterable, Container], name: Optional[str] = None,
+              map_to_str: Callable[[Any], str] = str):
     """
     Convenience helper, simplifies usage of a Python container types as a data provider,
     e.g. Iterable literals, comprehensions and generators, etc.
