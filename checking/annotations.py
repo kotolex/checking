@@ -107,7 +107,7 @@ def provider(*args, enabled: bool = True, name: Optional[str] = None, cached: bo
         return fake
 
     def real_decorator(func: Callable[[None], Iterable]):
-        __check_is_function_without_args(func, 'data')
+        __check_is_function_without_args(func, 'provider')
         if not _has_yield_or_return(func):
             raise WrongDecoratedObject(f'Function marked with @data must returns or yields Iterable!')
         name_ = name if name else func.__name__
@@ -188,7 +188,7 @@ def before_group(*args, name: Optional[str] = None):
     """
 
     def real_decorator(func: Callable[[], None]):
-        __check_is_function_without_args(func, 'before_module')
+        __check_is_function_without_args(func, 'before_group')
         group = name if name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_before(func)
         return fake
@@ -214,7 +214,7 @@ def after_group(*args, name: Optional[str] = None, always_run: bool = False):
     """
 
     def real_decorator(func: Callable[[], None]):
-        __check_is_function_without_args(func, 'after_module')
+        __check_is_function_without_args(func, 'after_group')
         group = name if name else func.__module__
         TestSuite.get_instance().get_or_create(group).add_after(func)
         if always_run:
