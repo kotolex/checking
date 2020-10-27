@@ -280,7 +280,7 @@ def _check_func_for_soft_assert(func):
             print(f'WARNING! Function {func.__module__}.{func.__name__} marked with @test seems to contains SoftAssert '
                   f'object without calling assert_all()!', file=stderr)
     except Exception:
-        # Consciously ignore it, just check for a warning, this is not critical
+        # Safe to ignore since the warning was issued
         pass
 
 
