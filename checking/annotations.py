@@ -4,7 +4,7 @@ from sys import _getframe
 from inspect import signature
 from inspect import getsource
 from inspect import isfunction
-from typing import Callable, Any, Iterable, Tuple, Union, Sequence, Container
+from typing import Callable, Any, Iterable, Tuple, Union, Sequence, Container, Optional
 
 from .exceptions import *
 from .classes.basic_test import Test
@@ -13,9 +13,9 @@ from .classes.basic_suite import TestSuite
 from .helpers.others import is_file_exists, fake
 
 
-def test(*args, enabled: bool = True, name: str = None, description: str = None, data_provider: str = None,
-         retries: int = 1, groups: Tuple[str] = None, priority: int = 0, timeout: int = 0,
-         only_if: Callable[[], bool] = None):
+def test(*args, enabled: bool = True, name: Optional[str] = None, description: Optional[str] = None,
+         data_provider: Optional[str] = None, retries: int = 1, groups: Optional[Tuple[str]] = None,
+         priority: int = 0, timeout: int = 0, only_if: Optional[Callable[[], bool]] = None):
     """
     The annotation that marks a function in a module as a test, does not work with classes and class methods and with
     functions, that take an argument (except using of data provider).
@@ -82,7 +82,7 @@ def test(*args, enabled: bool = True, name: str = None, description: str = None,
     return real_decorator
 
 
-def provider(*args, enabled: bool = True, name: str = None, cached: bool = False,
+def provider(*args, enabled: bool = True, name: Optional[str] = None, cached: bool = False,
              map_to_str: Callable[[Any], str] = str):
     """
     The annotation that marks a data provider, that is, a function that supplies data to a test. Such a function should
@@ -125,7 +125,7 @@ def provider(*args, enabled: bool = True, name: str = None, cached: bool = False
     return real_decorator
 
 
-def before(*args, group_name: str = None):
+def before(*args, group_name: Optional[str] = None):
     """
     It marks the function as mandatory to run before each module/group test.
     :param group_name: the name of the group before which test the function will be executed. If no group name is
@@ -145,7 +145,7 @@ def before(*args, group_name: str = None):
     return real_decorator
 
 
-def after(*args, group_name: str = None):
+def after(*args, group_name: Optional[str] = None):
     """
     It marks the function as mandatory to run after each module/group test. If there are functions running before the
     test (@before) and they failed, then these functions will not start!
@@ -166,7 +166,7 @@ def after(*args, group_name: str = None):
     return real_decorator
 
 
-def before_group(*args, name: str = None):
+def before_group(*args, name: Optional[str] = None):
     """
     Marks a function as a mandatory part of a test group bootstrap process.
     The marked function is executed once strictly before any of the tests in the specified test group.
@@ -188,7 +188,7 @@ def before_group(*args, name: str = None):
     return real_decorator
 
 
-def after_group(*args, name: str = None, always_run: bool = False):
+def after_group(*args, name: Optional[str] = None, always_run: bool = False):
     """
     Marks a function as a mandatory part of a test group teardown process.
     The marked function is executed once strictly after all of the tests in a group have finished running.
@@ -303,8 +303,8 @@ def __check_is_function_for_provider(func: Callable[[Any], None]):
                                    f"has more than 1 argument!")
 
 
-def DATA_FILE(file_path: str, name: str = None, cached: bool = False, encoding: str = 'UTF-8',
-              map_function: Callable = None):
+def DATA_FILE(file_path: str, name: Optional[str] = None, cached: bool = False, encoding: str = 'UTF-8',
+              map_function: Optional[Callable] = None):
     """
     Function to use text file as data provider for test. Reads file lazily, do not get it to memory.
     The function name explicitly stays uppercase for user to pay attention to it.
