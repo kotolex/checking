@@ -284,19 +284,19 @@ def _check_func_for_soft_assert(func):
         pass
 
 
-def __check_is_function_without_args(func: Callable, annotation_name: str):
+def __check_is_function_without_args(func: Callable, decorator_name: str):
     """
     Helper, checks whether a decorator marks a function with no arguments.
     The library is designed to work with free functions, classes and methods are not supported.
 
     :param func: function object to check
-    :param annotation_name: decorator name
+    :param decorator_name: decorator name
     :return: None
     :raise WrongDecoratedObject: if marked function is not a free function with no arguments
     """
     if not isfunction(func) or signature(func).parameters:
         raise WrongDecoratedObject(
-            f"Annotation '{annotation_name}' must be used only with no-argument functions! Its not supposed to work "
+            f"Annotation '{decorator_name}' must be used only with no-argument functions! Its not supposed to work "
             f"with classes or class methods!")
 
 
