@@ -1,4 +1,3 @@
-import os
 from unittest import TestCase, main
 
 from checking.annotations import *
@@ -124,19 +123,17 @@ class TestAnnotationMessages(TestCase):
             "Test named 'invalid_multiarg_test' uses a data provider, but takes more than one argument."
         )
 
-    # def test_provider_data_file_guard_fails(self):
-    #     clear()
-    #
-    #     file_path = 'dummy.txt'
-    #     with self.assertRaises(FileNotFoundError) as e:
-    #         DATA_FILE(file_path)
-    #
-    #     real_path = path.join(os.getcwd(), file_path)
-    #
-    #     self.assertEqual(
-    #         e.exception.args[0],
-    #         f"Data source file '{real_path}' not found."
-    #     )
+    def test_provider_data_file_guard_fails(self):
+        clear()
+
+        file_path = 'dummy.txt'
+        with self.assertRaises(FileNotFoundError) as e:
+            DATA_FILE(file_path)
+
+        # hack, circumvents different behavior for Windows and Linux
+        self.assertIn('Data source file ', e.exception.args[0])
+        self.assertIn(file_path, e.exception.args[0])
+        self.assertIn(' not found.', e.exception.args[0])
 
 
 if __name__ == '__main__':
