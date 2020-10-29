@@ -58,7 +58,7 @@ class TestAnnotations(TestCase):
     def test_raises_when_func_for_provider_has_no_arg(self):
         with self.assertRaises(WrongDecoratedObject) as e:
             test(data_provider="good")(valid)
-        self.assertEqual("Function 'valid' marked with data_provider has no argument!", e.exception.args[0])
+        self.assertEqual("Test named 'valid' uses a data provider, but takes no arguments.", e.exception.args[0])
 
     def test_raises_when_no_provider(self):
         clear()
@@ -105,7 +105,7 @@ class TestAnnotations(TestCase):
         with self.assertRaises(DuplicateProviderNameException) as e:
             provider(valid_for_data)
             provider(valid_for_data)
-        self.assertEqual('Provider with name "valid_for_data" already exists! Only unique names allowed!',
+        self.assertEqual("Provider named 'valid_for_data' already exists. Provider names must be unique.",
                          e.exception.args[0])
 
     def test_data_raises_when_two_args(self):
@@ -115,7 +115,7 @@ class TestAnnotations(TestCase):
         with self.assertRaises(WrongDecoratedObject) as e:
             provider(name='another2')(_)
             test(data_provider='another2')(non_valid_for_provider)
-        self.assertEqual("Function 'non_valid_for_provider' marked with data_provider has more than 1 argument!",
+        self.assertEqual("Test named 'non_valid_for_provider' uses a data provider, but takes more than one argument.",
                          e.exception.args[0])
 
     def test_data_name_works(self):
