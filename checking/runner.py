@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from typing import Callable, Any, Dict, List, Union
+from typing import Callable, Any, Dict, List, Union, Optional
 
 from .helpers.others import fake
 from .classes.basic_test import Test
@@ -27,9 +27,10 @@ _actual_failed_count = 0
 common_parameters: Dict[str, Any] = {}
 
 
-def start(verbose: int = 0, listener: Listener = None, groups: List[str] = None, params: Dict[str, Any] = None,
-          threads: int = 1, suite_name: str = 'Default Test Suite', dry_run: bool = False, filter_by_name: str = None,
-          random_order: bool = False, max_fail: int = 0, generate_report: bool = False, **kwargs):
+def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optional[List[str]] = None,
+          params: Optional[Dict[str, Any]] = None, threads: int = 1, suite_name: str = 'Default Test Suite',
+          dry_run: bool = False, filter_by_name: Optional[str] = None, random_order: bool = False,
+          max_fail: int = 0, generate_report: bool = False, **kwargs):
     """
     The main function of tests start
 
