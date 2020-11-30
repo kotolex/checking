@@ -88,7 +88,7 @@ def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optiona
     _run(test_suite, threads, random_order, generate_report)
 
 
-def _dry_run(test_suite):
+def _dry_run(test_suite: TestSuite):
     """
     Clear all fixtures and replace real test with fake function
     :param test_suite: is TestSuite
@@ -175,7 +175,7 @@ def _run_before_group(group: TestGroup) -> bool:
     return True
 
 
-def _run_test_with_provider(test):
+def _run_test_with_provider(test: Test):
     """
     Run test which has provider
     :param test: Test
