@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>Test Results for #suite_name</title>
-	<link rel="stylesheet" href="css/materialize.css">
-	<link rel="stylesheet" href="css/roboto.css">
+    <link rel="stylesheet" href="css/materialize.css">
+    <link rel="stylesheet" href="css/roboto.css">
     <script>
         function opclose(locator) {
             return function () {
@@ -15,7 +15,7 @@
                 }
             }
         }
-        
+
         function opclose_sibling(locator) {
             return function () {
                 if (document.querySelector(locator).nextElementSibling.style.display === 'none') {
@@ -28,43 +28,44 @@
     </script>
 </head>
 <body class="blue-grey lighten-5">
-<h1 style="text-align: center;" class="card-panel teal blue-grey darken-4 z-depth-3"><span style="color: #eceff1; font-family: 'Roboto', sans-serif;">Info</span></h1>
+<h1 style="text-align: center;" class="card-panel teal blue-grey darken-4 z-depth-3"><span
+        style="color: #eceff1; font-family: 'Roboto', sans-serif;">Info</span></h1>
 <table style="width: 80%; margin-left: auto; margin-right: auto; font-family: 'Roboto', sans-serif;">
-        <tbody>
-          <tr>
-			  <td><b>Suite name:</b></td>
-            <td>#suite_name</td>
-          </tr>
-          <tr>
-            <td><b>Total groups:</b></td>
-            <td>#total_groups</td>
-          </tr>
-          <tr>
-            <td><b>Total tests:</b></td>
-            <td>#total_tests</td>
-          </tr>
-		<tr>
-            <td><b style="color: #2e7d32">success tests:</b></td>
-            <td><span style="color: #2e7d32">#success_tests</span></td>
-		</tr>
-		<tr>
-            <td><b style="color: #d50000">failed tests:</b></td>
-            <td><span style="color: #d50000">#failed_tests</span></td>
-          </tr>
-		<tr>
-            <td><b style="color: #ff6f00">broken tests:</b></td>
-            <td><span style="color: #ff6f00">#broken_tests</span></td>
-          </tr>
-		<tr>
-            <td><b style="color: #757575">ignored tests:</b></td>
-            <td><span style="color: #757575">#ignored_tests</span></td>
-		</tr>
-		<td>
-			<b>Success percent: </b>#percent<br/>
-			<p><b>Total time: </b>#total_time</p>
-		</td>
-        </tbody>
+    <tbody>
+    <tr>
+        <td><b>Suite name:</b></td>
+        <td>#suite_name</td>
+    </tr>
+    <tr>
+        <td><b>Total groups:</b></td>
+        <td>#total_groups</td>
+    </tr>
+    <tr>
+        <td><b>Total tests:</b></td>
+        <td>#total_tests</td>
+    </tr>
+    <tr>
+        <td><b style="color: #2e7d32">success tests:</b></td>
+        <td><span style="color: #2e7d32">#success_tests</span></td>
+    </tr>
+    <tr>
+        <td><b style="color: #d50000">failed tests:</b></td>
+        <td><span style="color: #d50000">#failed_tests</span></td>
+    </tr>
+    <tr>
+        <td><b style="color: #ff6f00">broken tests:</b></td>
+        <td><span style="color: #ff6f00">#broken_tests</span></td>
+    </tr>
+    <tr>
+        <td><b style="color: #757575">ignored tests:</b></td>
+        <td><span style="color: #757575">#ignored_tests</span></td>
+    </tr>
+    <td>
+        <b>Success percent: </b>#percent<br/>
+        <p><b>Total time: </b>#total_time</p>
+    </td>
+    </tbody>
 </table>
 
 <div style="width: 80%; margin-left: auto; margin-right: auto; font-family: 'Roboto', sans-serif;">
-<h2>Statistics:</h2>
+    <h2>Statistics:</h2>
