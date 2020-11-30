@@ -294,8 +294,7 @@ def _provider_next(provider_name: str) -> Any:
     :return: generator
     """
     iter_ = TestSuite.get_instance().providers[provider_name][0]()
-    for param in iter_:
-        yield param
+    yield from iter_
     # try-close the resource (e.g. file) if provider was using it
     if hasattr(iter_, 'close'):
         try:
