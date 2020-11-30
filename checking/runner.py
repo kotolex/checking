@@ -185,7 +185,7 @@ def _run_before_group(group: TestGroup) -> bool:
     _run_before(group)
     if group.is_before_failed:
         for test in group.tests:
-            test.stop(TestIgnoredException('Before module/group failed!'))
+            test.stop(TestIgnoredException('Before module/group has failed!'))
             # run listener hook
             _listener.on_ignored(test, 'before module/group')
         if group.always_run_after:
@@ -224,7 +224,7 @@ def _run_test_with_provider(test: Test):
                 break
         # ignore tests with empty providers
         if not is_any_value_provides:
-            test.stop(TestIgnoredException(f'No values at provider {test.provider}'))
+            test.stop(TestIgnoredException(f'Provider {test.provider} is empty.'))
             # run listener hook
             _listener.on_ignored_with_provider(test)
         else:
@@ -235,7 +235,7 @@ def _run_test_with_provider(test: Test):
             _listener.on_error_with_provider(provider, e)
             raise
         else:
-            test.stop(TestIgnoredException(f'Error with provider {test.provider}'))
+            test.stop(TestIgnoredException(f'Error using provider {test.provider}.'))
             # run listener hook and ignore the exception
             _listener.on_ignored_with_provider(test)
 
@@ -270,7 +270,7 @@ def _run_test_with_before_and_after(test: Test, is_before_failed: bool) -> bool:
     else:
         test.is_before_failed = True
     if test.is_before_failed:
-        test.stop(TestIgnoredException('Before test failed!'))
+        test.stop(TestIgnoredException("''before_test' fixture has failed."))
         # run listener hook
         _listener.on_ignored(test, 'before test')
         return True
@@ -361,8 +361,8 @@ def _check_data_providers(suite: TestSuite):
     is_all_provider_known = all([provider in suite.providers for provider in all_data_providers])
     if not is_all_provider_known:
         name_ = [provider for provider in all_data_providers if provider not in suite.providers]
-        raise UnknownProviderName(f'Cant find provider with name(s) {name_}. '
-                                  f'You must have method with @data annotation in this package!')
+        raise UnknownProviderName(f"Could not find provider(s) named {name_}. "
+                                  f"Current module must contain functions marked with the '@data' decorator.")
 
 
 def _run_before(test_case: Union[TestCase, TestSuite]):
