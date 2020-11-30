@@ -32,26 +32,32 @@ def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optiona
           dry_run: bool = False, filter_by_name: Optional[str] = None, random_order: bool = False,
           max_fail: int = 0, generate_report: bool = False, **kwargs):
     """
-    The main function of tests start
+    Launches the test suite.
 
-    :param suite_name: name of the test-suite
-    :param listener: is test listener, DefaultListener is used by default. If set, then the verbose parameter is ignored
-    (the one in the listener is used).
-    :param verbose: is the report detail, 0 - briefly (only dots and 1 letter), 1 - detail, indicating only failed
-    tests, 2 - detail, indicating successful and fallen, 3 - detail and at the end, a list of fallen and broken ones
-    If not between 0 and 3, then 0 is accepted
-    :param groups: is the list of group names to run, to run only the tests you need
-    :param params: is the dictionary of parameters available in all tests (general run parameters)
-    :param threads: is the number of threads to run tests by default is 1. Each group can run in a separate thread if
-    necessary. This is an experimental feature and it can be useful only for tests NOT performing any complex
-    calculations (CPU bound). It is best to use this parameter (more than 1) for tests related to the use of I / O
-    operations - disk work, network requests. Obey the GIL!
-    :param dry_run: if True runs test-suite with fake function except of real tests and fixtures, can be useful to
-    find out order, number of tests, params of provider etc.
-    :param filter_by_name if specified - runs only tests with name containing this parameter
-    :param random_order if specified - runs tests inside each group in random order
-    :param max_fail if greater than 0, than suite will stops, when reach that count of failed tests
-    :param generate_report if specified - creates html report with the results in test folder
+    :param verbose: is the report detail:
+        0 - brief (dots for successful, letter F for failed tests)
+        1 - report only the failed tests
+        2 - report both successful and failed tests
+        3 - same as 2, additionally list all failed and broken tests at the end of the test run
+        reset to 0 if any other value
+    :param listener: test listener instance, defaults to DefaultListener.
+        If provided, 'verbose' parameter is ignored and verbose setting from the provided listener is used.
+    :param groups: list of the test group names to execute
+    :param params: dict of parameters shared for all tests
+    :param threads: number of threads to run tests in.
+        Each test group can be executed in a separate thread.
+        WARNING! This is an experimental feature which should be used for lightweight tests,
+        not performing resource-intensive calculations (not CPU-bound).
+        Use threads parameter to run I/O-bound tests (tests using database, file system, network, etc.).
+        Obey the GIL!
+    :param suite_name: test suite name
+    :param dry_run: if True, runs the test suite with an empty stub function.
+        Use to check the suite configuration, e.g. number of tests in a suite, test execution order,
+        provider parameters, etc.
+    :param filter_by_name: if specified, filters out tests not containing the specified string
+    :param random_order: if specified, runs tests within each group in random order
+    :param max_fail: if greater than 0, halts the suite execution when number of failed tests reaches to this parameter
+    :param generate_report: if specified, creates an HTML report containing the test run results in the test folder
     :return: None
     """
     verbose = 0 if verbose not in range(4) else verbose
@@ -90,8 +96,9 @@ def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optiona
 
 def _dry_run(test_suite: TestSuite):
     """
-    Clear all fixtures and replace real test with fake function
-    :param test_suite: is TestSuite
+    Clears all fixtures and replaces the real tests with an empty stub function.
+
+    :param test_suite: suite to launch a dry run on
     :return: None
     """
     _listener.on_dry_run(test_suite)
@@ -107,6 +114,9 @@ def _dry_run(test_suite: TestSuite):
 
 
 def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False, generate_report: bool = False):
+    """
+    Helper, executes a test suite with validated parameters.
+    """
     for group in test_suite.groups.values():
         if random_order:
             group.shuffle_tests()
@@ -136,7 +146,9 @@ def _run(test_suite: TestSuite, threads: int = 1, random_order: bool = False, ge
 
 
 def _run_group_before_and_after_at_separate_thread(group: TestGroup):
-    # If the fixture before the group fell, then we do not run the tests
+    """
+    Helper, thread worker, handles test and fixture execution.
+    """
     if not _run_before_group(group):
         return
     _run_all_tests_in_group(group)
@@ -145,9 +157,10 @@ def _run_group_before_and_after_at_separate_thread(group: TestGroup):
 
 def _run_before_suite(test_suite: TestSuite) -> bool:
     """
-    Run fixtures before whole suite.
-    :param test_suite: TestSuite
-    :return: True if fixture is not fail, False otherwise
+    Helper, runs 'before_suite' fixtures.
+
+    :param test_suite: TestSuite instance
+    :return: True if all fixtures have finished successfully, False otherwise
     """
     _run_before(test_suite)
     if test_suite.is_before_failed:
@@ -160,9 +173,10 @@ def _run_before_suite(test_suite: TestSuite) -> bool:
 
 def _run_before_group(group: TestGroup) -> bool:
     """
-    Runs before group fixtures
-    :param group: TestGroup
-    :return: True if fixtures not failed, False otherwise
+    Helper, runs 'before_group' fixtures.
+
+    :param group: TestGroup instance
+    :return: True if all fixtures have finished successfully, False otherwise
     """
     _run_before(group)
     if group.is_before_failed:
@@ -177,8 +191,9 @@ def _run_before_group(group: TestGroup) -> bool:
 
 def _run_test_with_provider(test: Test):
     """
-    Run test which has provider
-    :param test: Test
+    Helper, runs tests which have a provider.
+
+    :param test: Test instance
     :return: None
     """
     test_suite = TestSuite.get_instance()
@@ -219,8 +234,9 @@ def _run_test_with_provider(test: Test):
 
 def _run_all_tests_in_group(group: TestGroup):
     """
-    Run all test of the group, after sorting them by priority
-    :param group: TestGroup
+    Helper, sorts tests by priority and executes all test from the specified group.
+
+    :param group: TestGroup instance
     :return: None
     """
     is_one_of_before_test_failed = False
@@ -234,6 +250,13 @@ def _run_all_tests_in_group(group: TestGroup):
 
 
 def _run_test_with_before_and_after(test: Test, is_before_failed: bool) -> bool:
+    """
+    Helper, runs a test with the corresponding 'before_test' and 'after_test' fixtures.
+
+    :param test: Test instance
+    :param is_before_failed:
+    :return:
+    """
     if not is_before_failed:
         _run_before(test)
     else:
@@ -255,9 +278,10 @@ def _run_test_with_before_and_after(test: Test, is_before_failed: bool) -> bool:
 
 def _provider_next(provider_name: str) -> Any:
     """
-    Gets provider functions return or yield(generator) and iterate it. If a close attribute exists (for files) try to
-    close recourse after getting all elements.
-    :param provider_name: name of the provider
+    Helper, looks up the specified provider function and yields test data from it.
+    Tries to close a resource after reading the data, if the provider has a 'close' callable attribute.
+
+    :param provider_name: provider name
     :return: generator
     """
     iter_ = TestSuite.get_instance().providers[provider_name][0]()
@@ -274,9 +298,10 @@ def _provider_next(provider_name: str) -> Any:
 
 def _run_test(test: Test) -> bool:
     """
-    Run actual test
-    :param test: Test (function to run)
-    :return: True if test succeed, False otherwise
+    Helper, runs the test and collects the test result.
+
+    :param test: Test instance
+    :return: True if test succeeds, False otherwise
     """
     _listener.on_test_starts(test)
     try:
@@ -309,10 +334,11 @@ def _run_test(test: Test) -> bool:
 
 def _check_data_providers(suite: TestSuite):
     """
-    Checks if any test use data-provider, this provider is in collected list
-    :param suite: TestSuite
+    Helper, checks if any tests in the specified suite use a data provider and the provider name is resolved.
+
+    :param suite: TestSuite instance
     :return: None
-    :raise UnknownProviderName if test uses name what is not in providers list
+    :raise UnknownProviderName: if a test uses a provider which name was not successfully resolved
     """
     all_data_providers = [test.provider for group in suite.groups.values() for test in group.tests if test.provider]
     if not all_data_providers:
@@ -326,8 +352,10 @@ def _check_data_providers(suite: TestSuite):
 
 def _run_before(test_case: Union[TestCase, TestSuite]):
     """
-    Runs all fixtures before test case. If failed - set flaf is_before_failed to True
-    :param test_case: Test or TestGroup
+    Helper, runs all fixtures before a test case or the test suite.
+    Sets 'is_before_failed' flag to True if a fixture fails.
+
+    :param test_case: Test or TestGroup instance
     :return: None
     """
     for before in test_case.before:
@@ -338,8 +366,9 @@ def _run_before(test_case: Union[TestCase, TestSuite]):
 
 def _run_after(test_case: Union[TestCase, TestSuite]):
     """
-    Runs all fixtures after test or group
-    :param test_case: Test or TestGroup
+    Helper, runs all fixtures after a test or a test group.
+
+    :param test_case: Test or TestGroup instance
     :return: None
     """
     if not test_case.always_run_after and test_case.is_before_failed:
@@ -350,11 +379,12 @@ def _run_after(test_case: Union[TestCase, TestSuite]):
 
 def _run_fixture(func: Callable, fixture_type: str, group_name: str) -> bool:
     """
-    Runs fixture and returns result of the run
-    :param func: fixture-function (marked @before etc.)
-    :param fixture_type: type of the fixture to use in listener (before, after ...)
-    :param group_name: name of the group
-    :return: False if fixture not failed, True otherwise
+    Helper, runs a fixture and returns the result of the fixture execution.
+
+    :param func: function, marked with a 'before*' decorator
+    :param fixture_type: string fixture classifier to use with the listener events (e.g. 'before', 'after' ...)
+    :param group_name: test group name
+    :return: True if the fixture has failed, False otherwise
     """
     is_failed: bool = False
     try:
