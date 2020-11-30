@@ -358,7 +358,7 @@ def _check_data_providers(suite: TestSuite):
     all_data_providers = [test.provider for group in suite.groups.values() for test in group.tests if test.provider]
     if not all_data_providers:
         return
-    is_all_provider_known = all([provider in suite.providers for provider in all_data_providers])
+    is_all_provider_known = all(provider in suite.providers for provider in all_data_providers)
     if not is_all_provider_known:
         name_ = [provider for provider in all_data_providers if provider not in suite.providers]
         raise UnknownProviderName(f"Could not find provider(s) named {name_}. "
