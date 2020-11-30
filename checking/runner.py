@@ -50,10 +50,11 @@ def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optiona
         Use threads parameter to run I/O-bound tests (tests using database, file system, network, etc.).
         Obey the GIL!
     :param suite_name: test suite name
-    :param dry_run: if True, runs the test suite with an empty stub function.
+    :param dry_run: if True, runs the test suite, replacing all marked functions with an empty stub function.
         Use to check the suite configuration, e.g. number of tests in a suite, test execution order,
         provider parameters, etc.
-    :param filter_by_name: if specified, filters out tests not containing the specified string
+    :param filter_by_name: if specified, leaves only tests with names containing the specified string,
+        filtering out the rest
     :param random_order: if specified, runs tests within each group in random order
     :param max_fail: if greater than 0, halts the suite execution when number of failed tests reaches to this parameter
     :param generate_report: if specified, creates an HTML report containing the test run results in the test folder
