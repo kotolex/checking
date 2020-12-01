@@ -89,7 +89,7 @@ def _is_line_ends_with_message(text: str) -> bool:
     Function returns True if assert statement ends with message
     """
     text = text[::-1].replace(' ', '')
-    if not text[0] == "'" and not text[0] == '"':
+    if text[0] != "'" and text[0] != '"':
         return False
     char = '"' if text[0] == '"' else "'"
     index_of_last_quote = text.index(char, text.index(char) + 1)
