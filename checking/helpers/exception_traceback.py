@@ -84,13 +84,13 @@ def exception_with_assert(exception: Exception) -> Exception:
     return error
 
 
-def _is_line_ends_with_message(text: str) -> bool:
+def _is_line_ends_with_message(line: str) -> bool:
     """
     Function returns True if assert statement ends with message
     """
-    text = text[::-1].replace(' ', '')
-    if text[0] != "'" and text[0] != '"':
+    line = line[::-1].replace(' ', '')
+    if line[0] != "'" and line[0] != '"':
         return False
-    char = '"' if text[0] == '"' else "'"
-    index_of_last_quote = text.index(char, text.index(char) + 1)
-    return text[index_of_last_quote + 1] == ','
+    char = '"' if line[0] == '"' else "'"
+    index_of_last_quote = line.index(char, line.index(char) + 1)
+    return line[index_of_last_quote + 1] == ','
