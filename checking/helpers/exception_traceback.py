@@ -17,10 +17,11 @@ CASES = {
 
 def _is_need_to_hide(name: str) -> bool:
     """
-    Check the strings of traceback for the contents of the internal modules of the project and some modules of standard
-    library, to as not to display error traces (which the user is not interested in).
-    :param name: is the name
-    :return: True if it is the name of one of the internal modules.
+    Helper, checks traceback strings for the library internal module and some standard library module references.
+    Used to truncate uninformative parts of the exception traceback.
+
+    :param name: name of the module
+    :return: True if name is one of the excluded modules, False otherwise
     """
     parts = (f'checking{SEPARATOR}asserts.py',
              f'checking{SEPARATOR}classes{SEPARATOR}',
@@ -31,9 +32,11 @@ def _is_need_to_hide(name: str) -> bool:
 
 def get_trace(exception: Exception) -> List[Tuple]:
     """
-    Returns all trace of error as list, which consists with tuples (error line location, an error).
-    :param exception:  is the exception that whose trace is needed.
-    :return: the list of tuples.
+    Parses the whole error traceback and collects assertion fail info into a list of tuples.
+
+    :param exception: exception to analyze
+    :return: list, containing pairs consisting of the error location (file name, line number and test function name)
+        and the line of code, which triggered an assertion fail
     """
     result = []
     for tb in iter(traceback.extract_tb(exception.__traceback__)):
@@ -45,19 +48,22 @@ def get_trace(exception: Exception) -> List[Tuple]:
 
 def get_trace_filtered_by_filename(exception: Exception) -> str:
     """
-    Returns string representation of the trace error, which has been filtered by module name, actually remain only
-    strings which are not owned by the main 'checking' classes.
-    :param exception: the exception, whose stacktrace is needed
-    :return: the string, where each note is defined \n
+    Builds the assertion error report string, truncating uninformative parts
+    (parts belonging to the library internal classes).
+
+    :param exception: exception to analyze
+    :return: formatted traceback string
     """
     return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception) if not _is_need_to_hide(a)])
 
 
 def exception_with_assert(exception: Exception) -> Exception:
     """
-    Tries to handle with assert of python
-    :param exception: raised exception
-    :return: argument exception if no 'assert' in line or changed exception otherwise
+    Tries to handle standard Python assertions.
+
+    :param exception: exception to analyze
+    :return: forwards the exception argument back to the caller if no standard Python assertions detected,
+        AssertionError with the updated traceback otherwise
     """
     trace = get_trace(exception)
     trace_last_line: str = trace[-1][-1]
@@ -86,7 +92,10 @@ def exception_with_assert(exception: Exception) -> Exception:
 
 def _is_line_ends_with_message(line: str) -> bool:
     """
-    Function returns True if assert statement ends with message
+    Helper, checks if an assert statement ends with a message.
+
+    :param line: assert statement text to check for a message
+    :return: True if message exists, False otherwise
     """
     line = line[::-1].replace(' ', '')
     if line[0] != "'" and line[0] != '"':
