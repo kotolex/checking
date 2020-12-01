@@ -26,7 +26,7 @@ def _is_need_to_hide(name: str) -> bool:
              f'checking{SEPARATOR}classes{SEPARATOR}',
              f'checking{SEPARATOR}runner.py{SEPARATOR}',
              f'{SEPARATOR}contextlib.py',)
-    return any([part in name for part in parts])
+    return any(part in name for part in parts)
 
 
 def get_trace(exception_: Exception) -> List[Tuple]:
