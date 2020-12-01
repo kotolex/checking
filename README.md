@@ -90,7 +90,7 @@ you can use the provided context manager:
 def check_with_exception():
     with should_raise(ZeroDivisionError) as e:
         x = 1 / 0   # Force ZeroDivisionError
-    assert e.message == 'division by zero'   # Note, that the exception is wrapped into a library provided convenience classn 
+    assert e.message == 'division by zero'   # Note, that the exception is wrapped into a library provided convenience class 
 ```
 
 The test will fail if no exception is raised or the exception is of another type. 
