@@ -36,7 +36,7 @@ def get_trace(exception_: Exception) -> List[Tuple]:
     :return: the list of tuples.
     """
     result = []
-    for tb in (e for e in traceback.extract_tb(exception_.__traceback__)):
+    for tb in iter(traceback.extract_tb(exception_.__traceback__)):
         first = f'File "{tb.filename}", line {tb.lineno}, in {tb.name}'
         second = f'-->    {tb.line}'
         result.append((first, second))
