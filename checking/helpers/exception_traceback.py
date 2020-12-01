@@ -67,12 +67,12 @@ def exception_with_assert(exception: Exception) -> Exception:
     """
     trace = get_trace(exception)
     trace_last_line: str = trace[-1][-1]
-    # if no assert in traceback then just reruns original exception
+    # return the original exception if no standard Python asserts detected in the traceback
     if 'assert ' not in trace_last_line:
         return exception
     trace_last_line = trace_last_line.replace('-->', '').replace('assert', '').lstrip()
     message = ''
-    # if line ends with quote and comma, so message text exist, parse it
+    # parse the message text if exists (traceback line ends with a quote and a comma)
     if _is_line_ends_with_message(trace_last_line):
         trace_last_line, _, message = trace_last_line.rpartition(',')
         trace_last_line = trace_last_line.rstrip()
