@@ -16,16 +16,16 @@ CASES = {
 
 
 def _is_need_to_hide(name: str) -> bool:
-    parts = (f'checking{SEPARATOR}asserts.py',
-             f'checking{SEPARATOR}classes{SEPARATOR}',
-             f'checking{SEPARATOR}runner.py{SEPARATOR}',
-             f'{SEPARATOR}contextlib.py',)
     """
-    Check the strings of traceback for the contents of the internal modules of the project and some modules of standard 
+    Check the strings of traceback for the contents of the internal modules of the project and some modules of standard
     library, to as not to display error traces (which the user is not interested in).
     :param name: is the name
     :return: True if it is the name of one of the internal modules.
     """
+    parts = (f'checking{SEPARATOR}asserts.py',
+             f'checking{SEPARATOR}classes{SEPARATOR}',
+             f'checking{SEPARATOR}runner.py{SEPARATOR}',
+             f'{SEPARATOR}contextlib.py',)
     return any([part in name for part in parts])
 
 
