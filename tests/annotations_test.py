@@ -65,7 +65,7 @@ class TestAnnotations(TestCase):
         test(data_provider="missing")(valid_for_provider)
         with self.assertRaises(UnknownProviderName) as e:
             start(TestSuite.get_instance(), listener=Listener(0))
-        self.assertTrue("Cant find provider with name(s) ['missing']" in e.exception.args[0])
+        self.assertTrue("Could not find provider(s) named ['missing']" in e.exception.args[0])
 
     def test_ignore_all_if_test_disabled(self):
         test(enabled=False, data_provider="wrong")(valid)
