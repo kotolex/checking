@@ -54,7 +54,7 @@ def get_trace_filtered_by_filename(exception: Exception) -> str:
     :param exception: exception to analyze
     :return: formatted traceback string
     """
-    return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception) if not _is_need_to_hide(a)])
+    return '\n'.join(f'{a}\n{b}' for a, b in get_trace(exception) if not _is_need_to_hide(a))
 
 
 def exception_with_assert(exception: Exception) -> Exception:
