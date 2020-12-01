@@ -29,41 +29,41 @@ def _is_need_to_hide(name: str) -> bool:
     return any(part in name for part in parts)
 
 
-def get_trace(exception_: Exception) -> List[Tuple]:
+def get_trace(exception: Exception) -> List[Tuple]:
     """
     Returns all trace of error as list, which consists with tuples (error line location, an error).
-    :param exception_:  is the exception that whose trace is needed.
+    :param exception:  is the exception that whose trace is needed.
     :return: the list of tuples.
     """
     result = []
-    for tb in iter(traceback.extract_tb(exception_.__traceback__)):
+    for tb in iter(traceback.extract_tb(exception.__traceback__)):
         first = f'File "{tb.filename}", line {tb.lineno}, in {tb.name}'
         second = f'-->    {tb.line}'
         result.append((first, second))
     return result
 
 
-def get_trace_filtered_by_filename(exception_: Exception) -> str:
+def get_trace_filtered_by_filename(exception: Exception) -> str:
     """
     Returns string representation of the trace error, which has been filtered by module name, actually remain only
     strings which are not owned by the main 'checking' classes.
-    :param exception_: the exception, whose stacktrace is needed
+    :param exception: the exception, whose stacktrace is needed
     :return: the string, where each note is defined \n
     """
-    return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception_) if not _is_need_to_hide(a)])
+    return '\n'.join([f'{a}\n{b}' for a, b in get_trace(exception) if not _is_need_to_hide(a)])
 
 
-def exception_with_assert(e: Exception) -> Exception:
+def exception_with_assert(exception: Exception) -> Exception:
     """
     Tries to handle with assert of python
-    :param e: raised exception
+    :param exception: raised exception
     :return: argument exception if no 'assert' in line or changed exception otherwise
     """
-    trace = get_trace(e)
+    trace = get_trace(exception)
     trace_last_line: str = trace[-1][-1]
     # if no assert in traceback then just reruns original exception
     if 'assert ' not in trace_last_line:
-        return e
+        return exception
     trace_last_line = trace_last_line.replace('-->', '').replace('assert', '').lstrip()
     message = ''
     # if line ends with quote and comma, so message text exist, parse it
@@ -79,8 +79,8 @@ def exception_with_assert(e: Exception) -> Exception:
     else:
         message = f'{message}"{trace_last_line}" returns False but True was expected'
     error = AssertionError(message)
-    error.__traceback__ = e.__traceback__
-    del e
+    error.__traceback__ = exception.__traceback__
+    del exception
     return error
 
 
