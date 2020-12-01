@@ -3,15 +3,16 @@ import traceback
 from typing import List, Tuple
 
 SEPARATOR = os.path.sep
-CASES = {'==': 'Objects are not equals (#1 != #2)',
-         '!=': 'Objects are equal (#1 == #2)',
-         '>=': '#1 is less than #2',
-         '<=': '#1 is greater than #2',
-         '<': '#1 is greater or equal to #2',
-         '>': '#1 is less or equal to #2',
-         ' is not ': '#1 is #2 (points to one object)',
-         ' is ': '#1 is not #2 (points to different objects)',
-         }
+CASES = {
+    '==': 'Objects are not equals (#1 != #2)',
+    '!=': 'Objects are equal (#1 == #2)',
+    '>=': '#1 is less than #2',
+    '<=': '#1 is greater than #2',
+    '<': '#1 is greater or equal to #2',
+    '>': '#1 is less or equal to #2',
+    ' is not ': '#1 is #2 (points to one object)',
+    ' is ': '#1 is not #2 (points to different objects)',
+}
 
 
 def _is_need_to_hide(name: str) -> bool:
