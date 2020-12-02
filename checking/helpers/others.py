@@ -6,12 +6,13 @@ from typing import Any, Iterable, Callable
 
 def short(obj: Any, width: int = 45) -> str:
     """
-    Reduces the string representation to a specific length, replacing all characters after the specified length with
-    three dots ([...]) plus symbols count to end.
-    If the string representation is shorter than the specified length, it returns it unchanged.
-    :param obj: String or object[Any]
-    :param width: Maximum string representation length
-    :return: shortened string
+    Elides an object string representation to the specified length,
+    adding ellipsis (...) and the remaining glyph count to the end of the string.
+    Returns the string as-is if string representation is shorter than the specified width.
+
+    :param obj: object to format the string representation for
+    :param width: required string representation length
+    :return: formatted elided string
     """
     str_ = str(obj)
     len_ = len(str_) - width
@@ -22,7 +23,8 @@ def short(obj: Any, width: int = 45) -> str:
 
 def print_splitter_line():
     """
-    Displays a dash separator in the form of a 10 dash (for separating test results)
+    Prints test result separator (ten dashes '-') to stdout.
+
     :return: None
     """
     print('-' * 10)
@@ -30,24 +32,28 @@ def print_splitter_line():
 
 def is_file_exists(file_name: str) -> bool:
     """
-    Tells, if the file with name exists
-    :return: True, if the file exists
+    Checks if a file exists.
+
+    :param file_name: file name to check
+    :return: True, if the file exists, False otherwise
     """
     return len(glob.glob(file_name)) == 1
 
 
 def str_date_time():
     """
-    Generates current date and time for using at file names
-    :return: str like 2020-02-22_12_58_58
+    Generates a datetime signature for the current time to use in a file name.
+
+    :return: string formatted like '2020-02-22_12-58-58'
     """
     return datetime.strftime(datetime.now(), '%Y-%m-%d_%H-%M-%S')
 
 
 def fake(*_):
     """
-    Stub function that does nothing
-    :param args: ignored params
+    Stub function that does nothing.
+
+    :param _: ignored function arguments
     :return: None
     """
     pass
@@ -55,9 +61,8 @@ def fake(*_):
 
 class FakePoolExecutor:
     """
-    Fake to use 1 threaded execution, mimic real ThreadPool methods
+    Fake thread pool object to use for the single-threaded execution, mimics the real ThreadPool behaviour.
     """
-
     def submit(self, func: Callable, param: Any):
         func(param)
 
@@ -67,9 +72,10 @@ class FakePoolExecutor:
 
 def format_seconds(seconds: float) -> str:
     """
-    Creates string representation of seconds count, which format it to hours and/or minutes if possible
-    :param seconds: amount of seconds
-    :return: str
+    Formats a time count report string, employing minutes and hours if necessary.
+
+    :param seconds: second count
+    :return: formatted report string
     """
     if not seconds // 60:
         return f'{seconds:.2f} seconds'
@@ -84,12 +90,13 @@ def format_seconds(seconds: float) -> str:
 
 def diff(first: Any, second: Any) -> str:
     """
-    Function to gets differs between objects for message in asserts. Objects must be the same type and has length.
-    Returns empty string if objects are the same, equal, not the same type, has no length, or not one of
-    (Mapping, Iterable, Set)
+    Calculates the difference between the two specified objects and builds the diff report string.
+    To calculate the difference, objects must be of the same type and have the length attribute.
+
     :param first: any object to compare
     :param second: any object to compare
-    :return: string info about difference or empty if cant be checked
+    :return: formatted diff report string or empty string if objects are the same or equal,
+        are not of the same type, have no length, or do not have type Union[Mapping, Iterable, Set]
     """
     if type(first) != type(second) or first is second or first == second:
         return ''
