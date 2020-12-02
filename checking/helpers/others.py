@@ -44,7 +44,7 @@ def str_date_time():
     return datetime.strftime(datetime.now(), '%Y-%m-%d_%H-%M-%S')
 
 
-def fake(*args):
+def fake(*_):
     """
     Stub function that does nothing
     :param args: ignored params
