@@ -11,11 +11,15 @@ from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename as filtered
 
+__all__ = [
+    'generate',
+]
+
 # Name for folder with results
 FOLDER = 'test_results'
 
 
-def add_text(name: str, value: str):
+def _add_text(name: str, value: str):
     """
     Add some text to test in report
     :param name: name of the parameter
@@ -25,7 +29,7 @@ def add_text(name: str, value: str):
     _add_to_test(name, value)
 
 
-def add_img(name: str, bytes_: bytes):
+def _add_img(name: str, bytes_: bytes):
     """
     Add some picture(screenshot) to test in report
     :param name: name of parameter

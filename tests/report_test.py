@@ -1,7 +1,7 @@
 from unittest import main, TestCase
 
 from checking.annotations import test
-from checking.helpers.report import add_text, add_img
+from checking.helpers.report import _add_text, _add_img
 from checking.classes.basic_suite import TestSuite
 from tests.fixture_behaviour_test import clear
 
@@ -10,7 +10,7 @@ class TestReport(TestCase):
 
     def test_add_text(self):
         def _():
-            add_text("A", "B")
+            _add_text("A", "B")
 
         clear()
         test(_)
@@ -20,7 +20,7 @@ class TestReport(TestCase):
 
     def test_add_img(self):
         def _():
-            add_img("A", b"B")
+            _add_img("A", b"B")
 
         clear()
         test(_)
