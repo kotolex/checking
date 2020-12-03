@@ -15,7 +15,7 @@ __all__ = [
     'generate',
 ]
 
-# Name for folder with results
+# HTML report output folder
 FOLDER = 'test_results'
 
 
@@ -62,7 +62,7 @@ def _add_to_test(name: str, value: Union[bytes, str]):
                     current_test.report_params[str(name)] = str(value)
                 break
     except ValueError:
-        pass  # ignored, just deletes frame
+        pass    # ran out of stack frames, ignore the error and delete the frame reference
     finally:
         del frame
 
