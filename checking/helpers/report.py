@@ -84,7 +84,7 @@ def generate(test_suite: TestSuite):
     _write_file(html)
 
 
-def _create_info(html: str, suite: TestSuite):
+def _create_info(html: str, suite: TestSuite) -> str:
     """
     Generates Info section (header) of the report.
     :param html: sting of the html report
@@ -145,7 +145,7 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
     return html_lines
 
 
-def _write_file(lines: list):
+def _write_file(lines: List[str]):
     with open(f'{FOLDER}{sep}index.html', 'wt') as file:
         file.write(''.join(lines))
 
@@ -190,7 +190,7 @@ def _add_test_info(test: Test, lines: List[str], count: int):
         f"\t\t</div>\n\t</li>\n")
 
 
-def _get_rep_params(test, count):
+def _get_rep_params(test: Test, count: int) -> str:
     """
     Add info attached to test (text ot image)
     :param test: test to get info from
