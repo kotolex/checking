@@ -21,9 +21,10 @@ FOLDER = 'test_results'
 
 def _add_text(name: str, value: str):
     """
-    Add some text to test in report
-    :param name: name of the parameter
-    :param value: value of the parameter
+    Convenience wrapper for **_add_to_test()**, handles textual data.
+
+    :param name: text parameter name
+    :param value: text parameter value
     :return: None
     """
     _add_to_test(name, value)
@@ -31,9 +32,10 @@ def _add_text(name: str, value: str):
 
 def _add_img(name: str, bytes_: bytes):
     """
-    Add some picture(screenshot) to test in report
-    :param name: name of parameter
-    :param bytes_: bytes of picture (will be saved as png)
+    Convenience wrapper for **_add_to_test()**, handles binary (image) data.
+
+    :param name: image parameter name
+    :param bytes_: image parameter data
     :return: None
     """
     _add_to_test(name, bytes_)
@@ -41,9 +43,12 @@ def _add_img(name: str, bytes_: bytes):
 
 def _add_to_test(name: str, value: Union[bytes, str]):
     """
-    Looks for 5 frames deep in call stack to find current test and put data there
-    :param name: name of parameter to add
-    :param value: value of str or bytes
+    Helper, locates the current test instance by searching the last five stack frames,
+    then adds the specified report parameter data to the located test instance.
+    Data is added via the **Test** class **report_params** property.
+
+    :param name: parameter name
+    :param value: parameter data
     :return: None
     """
     try:
@@ -64,8 +69,9 @@ def _add_to_test(name: str, value: Union[bytes, str]):
 
 def generate(test_suite: TestSuite):
     """
-    The only public method to generate html report with all test results
-    :param test_suite: suite to save results to report
+    Generates an HTML report containing the test suite execution results.
+
+    :param test_suite: TestSuite instance to build the report for
     :return: None
     """
     path_to_template = is_file_exists.__globals__['__spec__'].origin
@@ -90,10 +96,11 @@ def generate(test_suite: TestSuite):
 
 def _create_info(html: str, suite: TestSuite) -> str:
     """
-    Generates Info section (header) of the report.
-    :param html: sting of the html report
-    :param suite: suite to get results from
-    :return: None
+    Helper, generates the report header (info section).
+
+    :param html: html report string
+    :param suite: TestSuite instance to generate the report for
+    :return: HTML string with the added report header
     """
     per_col = '#2e7d32'
     percent = len(suite.success()) / (suite.tests_count() / 100) if suite.tests_count() else 0.0
@@ -117,9 +124,10 @@ def _create_info(html: str, suite: TestSuite) -> str:
 
 def _generate_html(test_suite: TestSuite) -> List[str]:
     """
-    Generates html in list of strings
-    :param test_suite: suite to get all results from
-    :return: list of strings (html code)
+    Helper, generates HTML strings for each test group in a suite.
+
+    :param test_suite: TestSuite instance to generate the report for
+    :return: list of HTML strings, each containing the test results for a test group
     """
     with open(f'{FOLDER}{sep}index.html') as template:
         base = ''.join(template.readlines())
@@ -150,11 +158,24 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
 
 
 def _write_file(lines: List[str]):
+    """
+    Helper, writes a list of strings to report's index.html file.
+
+    :param lines: list of prepared report HTML strings
+    :return:
+    """
     with open(f'{FOLDER}{sep}index.html', 'wt') as file:
         file.write(''.join(lines))
 
 
 def _add_all_listeners(lines: List[str], count: int):
+    """
+    Helper, adds JavaScript event listeners to the report.
+
+    :param lines: list of report HTML strings
+    :param count: number of sections to add listeners to
+    :return:
+    """
     a_l = [f"document.querySelector('#id_{_}').addEventListener('click',opclose('#id_{_}'));" for _ in range(1, count)]
     joined = '\n'.join(a_l)
     lines.append(f"<script>{joined}</script>")
@@ -162,10 +183,11 @@ def _add_all_listeners(lines: List[str], count: int):
 
 def _add_test_info(test: Test, lines: List[str], count: int):
     """
-    Add info about specific test
-    :param test: test to ger info from
-    :param lines: list of strings og html file
-    :param count: id for html tag
+    Helper, adds info header for a specific test.
+
+    :param test: Test instance to generate info for
+    :param lines: list of report HTML strings
+    :param count: test case id number to use in the HTML tag
     :return: None
     """
     time_ = 0.0 if test.duration() < 0.01 else test.duration()
@@ -196,10 +218,11 @@ def _add_test_info(test: Test, lines: List[str], count: int):
 
 def _get_rep_params(test: Test, count: int) -> str:
     """
-    Add info attached to test (text ot image)
-    :param test: test to get info from
-    :param count: id for element
-    :return: None
+    Helper, adds additional data (text or image to the test's HTML string.
+
+    :param test: Test instance to generate info for
+    :param count: test case id number to use in the HTML tags and image file names.
+    :return: test case additional info HTML string
     """
     rep_params = ''
     if not test.report_params:
