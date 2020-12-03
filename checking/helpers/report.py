@@ -103,15 +103,15 @@ def _create_info(html: str, suite: TestSuite) -> str:
         per_col = '#d50000'
     start = datetime.fromtimestamp(suite.timer.start_time).strftime('%Y-%m-%d %H:%M:%S')
     end = datetime.fromtimestamp(suite.timer.end_time).strftime('%Y-%m-%d %H:%M:%S')
-    html = html.replace('#suite_name', suite.name). \
-        replace('#total_groups', str(len(suite.groups))). \
-        replace('#total_tests', str(suite.tests_count())). \
-        replace('#success_tests', str(len(suite.success()))). \
-        replace('#failed_tests', str(len(suite.failed()))). \
-        replace('#broken_tests', str(len(suite.broken()))). \
-        replace('#ignored_tests', str(len(suite.ignored()))). \
-        replace('#percent', f"<b style='color: {per_col}'>0.0 %</b>"). \
-        replace('#total_time', f"{suite.suite_duration():.2} seconds ({start} - {end})")
+    html = html.replace('#suite_name', suite.name) \
+        .replace('#total_groups', str(len(suite.groups))) \
+        .replace('#total_tests', str(suite.tests_count())) \
+        .replace('#success_tests', str(len(suite.success()))) \
+        .replace('#failed_tests', str(len(suite.failed()))) \
+        .replace('#broken_tests', str(len(suite.broken()))) \
+        .replace('#ignored_tests', str(len(suite.ignored()))) \
+        .replace('#percent', f"<b style='color: {per_col}'>0.0 %</b>") \
+        .replace('#total_time', f"{suite.suite_duration():.2} seconds ({start} - {end})")
     return html
 
 
