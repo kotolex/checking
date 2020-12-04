@@ -1,12 +1,9 @@
-from os import sep
-from os import chdir
-from os import mkdir
-from os import path
+from os import sep, chdir, mkdir, path
 from sys import _getframe
 from datetime import datetime
 from typing import List, Union
-from checking.helpers.others import is_file_exists
 
+from checking.helpers.others import is_file_exists
 from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename as filtered
