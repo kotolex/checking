@@ -132,7 +132,7 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
     html_lines = [base, ]
     if test_suite.is_empty():
         html_lines.append("<div id='empty'>Suite is empty! There are no tests!</div>\n")
-        html_lines.append('</body>\n</html>')
+        html_lines.append('\n</div>\n</body>\n</html>')
         return html_lines
     count = 1
     for group in test_suite.groups:
@@ -150,7 +150,7 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
             count += 1
         html_lines.append('</ol>\n')
     _add_all_listeners(html_lines, count)
-    html_lines.append('\n</body>\n</html>')
+    html_lines.append('\n</div>\n</body>\n</html>')
     return html_lines
 
 
