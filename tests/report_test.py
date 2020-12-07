@@ -89,19 +89,19 @@ class TestReport(TestCase):
         <td>0</td>
     </tr>
     <tr>
-        <td><b style="color: #2e7d32">success tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #2e7d32">succeeded:</b></td>
         <td><span style="color: #2e7d32">0</span></td>
     </tr>
     <tr>
-        <td><b style="color: #d50000">failed tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #d50000">failed:</b></td>
         <td><span style="color: #d50000">0</span></td>
     </tr>
     <tr>
-        <td><b style="color: #ff6f00">broken tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #ff6f00">broken:</b></td>
         <td><span style="color: #ff6f00">0</span></td>
     </tr>
     <tr>
-        <td><b style="color: #757575">ignored tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #757575">ignored:</b></td>
         <td><span style="color: #757575">0</span></td>
     </tr>
     <td>
@@ -195,19 +195,19 @@ class TestReport(TestCase):
         <td>3</td>
     </tr>
     <tr>
-        <td><b style="color: #2e7d32">success tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #2e7d32">succeeded:</b></td>
         <td><span style="color: #2e7d32">0</span></td>
     </tr>
     <tr>
-        <td><b style="color: #d50000">failed tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #d50000">failed:</b></td>
         <td><span style="color: #d50000">0</span></td>
     </tr>
     <tr>
-        <td><b style="color: #ff6f00">broken tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #ff6f00">broken:</b></td>
         <td><span style="color: #ff6f00">0</span></td>
     </tr>
     <tr>
-        <td><b style="color: #757575">ignored tests:</b></td>
+        <td>&nbsp;&nbsp;&nbsp;<b style="color: #757575">ignored:</b></td>
         <td><span style="color: #757575">0</span></td>
     </tr>
     <td>
