@@ -6,7 +6,7 @@ from unittest import main, TestCase
 
 from checking import test_break, TestBrokenException
 from checking.annotations import test
-from checking.helpers.report import add_text, add_img
+from checking.helpers.report import add_text, add_img, generate
 from checking.classes.basic_suite import TestSuite
 from tests.fixture_behaviour_test import clear
 

@@ -8,7 +8,13 @@ from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename as filtered
 
-# Name for folder with results
+__all__ = [
+    'generate',
+    'add_text',
+    'add_img'
+]
+
+# HTML report output folder
 FOLDER = 'test_results'
 
 
