@@ -142,7 +142,7 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
         html_lines.append(
             f"<h4 id='id_g_{count}' style='cursor: pointer;'>Group '{group}' (elapsed {group_time:.2} seconds), "
             f"success tests {succ}/{len(results)}:\n"
-            f"\t<script>document.querySelector('#id_g_{count}')."
+            f"    <script>document.querySelector('#id_g_{count}')."
             f"addEventListener('click', opclose_sibling('#id_g_{count}'))</script>\n</h4>\n"
             f"<ol style='display: none;'>\n")
         for test in results:
