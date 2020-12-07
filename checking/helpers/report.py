@@ -131,7 +131,7 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
     base = _create_info(base, test_suite)
     html_lines = [base, ]
     if test_suite.is_empty():
-        html_lines.append("<div id='empty'>Suite is empty! There are no tests!</div>\n")
+        html_lines.append("<div id='empty'>No tests found in the suite!</div>\n")
         html_lines.append('\n</div>\n</body>\n</html>')
         return html_lines
     count = 1
@@ -141,7 +141,7 @@ def _generate_html(test_suite: TestSuite) -> List[str]:
         succ = len(test_suite.groups.get(group).tests_by_status('success'))
         html_lines.append(
             f"<h4 id='id_g_{count}' style='cursor: pointer;'>Group '{group}' (elapsed {group_time:.2} seconds), "
-            f"success tests {succ}/{len(results)}:\n"
+            f"succeeded tests {succ}/{len(results)}:\n"
             f"    <script>document.querySelector('#id_g_{count}')."
             f"addEventListener('click', opclose_sibling('#id_g_{count}'))</script>\n</h4>\n"
             f"<ol style='display: none;'>\n")
@@ -204,7 +204,7 @@ def _add_test_info(test: Test, lines: List[str], count: int):
         f"\t\t<div style='display: none;'>\n<table style='width: 80%; margin-left: auto; margin-right: auto; font-family: 'Roboto', sans-serif;'>\n<tbody>\n"
         f"\t\t\t<tr><td><b>Description:</b></td><td>'{test.description}'</td></tr>\n"
         f"\t\t\t<tr><td><b>Argument:</b></td><td> {test.argument}</td></tr>\n"
-        f"\t\t\t<tr><td><b>Attempt number:</b></td><td> {test.retries}</td></tr>\n"
+        f"\t\t\t<tr><td><b>Retries:</b></td><td> {test.retries}</td></tr>\n"
         f"\t\t\t<tr><td><b>Status:</b></td><td><b style='color:{st_col}'>{test.status.upper()}</b></td></tr>\n"
         f"\t\t\t<tr><td><b>Duration:</b></td><td> {time_:.3} seconds</td></tr>\n</tbody>\n</table>\n"
         f"{traceback}\n"

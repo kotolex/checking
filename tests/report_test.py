@@ -112,7 +112,7 @@ class TestReport(TestCase):
 
 <div style="width: 80%; margin-left: auto; margin-right: auto; font-family: 'Roboto', sans-serif;">
     <h2>Statistics:</h2>
-<div id='empty'>Suite is empty! There are no tests!</div>
+<div id='empty'>No tests found in the suite!</div>
 
 </div>
 </body>
@@ -218,7 +218,7 @@ class TestReport(TestCase):
 
 <div style="width: 80%; margin-left: auto; margin-right: auto; font-family: 'Roboto', sans-serif;">
     <h2>Statistics:</h2>
-<h4 id='id_g_1' style='cursor: pointer;'>Group 'report_test' (elapsed 0.0 seconds), success tests 0/0:
+<h4 id='id_g_1' style='cursor: pointer;'>Group 'report_test' (elapsed 0.0 seconds), succeeded tests 0/0:
     <script>document.querySelector('#id_g_1').addEventListener('click', opclose_sibling('#id_g_1'))</script>
 </h4>
 <ol style='display: none;'>
