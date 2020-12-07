@@ -6,7 +6,7 @@ from unittest import main, TestCase
 
 from checking import test_break, TestBrokenException
 from checking.annotations import test
-from checking.helpers.report import _add_text, _add_img, generate
+from checking.helpers.report import add_text, add_img
 from checking.classes.basic_suite import TestSuite
 from tests.fixture_behaviour_test import clear
 
@@ -15,7 +15,7 @@ class TestReport(TestCase):
 
     def test_add_text(self):
         def _():
-            _add_text("A", "B")
+            add_text("A", "B")
 
         clear()
         test(_)
@@ -25,7 +25,7 @@ class TestReport(TestCase):
 
     def test_add_img(self):
         def _():
-            _add_img("A", b"B")
+            add_img("A", b"B")
 
         clear()
         test(_)

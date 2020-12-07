@@ -8,15 +8,11 @@ from checking.classes.basic_test import Test
 from checking.classes.basic_suite import TestSuite
 from checking.helpers.exception_traceback import get_trace_filtered_by_filename as filtered
 
-__all__ = [
-    'generate',
-]
-
-# HTML report output folder
+# Name for folder with results
 FOLDER = 'test_results'
 
 
-def _add_text(name: str, value: str):
+def add_text(name: str, value: str):
     """
     Convenience wrapper for **_add_to_test()**, handles textual data.
 
@@ -27,7 +23,7 @@ def _add_text(name: str, value: str):
     _add_to_test(name, value)
 
 
-def _add_img(name: str, bytes_: bytes):
+def add_img(name: str, bytes_: bytes):
     """
     Convenience wrapper for **_add_to_test()**, handles binary (image) data.
 
