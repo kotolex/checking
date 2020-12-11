@@ -41,7 +41,7 @@ if __name__ == '__main__':
     start()
 ```
 
-Only functions marked with @test decorator will be marked as tests to execute. 
+Only functions wrapped with the @test decorator will be marked as tests to execute. 
 You can name your tests however you like, just put that @test decorator.
 
 ### Basic Asserts ###
