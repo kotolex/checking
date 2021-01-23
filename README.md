@@ -801,12 +801,29 @@ from checking import *
 
 @test
 def api_check():
-    equals(4, 2 + common_parameters['value']) # Here we use common_parameters - dictionary available from all tests
+    equals(4, 2 + common['value']) # Here we use common - object available from all tests
 
 
 if __name__ == '__main__':
-    start(verbose=3, params={'value': 2}) # Here we adds a parameter to common_parameters
+    start(verbose=3, params={'value': 2}) # Here we adds a parameter to common object
 ```
+You can also mark any function as common, for example if you need to use it in different tests in  
+different modules.
+```python
+from checking import *
+
+
+@common_function
+def sum_of_two(a, b):
+    return a + b
+
+
+@test
+def test_common_function():
+    equals(4, common.sum_of_two(2, 2)) # here we use dot notation to get common attribute
+
+```
+
 
 **threads** is the number of threads to run tests, by default is 1. Each group can run in a separate thread if 
 necessary. This is an experimental feature and it can be useful only for tests NOT performing any complex calculations (CPU bound).

@@ -10,12 +10,19 @@ class AssertsTest(TestCase):
     def test_is_zero(self):
         is_zero(0)
 
+    def test_is_zero_false(self):
+        is_zero(False)
+
     def test_is_zero_float(self):
         is_zero(0.0)
 
     def test_is_zero_fails_if_wrong_type(self):
         with self.assertRaises(TestBrokenException):
             is_zero("0")
+
+    def test_is_zero_fails_if_true(self):
+        with self.assertRaises(AssertionError):
+            is_zero(True)
 
     def test_is_zero_fails_if_positive(self):
         with self.assertRaises(AssertionError):
@@ -31,6 +38,9 @@ class AssertsTest(TestCase):
 
     def test_is_positive(self):
         is_positive(1)
+
+    def test_is_positive_bool(self):
+        is_positive(True)
 
     def test_is_positive_str(self):
         is_positive('1')
@@ -49,6 +59,10 @@ class AssertsTest(TestCase):
     def test_is_positive_fail_str(self):
         with self.assertRaises(AssertionError):
             is_positive('')
+
+    def test_is_positive_fail_false(self):
+        with self.assertRaises(AssertionError):
+            is_positive(False)
 
     def test_is_negative(self):
         is_negative(-1)

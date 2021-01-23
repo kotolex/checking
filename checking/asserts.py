@@ -195,7 +195,7 @@ def is_positive(actual: Union[int, float, Sequence]):
     :param actual: object to evaluate
     :return: None
     """
-    if type(actual) in (int, float):
+    if isinstance(actual, (int, float)):
         if actual <= 0:
             raise AssertionError(f"'{short(actual)}' <{type(actual).__name__}> is not positive!")
     else:
@@ -287,7 +287,7 @@ def _get_length_if_sized(container: Sized) -> int:
 
 
 def _check_argument_is_number(actual, name: str):
-    if type(actual) not in (int, float):
+    if not isinstance(actual, (int, float)):
         raise TestBrokenException(f"Cannot execute '{name}', wrong type:"
                                   f"\nExpected: Union[int, float]"
                                   f"\nActual  : '{short(actual)}' <{type(actual).__name__}>")

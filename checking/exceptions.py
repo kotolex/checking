@@ -5,6 +5,7 @@ class WrongDecoratedObject(Exception):
         - class method
         - function, which takes arguments when a data provider is not used
         - function, which doesn't take a single argument when a data provider is used
+        - common function, which name is already used at common parameters
     """
     pass
 

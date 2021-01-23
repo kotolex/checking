@@ -5,6 +5,7 @@ from checking.classes.basic_suite import TestSuite
 from checking import runner as r_
 from checking.annotations import test, provider, before, before_suite
 from tests.fixture_behaviour_test import clear
+from importlib import reload
 
 COUNT = 0
 
@@ -85,6 +86,7 @@ class ListenerTest(TestCase):
 
     def test_starts_call(self):
         clear()
+        reload(r_)
         listener_ = Listener(0)
         listener_.on_test_starts = inc
         count = COUNT

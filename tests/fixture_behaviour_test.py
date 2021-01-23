@@ -4,7 +4,6 @@ from checking.annotations import *
 import checking.runner as runner
 from checking.runner import start
 from checking.classes.listeners.basic import Listener
-from importlib import reload
 
 common_str = ''
 
@@ -14,15 +13,14 @@ def failed():
 
 
 def par_1():
-    runner.common_parameters['1'] = 1
+    runner.common['1'] = 1
 
 
 def par_2():
-    assert 1 == runner.common_parameters['1']
+    assert 1 == runner.common['1']
 
 
 def clear():
-    reload(runner)
     test_suite = TestSuite.get_instance()
     test_suite.groups.clear()
     test_suite.before.clear()
@@ -33,7 +31,7 @@ def clear():
     test_suite.cached.clear()
     global common_str
     common_str = ''
-    runner.common_parameters.clear()
+    runner.common.clear()
 
 
 def b_suite():
@@ -258,7 +256,7 @@ class TestBeforeAndAfter(TestCase):
         test(par_1)
         test(par_2)
         start(listener=self._listener)
-        self.assertEqual(runner.common_parameters, {'1': 1})
+        self.assertEqual(runner.common.as_dict(), {'1': 1})
 
     def test_no_tests_if_filter_not_existed_group(self):
         clear()
@@ -278,22 +276,57 @@ class TestBeforeAndAfter(TestCase):
         clear()
         test(fn)
         start(listener=self._listener)
-        self.assertFalse(runner.common_parameters)
+        self.assertFalse(runner.common)
 
     def test_params_if_exists(self):
         clear()
         test(fn)
         start(listener=self._listener, params={'test': 'test'})
-        self.assertTrue(runner.common_parameters)
-        self.assertEqual(runner.common_parameters, {'test': 'test'})
+        self.assertTrue(runner.common)
+        self.assertEqual(runner.common.as_dict(), {'test': 'test'})
 
     def test_params_if_exists_and_use_in_test(self):
         clear()
         test(par_1)
         start(listener=self._listener, params={'test': 'test'})
-        self.assertTrue(runner.common_parameters)
-        self.assertEqual('test', runner.common_parameters['test'])
-        self.assertEqual(1, runner.common_parameters['1'])
+        self.assertTrue(runner.common)
+        self.assertEqual('test', runner.common['test'])
+        self.assertEqual(1, runner.common['1'])
+
+    def test_common_function_works(self):
+        def name():
+            pass
+
+        clear()
+        common_function(name)
+        test(failed)
+        start(listener=self._listener)
+        self.assertTrue(runner.common)
+        self.assertEqual(name, runner.common.name)
+        self.assertEqual(name, runner.common['name'])
+
+    def test_common_function_works_with_params(self):
+        def name():
+            pass
+
+        clear()
+        common_function(name)
+        test(failed)
+        start(listener=self._listener, params={'test': 'test'})
+        self.assertTrue(runner.common)
+        self.assertEqual(name, runner.common.name)
+        self.assertEqual('test', runner.common.test)
+        self.assertEqual(2, len(runner.common.as_dict()))
+
+    def test_common_function_raises_on_second_use_of_name(self):
+        def name():
+            pass
+
+        clear()
+        common_function(name)
+        with self.assertRaises(WrongDecoratedObject) as e:
+            common_function(name)
+        self.assertEqual(e.exception.args[0], 'Name "name" is already used at common object')
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ from inspect import isfunction
 from typing import Callable, Any, Iterable, Tuple, Union, Sequence, Container, Optional
 
 from .exceptions import *
+from .runner import common
 from .classes.basic_test import Test
 from .classes.data_file import DataFile
 from .classes.basic_suite import TestSuite
@@ -346,7 +347,7 @@ def DATA_FILE(file_path: str, name: Optional[str] = None, cached: bool = False, 
 
     # get the last code frame to verify the file path
     frame = _getframe(1)
-    assert frame   # code frame should always be present
+    assert frame  # code frame should always be present
 
     module_path = path.split(frame.f_globals['__file__'])[0]
     real_path = path.join(module_path, file_path)
@@ -379,3 +380,17 @@ def CONTAINER(value: Union[Sequence, Iterable, Container], name: Optional[str] =
 
     name = name if name is not None else 'container'
     provider(name=name, map_to_str=map_to_str)(_)
+
+
+def common_function(func: Callable):
+    """
+    Decorator for common functions, which are those which you want to use in different tests. In any test you can call
+    that function with "common.function()". Name of the function must be unique for all test-suite!
+
+    :raise WrongDecoratedObject if name of the function is already in use
+    """
+    name = func.__name__
+    if name in common:
+        raise WrongDecoratedObject(f'Name "{name}" is already used at common object')
+    setattr(common, name, func)
+    return func

@@ -1,15 +1,15 @@
+from importlib import reload
 from unittest import TestCase
 from unittest import main
 
 from checking import runner as r
-from checking.classes.basic_test import Test
+from checking.asserts import equals
 from checking.classes.basic_group import TestGroup
 from checking.classes.basic_suite import TestSuite
+from checking.classes.basic_test import Test
 from checking.classes.listeners.basic import Listener
 from checking.exceptions import UnknownProviderName, TestIgnoredException
 from checking.helpers.others import fake
-from checking.asserts import equals
-
 from tests.fixture_behaviour_test import clear
 
 
@@ -206,6 +206,8 @@ class RunnerTest(TestCase):
         self.assertEqual(count + 6, COUNT)
 
     def test_run_all_test_in_group(self):
+        clear()
+        reload(r)
         test_case = Test('one', inc)
         test_case2 = Test('two', inc)
         group = TestGroup('group')
@@ -257,6 +259,7 @@ class RunnerTest(TestCase):
 
     def test_check_max_fail_with_provider(self):
         clear()
+        reload(r)
         suite = TestSuite.get_instance()
         test_case = Test('some', lambda z: equals(z, 3))
         test_case.provider = 'test2'
@@ -268,6 +271,7 @@ class RunnerTest(TestCase):
 
     def test_check_max_fail_not_reached(self):
         clear()
+        reload(r)
         suite = TestSuite.get_instance()
         test_case = Test('some', lambda: equals(1, 2))
         suite.get_or_create("group").add_test(test_case)

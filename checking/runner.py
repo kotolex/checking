@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from typing import Callable, Any, Dict, List, Union, Optional
 
+from .classes.common import Common
 from .helpers.others import fake
 from .classes.basic_test import Test
 from .helpers.report import generate
@@ -22,8 +23,8 @@ _can_run = True
 _max_fail = 0
 # Stores the number of currently failed tests.
 _actual_failed_count = 0
-# Stores the shared parameters for the whole test suite.
-common_parameters: Dict[str, Any] = {}
+# Stores the shared parameters and common functions for the whole test suite.
+common: Common = Common()
 
 
 def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optional[List[str]] = None,
@@ -81,7 +82,7 @@ def start(verbose: int = 0, listener: Optional[Listener] = None, groups: Optiona
             generate(test_suite)
         return
     if params:
-        common_parameters.update(params)
+        common.update(params)
     if threads < 1:
         threads = 1
     # use one thread if there's only one test group

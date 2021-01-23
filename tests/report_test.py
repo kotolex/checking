@@ -1,9 +1,11 @@
 import os
 import shutil
+from importlib import reload
 
 from os.path import sep
 from unittest import main, TestCase
 
+from checking import runner
 from checking import test_break, TestBrokenException
 from checking.annotations import test
 from checking.helpers.report import add_text, add_img, generate
@@ -33,8 +35,10 @@ class TestReport(TestCase):
         t.run()
         self.assertEqual({b'B': 'A'}, t.report_params)
 
-    def test_generate_empty(self):
+    def generate_empty(self):
         clear()
+        reload(runner)
+
         generate(TestSuite.get_instance())
 
         with open(f'{os.getcwd()}{sep}test_results{sep}index.html') as f:
