@@ -632,13 +632,29 @@ def check_double():
     equals(100, len(spy))  # Len now returns 100
 ```
 
+**Important!** Both spy and TestDouble override **isinstance**, so they emulate type of the original object. It can be useful for
+testing functions, which has isinstance check inside. For example:
+```python
+def function_that_checks_class(obj):
+    if isinstance(obj, str):  # check for argument type (string)
+        return "OK"
+    return "Not OK"
+
+
+@test
+def isinstance_check():
+    spy = Spy("fake string")  # fake the real string
+    result = function_that_checks_class(spy)  # get "OK" here, cause function thinks it's a string, not Spy
+    equals("OK", result)
+```
+
 **6. Stub object**
 
 Stub object is just a helper for testing, its purpose not to check or assert something, but to give data
 and perform some simple action, when application under test need it. Unlike spy or double, Stub 
 is not remember calls, it just a simple replacement for some object with minimum or no logic inside.
 
-Lets say we have a function which gets some object, take its attribute, calculates something and 
+Let's say we have a function which gets some object, take its attribute, calculates something and 
 return result. We wish to isolate our testing from real objects, just test important behaviour, besides 
 this data-object can be hard to create or complicated.
 ```python

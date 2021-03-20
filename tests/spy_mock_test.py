@@ -203,6 +203,27 @@ class SpyTest(TestCase):
         self.assertTrue("Stub object {'function':" in str(stub))
         self.assertTrue("AttributeWrapper object" in str(stub))
 
+    def test_spy_isinstance(self):
+        spy = Spy("sds")
+        self.assertTrue(isinstance(spy, str))
+        self.assertFalse(isinstance(spy, int))
+        self.assertFalse(isinstance('text', int))
+        self.assertTrue(isinstance(11, int))
+
+    def test_spy_isinstance_for_empty(self):
+        spy = Spy()
+        self.assertTrue(isinstance(spy, type(None)))
+
+    def test_double_isinstance(self):
+        test_double = TestDouble("sds")
+        self.assertTrue(isinstance(test_double, str))
+        self.assertFalse(isinstance('text', int))
+        self.assertTrue(isinstance(11, int))
+
+    def test_double_isinstance_for_empty(self):
+        test_double = TestDouble()
+        self.assertTrue(isinstance(test_double, type(None)))
+
 
 if __name__ == '__main__':
     main()

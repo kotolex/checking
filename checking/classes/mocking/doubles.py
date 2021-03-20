@@ -1,8 +1,20 @@
+import builtins
 from typing import Any, List, Tuple
 
 from .calls import Call
 from .interfaces import Observer
 from .wrapper import AttributeWrapper
+
+
+def fake_builtins():
+    real_isinstance = builtins.isinstance
+
+    def fake_isinstance(initial: Any, class_or_tuple: Any) -> bool:
+        if real_isinstance(initial, Spy):
+            return initial.class_ == class_or_tuple
+        return real_isinstance(initial, class_or_tuple)
+
+    builtins.isinstance = fake_isinstance
 
 
 class Spy(Observer):
@@ -11,9 +23,13 @@ class Spy(Observer):
     anything if unless otherwise indicated, but all of the calls are fixed. This class in used due to make sure in
     the call of respectively functions with arguments.
     """
+    first_instance = False
 
     def __init__(self, obj: Any = None):
         super().__init__()
+        if not Spy.first_instance:
+            Spy.first_instance = True
+            fake_builtins()
         self.chain: List[Call] = []
         self._returns = None
         self._raises = None
@@ -29,6 +45,7 @@ class Spy(Observer):
                 else:
                     setattr(self, name, None)
         self.basic = obj
+        self.class_ = obj.__class__
 
     def notify(self, _call: Call):
         self.chain.append(_call)
@@ -150,6 +167,7 @@ class TestDouble(Spy):
         wrapper = AttributeWrapper('iter', self)
         setattr(self, 'iter', wrapper)
         self.basic = obj
+        self.class_ = obj.__class__
 
     def __str__(self):
         return f'Test Double of the "{self.basic}" {type(self.basic)}'
