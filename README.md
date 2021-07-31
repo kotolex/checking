@@ -78,7 +78,7 @@ def checks_basic_asserts():
     is_not_empty([1,2], 'Error message')   # checks, if the length of first arg (Sized type) is greater than 0, e.g. a collection is NOT empty
 ```
 
-Messages in all asserts are optional, but it's strongly recommended to use them.
+Messages in all asserts are optional, but it's strongly recommended using them.
 
 ###### Working with exceptions
 
@@ -96,7 +96,7 @@ def check_with_exception():
 The test will fail if no exception is raised or the exception is of another type. 
 Please note, that you have to check the exception message _after_ the context manager exits, not within it's scope.
 
-The library forbids the usage of the BaseException type here and it is strongly recommended not to use the Exception type as well. 
+The library forbids the usage of the BaseException type here, and it is strongly recommended not to use the Exception type as well. 
 Use concrete exception types.
 
 In some cases you only need to run the code and make sure no exception is raised. 
@@ -142,10 +142,10 @@ def must_be_ignored():
 
 The standard testing procedure compels the "fail fast" workflow: the whole test should halt if a single check fails. 
 But sometimes you need to check a bunch of conditions and only fail at the end of the test if needed, 
-collecting all of the information on the executed checks. 
+collecting all the information on the executed checks. 
 Soft Assert is a simple and convenient tool designed for this purpose.
 
-For example, you need to check all of the fields in a JSON object, 
+For example, you need to check all the fields in a JSON object, 
 collecting the info on which fields are correct and which are not: 
 
 ```python
@@ -214,14 +214,14 @@ def switch_to_attribute():
 ### Data Providers ###
 
 Often you need to run the same test with different data, there is @provider annotation for that target. Mark function you want with @provider annotation and
-you can use it in your tests. The function for data-provider should not have arguments and it has to return iterable, sequence or generator.
+you can use it in your tests. The function for data-provider should not have arguments, and it has to return iterable, sequence or generator.
 
 **Important!** Name of the provider has to be unique, you can specify it in parameter 
 
 `@provider(name='provider')` 
 
 or it takes the function name by default.
-It it not necessary to have data-provider with the test (in the same module)
+It is not necessary to have data-provider with the test (in the same module)
 
 The data provider takes sets of values from the iterable one by one and pushes them onto your test.
 
@@ -235,9 +235,6 @@ def pairs():
 def check_sum(it):   # The test function must take one argument, the data provider will supply the test data via this argument 
     equals(it[0] + it[1], it[2])   # Run an assert on the data unit
 ```
-
-If you want to use a text file as a data source, you can use `DATA_FILE` helper function to skip the file handling boilerplate code:
-
 
 You can specify mapping function to map values from the provider to some format, 
 this string representation will be shown in test parameter, by default it use str(value) result.
@@ -274,7 +271,7 @@ Test "__main__.check_cat" [Cat from 140288585438160] SUCCESS!
 Test "__main__.check_cat" [Cat from 140288585437776] SUCCESS!
 ```
 
-If you need to use text file as a provider and get data line by line, you can use DATA_FILE function:
+If you want to use a text file as a data source, you can use `DATA_FILE` helper function to skip the file handling boilerplate code:
 
 ```python
 from checking import *
@@ -289,7 +286,7 @@ def try_prov(it):
 
 The helper lazy-loads specified data file line by line. 
 Raises FileNotFoundError if the file is not found.
-Also, you can transform all of the lines before feeding them into the test, 
+Also, you can transform all the lines before feeding them into the test, 
 for example delete trailing newlines at the end of each line:
 
 ```python
@@ -317,7 +314,7 @@ def try_prov(it):
 If your test suite uses a data provider more than once, you might want to avoid the IO overhead,
 if this provider fetches the data from some external source (database, file system, http request etc.). 
 You can use the `cached` parameter to force the provider to fetch the data only once and store it into memory.
-Please, be vary of the memory consumption, because the cache persists until the whole suite is done running. 
+Please, be varied of the memory consumption, because the cache persists until the whole suite is done running. 
 Also, be careful when using the cache when running tests in parallel.
  
 DATA_FILE helper can use this parameter too.
@@ -345,7 +342,7 @@ you can use the CONTAINER helper function to avoid full function definition boil
 ```python
 from checking import *
 
-CONTAINER([e for e in range(10)], name='range')   # Provide data from a listcomp, set provider name to 'range'
+CONTAINER([e for e in range(10)], name='range')   # Provide data from a listcomps, set provider name to 'range'
 
 @test(data_provider='range')
 def try_container(it):
@@ -353,12 +350,12 @@ def try_container(it):
 ```
 
 'name' parameter is optional, 'container' is used by default,
-but it's strongly recommended to use a unique name:
+but it's strongly recommended using a unique name:
 
 ```python
 from checking import *
 
-CONTAINER((e for e in range(10)))   # Provide data from a genexp
+CONTAINER((e for e in range(10)))   # Provide data from a genexps
 
 @test(data_provider='container')
 def try_container(it):
@@ -371,9 +368,9 @@ def try_container(it):
 
 You can manage the test execution mode by passing a number of parameters to the @test decorator:
   
-**enabled** (bool) - if set to False, the test will be skipped, all other parameters are ignored. By default set to True.
+**enabled** (bool) - if set to False, the test will be skipped, all other parameters are ignored. By default, set to True.
 
-**name** (str) - the name of the test. Is bound to the the decorated function name if not specified.
+**name** (str) - the name of the test. Is bound to the decorated function name if not specified.
 
 **description** (str) - test description. If absent, the test function docstring is used. 
 If both description and docstring are present, description takes precedence.
@@ -382,14 +379,14 @@ If both description and docstring are present, description takes precedence.
 If specified, the test function must take one argument to be fed with the data from the provider. 
 Raises UnknownProviderName if no providers with the specified name found.
 
-**retries** (int) - the number of times to run the failing test. If test does not fail, no more runs attempted. By default set to 1.
+**retries** (int) - the number of times to run the failing test. If test does not fail, no more runs attempted. By default, set to 1.
 
 **groups** (Tuple[str]) - a tuple of strings, representing the test group names a test is a part of.
 All tests belong to some test group, the default group holds all tests from the current module and is named after the module.
 Use this parameter to manage test execution groups.
 
 **priority** (int) - test priority. The higher the value the later the test will be executed.
-Use this parameter to fine tune test run order. By default set to 0.
+Use this parameter to fine tune test run order. By default, set to 0.
 
 **timeout** (int) - amount of time to wait for the test to end. 
 If the time runs out, the thread running the test is terminated and the test is marked as "broken".
@@ -440,7 +437,7 @@ def another_func():
 
 
 @after_suite - function run once after all groups, at the end of the test-suite.
-This function will not be run if there is @before_suite and it failed, except using parameter 'always_run = True'
+This function will not be run if there is @before_suite, and it failed, except using parameter 'always_run = True'
 
 ```python
 @before_suite
@@ -501,7 +498,7 @@ def check_print():
         my_print('1')
     equals([(1,), ('1',)], result) # checks all args are in result list
 ```
-and more complicated case, when our function works for ever, printing all inputs, until gets 'exit':
+and more complicated case, when our function works forever, printing all inputs, until gets 'exit':
 
 ```python
 def use_both():
@@ -569,7 +566,7 @@ def mock_open_both():
     # Here we specify what we must "read from file" ('test') and where we want to get all writes(result)
     with mock_open(on_read_text='test') as result:
         my_open()
-    equals(['TEST'], result) # checks we get test uppercased
+    equals(['TEST'], result) # checks we get test uppercase
 
 ```
 
@@ -577,7 +574,7 @@ def mock_open_both():
 
 Spy is the object which has all attributes of original, but spy not performed any action, 
 all methods return None (if not specified what to return). Therefore, spy log all actions and arguments.
-It can be useful if your code has inner object and you need to test what functions were called.
+It can be useful if your code has inner object, and you need to test what functions were called.
 
 ```python
 def function_with_str_inside(value):
@@ -747,7 +744,7 @@ Time elapsed: 0.00 seconds.
 Success percent: 50.00%
 ==============================
 ```
-If you will use parameter verbose=3 in example above, result will be:
+If you use parameter verbose=3 in example above, result will be:
 
 ```text
 Starting suite "My Suite"
@@ -806,7 +803,7 @@ if __name__ == '__main__':
     start(verbose=3, groups=['api'])
 ```
 
-When you runs this example, only function api_check will be executed, because we specify groups to run.
+When you run this example, only function api_check will be executed, because we specify groups to run.
 
 
 **params**  is the dictionary of parameters available in all tests (general run parameters)
@@ -842,7 +839,7 @@ def test_common_function():
 
 
 **threads** is the number of threads to run tests, by default is 1. Each group can run in a separate thread if 
-necessary. This is an experimental feature and it can be useful only for tests NOT performing any complex calculations (CPU bound).
+necessary. This is an experimental feature, and it can be useful only for tests NOT performing any complex calculations (CPU bound).
 It is best to use this parameter (more than 1) for tests related to the use of I / O  operations - disk work, network requests. Obey the GIL!
 
 **dry_run** if True runs test-suite with fake function except of real tests and fixtures, can be useful to find out order, 
@@ -872,9 +869,9 @@ In example above only function ui_name will be runs, because name of the functio
 
 **random_order** if True - runs tests inside each group in random order. Can be useful to make sure your tests really independent as they should be.
 
-**max_fail** if greater than 0, then suite will stops, when failed tests count reach that number. For example, if you specify max_fail=1,
+**max_fail** if greater than 0, then suite will stop, when failed tests count reach that number. For example, if you specify max_fail=1,
 then suite will stop after first failure. Pay attention that real failed test count can be bigger than max_fail if you use parallel execution, 
-so parallel test will not interrupted until ends, even if count is reached.
+so parallel test will not interrupt until ends, even if count is reached.
 
 **generate_report** if True - creates html report with the results in test folder. Experimental!
 
@@ -887,7 +884,7 @@ python -m checking
 ```
 There are few parameters for run in terminal:
 
-**-o options.json**  tells to look at the file options.json for test-suite parameters. 
+**-o options.json**  tells looking at the file options.json for test-suite parameters. 
 If specified, **-d** and **-f** options will be ignored!
 
 **-g** just generates default .json file for your options! If specified, all other options will be ignored!
@@ -931,10 +928,10 @@ In current working folder a file will appear with content like:
   "generate_report": false
 }
 ```
-Changing this parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.
+Changing these parameters you can manage your suites and test  - for example specify what listener to use, or what group to run only.
 Some rules for parameters:
 
-1) All types must be as in example, so you cant put string to "verbose" it must be int, etc.
+1) All types must be as in example, so you can't put string to "verbose" it must be int, etc.
 
 2) If groups not empty ("groups":["api"]) then only group with that name will run. If no such group found, no tests will executed
 
@@ -942,7 +939,7 @@ Some rules for parameters:
 to specify whole path, just module name and class name. If not specified, default listener will be used. You can use
 default listener names here, like "listener":"DefaultFileListener"
 
-4) Modules must be specified without ".py"! If modules parameter is empty than all found modules with tests will be imported.
+4) Modules must be specified without ".py"! If modules parameter is empty, then all found modules with tests will be imported.
 If modules specified("modules":["my_package.my_module"]) only that modules be imported, and tests wil be collected from it. 
 You can specify just module names or package.module (no need to specify full path)
 

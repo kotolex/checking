@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="checking",
-    version="0.8.9",
+    version="0.9.0",
     author="Lex Draven",
     author_email="lexman2@yandex.ru",
-    description="A small library for testing your code, made by tester for testers",
+    description="A small library for unit-testing",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/kotolex/checking",
