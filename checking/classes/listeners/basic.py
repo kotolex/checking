@@ -160,7 +160,7 @@ class Listener:
             mapping_function = str
             if len(suite.providers[test.provider]) == 2:
                 mapping_function = suite.providers[test.provider][1]
-            short_ = short(mapping_function(test.argument)).replace('\n', '')
+            short_ = short(mapping_function(test.str_arg)).replace('\n', '')
             return f'[{short_}]'
         return ''
 

@@ -10,8 +10,8 @@ class Test(TestCase):
     The class which representing test, the main point of test run.
     """
     __slots__ = ('name', 'before', 'after', 'is_before_failed', 'always_run_after', 'provider', 'retries', 'priority',
-                 'test', 'group', 'group_name', 'argument', 'timeout', 'only_if', 'description', 'timer', 'status',
-                 'reason', 'report_params')
+                 'test', 'group', 'group_name', 'argument', 'str_arg', 'timeout', 'only_if', 'description', 'timer',
+                 'status', 'reason', 'report_params')
 
     def __init__(self, name: str, test: Callable):
         """
@@ -26,6 +26,8 @@ class Test(TestCase):
         self.group = None
         # Argument for data-provider run
         self.argument: Any = None
+        # Str representation of argument, because sometimes argument can be mutable and will be changed during test
+        self.str_arg = str(self.argument)
         # Time in seconds to finish test
         self.timeout: int = 0
         # Function-predicate, if return False - test will not runs
@@ -61,6 +63,7 @@ class Test(TestCase):
                 raise OnlyIfFailedException()
         self.timer.start()
         if self.provider is not None:
+            self.str_arg = str(self.argument)
             self.test(self.argument)
         else:
             self.test()

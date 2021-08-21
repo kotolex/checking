@@ -62,6 +62,17 @@ def raises():
 
 class BehaviourTest(TestCase):
 
+    def test_provider_str_arg(self):
+        def _():
+            return [[0, 1]]
+
+        clear()
+        provider(name='some')(_)
+        test(data_provider='some')(_fn)
+        start(listener=Listener(0))
+        self.assertEqual(TestSuite.get_instance().failed()[0].str_arg, '[0, 1]')
+
+
     def test_three_success_when_data(self):
         def _():
             return [0, 1, 2]

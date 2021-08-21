@@ -1,11 +1,12 @@
+from importlib import reload
 from unittest import TestCase, main
-from checking.classes.listeners.basic import Listener
-from checking.classes.basic_test import Test
-from checking.classes.basic_suite import TestSuite
+
 from checking import runner as r_
 from checking.annotations import test, provider, before, before_suite
+from checking.classes.basic_suite import TestSuite
+from checking.classes.basic_test import Test
+from checking.classes.listeners.basic import Listener
 from tests.fixture_behaviour_test import clear
-from importlib import reload
 
 COUNT = 0
 
@@ -31,16 +32,18 @@ class ListenerTest(TestCase):
         self.assertEqual('[None]', Listener._get_test_arg_short_without_new_line(test_))
 
     def test_get_test_arg_short_without_new_line_returns_arg(self):
-        test_ = Test('name', print)
+        test_ = Test('name', lambda x: None)
         test_.provider = '1'
         test_.argument = 1
+        test_.run()
         TestSuite.get_instance().providers['1'] = None, str
         self.assertEqual('[1]', Listener._get_test_arg_short_without_new_line(test_))
 
     def test_get_test_arg_short_with_mapping(self):
-        test_ = Test('name', print)
+        test_ = Test('name', lambda x: None)
         test_.provider = '1'
         test_.argument = 'asd'
+        test_.run()
         TestSuite.get_instance().providers['1'] = None, lambda x: str(x).upper()
         self.assertEqual('[ASD]', Listener._get_test_arg_short_without_new_line(test_))
 

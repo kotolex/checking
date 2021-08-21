@@ -419,6 +419,13 @@ class TestClasses(TC):
         group.shuffle_tests()
         self.assertNotEqual([t1, t2, t3, t4, t5, t6], group.tests)
 
+    def test_str_arg(self):
+        test = Test('one', lambda i: None)
+        test.provider = "provider"
+        test.argument = [1, 2, 3]
+        test.run()
+        self.assertEqual(test.str_arg, str(test.argument))
+
 
 if __name__ == '__main__':
     main()
