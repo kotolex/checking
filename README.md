@@ -78,7 +78,7 @@ def checks_basic_asserts():
     is_not_empty([1,2], 'Error message')   # checks, if the length of first arg (Sized type) is greater than 0, e.g. a collection is NOT empty
 ```
 
-Messages in all asserts are optional, but it's strongly recommended using them.
+Messages in all asserts are optional, but it is strongly recommended using them.
 
 ###### Working with exceptions
 
